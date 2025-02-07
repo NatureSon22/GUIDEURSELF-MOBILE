@@ -10,7 +10,7 @@ import 'package:guideurself/screens/splash.dart';
 import 'package:guideurself/widgets/bottomnavlayout.dart';
 
 final GoRouter router = GoRouter(
-  initialLocation: "/",
+  initialLocation: "/login",
   routes: [
     GoRoute(path: "/splash", builder: (context, state) => const Splash()),
     GoRoute(
