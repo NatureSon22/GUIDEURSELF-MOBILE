@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:fquery/fquery.dart';
 import 'package:guideurself/features/auth/loginbuttons.dart';
 import 'package:guideurself/features/auth/logindescription.dart';
 import 'package:guideurself/features/auth/loginfields.dart';
+import 'package:guideurself/services/auth.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -11,6 +13,13 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+  // final _loginMutation = useMutation(
+  //   (data) => login(
+  //     email: data!['email'],
+  //     password: data['password'],
+  //     rememberMe: data['rememberMe'],
+  //   ),
+  // );
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -60,7 +69,6 @@ class _LoginState extends State<Login> {
                     child: Column(
                       children: [
                         const LoginDescription(),
-                        const SizedBox(height: 40),
                         LoginFields(
                           emailController: _emailController,
                           passwordController: _passwordController,

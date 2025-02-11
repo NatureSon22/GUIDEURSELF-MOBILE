@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 
 ThemeData lightTheme = ThemeData(
   brightness: Brightness.light,
-  fontFamily: 'Poppins',
   primaryColor: const Color(0xFF12A5BC),
   colorScheme: const ColorScheme.light(
     surface: Colors.white,
   ),
+
+  fontFamily: 'Poppins',
+
+  // appBarTheme: const AppBarTheme(backgroundColor: Colors.white, elevation: 2),
 
   // Text Theme
   textTheme: const TextTheme(
@@ -21,9 +24,14 @@ ThemeData lightTheme = ThemeData(
       color: Color(0xFF323232),
     ),
     headlineSmall: TextStyle(
-      fontSize: 18,
+      fontSize: 20,
       fontWeight: FontWeight.w600,
       color: Color(0xFF323232),
+    ),
+    labelSmall: TextStyle(
+      fontSize: 14,
+      color: Color(0xFF323232),
+      fontWeight: FontWeight.w600,
     ),
     bodyMedium: TextStyle(
       fontSize: 13,
