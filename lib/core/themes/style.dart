@@ -8,9 +8,10 @@ enum CustomFontWeight { weight400, weight500, weight600, weight700, weight800 }
 
 TextStyle styleText({
   required BuildContext context,
-  required FontSizeOption fontSizeOption,
-  required LineHeightOption lineHeightOption,
+  dynamic fontSizeOption, // Accept both FontSizeOption or double
+  LineHeightOption lineHeightOption = LineHeightOption.height200,
   CustomFontWeight fontWeight = CustomFontWeight.weight400,
+  Color color = const Color(0xFF323232),
 }) {
   final fontSizeMap = {
     FontSizeOption.size100: 11.0,
@@ -22,7 +23,7 @@ TextStyle styleText({
   final lineHeightMap = {
     LineHeightOption.height100: 1.2,
     LineHeightOption.height200: 1.6,
-    LineHeightOption.height300: 1.1, // Corrected from 1.10
+    LineHeightOption.height300: 1.1,
   };
 
   final fontWeightMap = {
@@ -33,13 +34,18 @@ TextStyle styleText({
     CustomFontWeight.weight800: FontWeight.w800,
   };
 
+  // Determine font size based on input type
+  final fontSize = fontSizeOption is FontSizeOption
+      ? fontSizeMap[fontSizeOption]
+      : fontSizeOption; 
+
   final textColor = Theme.of(context).brightness == Brightness.light
-      ? const Color(0xFF323232) // Light theme color
-      : const Color(0xFFFFFFFF); // Dark theme color
+      ? color
+      : (color == const Color(0xFF323232) ? const Color(0xFFFFFFFF) : color);
 
   return TextStyle(
     fontFamily: "Poppins",
-    fontSize: fontSizeMap[fontSizeOption],
+    fontSize: fontSize,
     height: lineHeightMap[lineHeightOption],
     fontWeight: fontWeightMap[fontWeight],
     color: textColor,

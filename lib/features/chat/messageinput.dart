@@ -1,10 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
+import 'package:guideurself/providers/conversation.dart';
+import 'package:guideurself/services/conversation.dart';
+import 'package:provider/provider.dart';
 
 class MessageInput extends StatefulWidget {
   final String? question;
-  const MessageInput({super.key, required this.question});
+  final void Function(Map<String, dynamic> question) handleSendQuestion;
+
+  const MessageInput({
+    super.key,
+    required this.question,
+    required this.handleSendQuestion,
+  });
 
   @override
   State<MessageInput> createState() => _MessageInputState();
@@ -27,6 +36,65 @@ class _MessageInputState extends State<MessageInput> {
     if (oldWidget.question != widget.question && widget.question != null) {
       _controller.text = widget.question!;
       SystemChannels.textInput.invokeMethod("TextInput.show");
+    }
+  }
+
+  Future<void> handleSendQuestion({required String question}) async {
+    final conversationProvider =
+        Provider.of<ConversationProvider>(context, listen: false);
+    final conversation = conversationProvider.conversation;
+
+    // Optimistically show user message
+    final String? initialConversationId = conversation['conversation_id'];
+
+    widget.handleSendQuestion(
+      {
+        "_id": initialConversationId,
+        "content": question,
+        "is_machine_generated": false,
+      },
+    );
+
+    _controller.clear();
+
+    Map<String, dynamic>? newConversation;
+
+    // If no conversation_id, create a new one
+    String conversationId = initialConversationId ?? '';
+    if (initialConversationId == null) {
+      newConversation = await createConversation(name: question);
+      conversationId = newConversation["conversation_id"];
+      conversationProvider.setConversation(conversation: newConversation);
+    }
+
+    try {
+      final response = await sendMessage(
+        conversationId: conversationId,
+        content: question,
+      );
+
+      // Use the correct conversation_id after creation for bot response
+      final resolvedConversationId =
+          initialConversationId ?? newConversation?['conversation_id'];
+
+      final responseMessage = {
+        "_id": resolvedConversationId,
+        "content": response["answer"]["content"],
+        "is_machine_generated": true,
+      };
+
+      widget.handleSendQuestion(responseMessage);
+    } catch (e) {
+      // Use the correct conversation_id after creation for failed message
+      final resolvedConversationId =
+          initialConversationId ?? newConversation?['conversation_id'];
+
+      widget.handleSendQuestion({
+        "_id": resolvedConversationId,
+        "content": "Failed to send message. Please try again.",
+        "is_machine_generated": true,
+        "is_failed": true,
+      });
     }
   }
 
@@ -63,6 +131,7 @@ class _MessageInputState extends State<MessageInput> {
           const Gap(4),
           Expanded(
             child: TextField(
+              autofocus: false,
               style: const TextStyle(fontSize: 12),
               controller: _controller,
               decoration: InputDecoration(
@@ -88,7 +157,7 @@ class _MessageInputState extends State<MessageInput> {
           ElevatedButton(
             onPressed: () {
               if (_controller.text.trim().isNotEmpty) {
-                _controller.clear(); // Clear the text field after sending
+                handleSendQuestion(question: _controller.text);
               }
             },
             style: ElevatedButton.styleFrom(
@@ -96,7 +165,7 @@ class _MessageInputState extends State<MessageInput> {
               padding: const EdgeInsets.all(11),
             ),
             child: Transform.rotate(
-              angle: -0.785398, // -45 degrees in radians
+              angle: -0.785398,
               child: const Icon(
                 Icons.send,
                 size: 22,
