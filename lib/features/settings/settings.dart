@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:guideurself/core/themes/style.dart';
+import 'package:guideurself/providers/account.dart';
+import 'package:guideurself/services/auth.dart';
+import 'package:provider/provider.dart';
 
 final settingsFeatures = [
   {
@@ -32,8 +35,15 @@ final settingsFeatures = [
 class Settings extends StatelessWidget {
   const Settings({super.key});
 
+  Future<void> handleLogout() async {
+    await logout();
+  }
+
   @override
   Widget build(BuildContext context) {
+    final accountProvider = context.watch<AccountProvider>();
+    final account = accountProvider.account;
+
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -59,11 +69,12 @@ class Settings extends StatelessWidget {
                         Container(
                           width: 75,
                           height: 75,
-                          decoration: const BoxDecoration(
+                          decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             image: DecorationImage(
                               image: NetworkImage(
-                                'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRzrwYBCJ5bXdYy6i-tgg7Pn9lOOp-DDyKIuA&s',
+                                account["user_photo_url"] ??
+                                    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRzrwYBCJ5bXdYy6i-tgg7Pn9lOOp-DDyKIuA&s',
                               ),
                               fit: BoxFit.cover,
                             ),
@@ -76,7 +87,8 @@ class Settings extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'John Doe'.toUpperCase(),
+                                account["username"].toUpperCase() ??
+                                    'John Doe'.toUpperCase(),
                                 style: const TextStyle(
                                   fontSize: 13,
                                   fontWeight: FontWeight.w600,
@@ -86,7 +98,7 @@ class Settings extends StatelessWidget {
                               ),
                               const Gap(1.5),
                               Text(
-                                'ID No: B2022-0553',
+                                'ID No: ${account["user_number"]}',
                                 style: TextStyle(
                                   fontFamily: "Poppins",
                                   fontSize: 11,
@@ -149,8 +161,15 @@ class Settings extends StatelessWidget {
                               : const Color(0xFF323232),
                         ),
                       ),
-                      onTap: () {
-                        context.go(feature['goto'] as String);
+                      onTap: () async {
+                        if (feature['label'] == "Logout") {
+                          await handleLogout();
+                          if (context.mounted) {
+                            context.go("/auth-layer");
+                          }
+                        } else {
+                          context.go(feature['goto'] as String);
+                        }
                       },
                       trailing: Icon(
                         Icons.arrow_forward_ios,

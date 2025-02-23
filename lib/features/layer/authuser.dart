@@ -17,21 +17,25 @@ class AuthLayer extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
             body: Center(
-              child: CircularProgressIndicator(),
+              child: CircularProgressIndicator(
+                color: Color(0xFF12A5BC),
+              ),
             ),
           );
         }
 
-        if (snapshot.hasError || snapshot.data == null) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            context.go('/login');
-          });
-        } else {
-          final isValid = snapshot.data?['valid'] == true;
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            context.go(isValid ? '/' : '/login');
-          });
-        }
+        Future.microtask(() {
+          if (!snapshot.hasData || snapshot.hasError) {
+            if (context.mounted) {
+              context.go('/login');
+            }
+          } else {
+            final isValid = snapshot.data?['valid'] == true;
+            if (context.mounted) {
+              context.go(isValid ? '/' : '/login');
+            }
+          }
+        });
 
         // Empty placeholder to avoid build errors
         return const Scaffold(body: SizedBox());

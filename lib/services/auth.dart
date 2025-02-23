@@ -53,3 +53,33 @@ void printCookies() async {
     }
   }
 }
+
+Future<void> logout() async {
+  try {
+    await dio.post("/auth/logout");
+  } on DioException catch (_) {
+    throw Exception('Failed to logout.');
+  }
+}
+
+Future<Map<String, dynamic>> userAccount() async {
+  try {
+    final response = await dio.get("/accounts/logged-in-account");
+    final user = response.data['user'][0];
+    return user;
+  } on DioException catch (_) {
+    throw Exception('Failed to fetch user account.');
+  }
+}
+
+Future<Map<String, dynamic>> updatePassword(
+    {required String password, required String accountId}) async {
+  try {
+    final response = await dio.put("/accounts/update-account",
+        data: {"password": password, "accountId": accountId});
+    final user = response.data;
+    return user;
+  } on DioException catch (_) {
+    throw Exception('Failed to update password.');
+  }
+}

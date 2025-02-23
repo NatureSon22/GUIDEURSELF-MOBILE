@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
+import 'package:guideurself/features/chat/recordinput.dart';
 import 'package:guideurself/providers/conversation.dart';
 import 'package:guideurself/services/conversation.dart';
 import 'package:provider/provider.dart';
@@ -113,7 +114,7 @@ class _MessageInputState extends State<MessageInput> {
       child: Row(
         children: [
           OutlinedButton(
-            onPressed: () {},
+            onPressed: () => recordInput(context),
             style: OutlinedButton.styleFrom(
               shape: const CircleBorder(),
               side: BorderSide(

@@ -3,7 +3,9 @@ import 'package:gap/gap.dart';
 import 'package:guideurself/core/themes/style.dart';
 
 class FeedbackComment extends StatelessWidget {
-  const FeedbackComment({super.key});
+  final TextEditingController controller;
+
+  const FeedbackComment({super.key, required this.controller});
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +30,8 @@ class FeedbackComment extends StatelessWidget {
             ),
           ),
           const Gap(10),
-          TextField(
+          TextFormField(
+            controller: controller,
             style: const TextStyle(fontSize: 12),
             decoration: InputDecoration(
               hintText: "What did you like? What could we improve?",
@@ -53,7 +56,13 @@ class FeedbackComment extends StatelessWidget {
               ),
             ),
             maxLines: 10,
-          )
+            validator: (value) {
+              if (value == null || value.trim().isEmpty) {
+                return "Please enter your feedback.";
+              }
+              return null;
+            },
+          ),
         ],
       ),
     );

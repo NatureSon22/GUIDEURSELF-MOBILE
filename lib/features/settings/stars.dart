@@ -3,20 +3,21 @@ import 'package:gap/gap.dart';
 import 'package:guideurself/core/themes/style.dart';
 
 class Stars extends StatefulWidget {
-  const Stars({super.key});
+  final Function(int) onRatingSelected; // Callback to pass rating
+
+  const Stars({super.key, required this.onRatingSelected});
 
   @override
   State<Stars> createState() => _StarsState();
 }
 
 class _StarsState extends State<Stars> {
-  int selectedRating = 0; // Tracks the selected star rating
+  int selectedRating = 0;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.start,
       children: [
         Text(
           "Rate Your Experience",
@@ -43,8 +44,9 @@ class _StarsState extends State<Stars> {
                 return IconButton(
                   onPressed: () {
                     setState(() {
-                      selectedRating = index + 1; // Update rating
+                      selectedRating = index + 1;
                     });
+                    widget.onRatingSelected(selectedRating);
                   },
                   icon: Icon(
                     Icons.star_rounded,

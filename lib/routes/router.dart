@@ -10,6 +10,7 @@ import 'package:guideurself/features/explore/explore.dart';
 import 'package:guideurself/features/home/home.dart';
 import 'package:guideurself/features/chat/chatpreview.dart';
 import 'package:guideurself/features/layer/authuser.dart';
+import 'package:guideurself/features/settings/privacylegal.dart';
 import 'package:guideurself/features/settings/settings.dart';
 import 'package:guideurself/features/settings/virtualtourpreference.dart';
 import 'package:guideurself/features/settings/userfeedback.dart';
@@ -18,7 +19,7 @@ import 'package:guideurself/screens/splash.dart';
 import 'package:guideurself/widgets/bottomnavlayout.dart';
 
 final GoRouter router = GoRouter(
-  initialLocation: "/",
+  initialLocation: "/auth-layer",
   routes: [
     GoRoute(
       path: "/splash",
@@ -31,18 +32,17 @@ final GoRouter router = GoRouter(
     ),
     GoRoute(
       path: "/login",
-      pageBuilder: (context, state) => _buildSlidePage(state, const Login()),
+      builder: (context, state) => const Login(),
     ),
     GoRoute(
       path: "/forgot-password",
-      pageBuilder: (context, state) =>
-          _buildSlidePage(state, const ForgotPassword()),
+      builder: (context, state) => const ForgotPassword(),
     ),
     GoRoute(
       path: "/auth-layer",
-      pageBuilder: (context, state) =>
-          _buildSlidePage(state, const AuthLayer()),
+      builder: (context, state) => const AuthLayer(),
     ),
+
     ShellRoute(
       builder: (context, state, child) {
         return BottomNavLayout(child: child);
@@ -69,6 +69,8 @@ final GoRouter router = GoRouter(
         ),
       ],
     ),
+    
+    // Other routes with transitions
     GoRoute(
       path: '/chatbot',
       pageBuilder: (context, state) => _buildSlidePage(state, const Chatbot()),
@@ -94,12 +96,18 @@ final GoRouter router = GoRouter(
           _buildSlidePage(state, const UserFeedback()),
     ),
     GoRoute(
+      path: '/privacy-legal',
+      pageBuilder: (context, state) =>
+          _buildSlidePage(state, const PrivacyLegal()),
+    ),
+    GoRoute(
       path: '/about',
       pageBuilder: (context, state) => _buildSlidePage(state, const About()),
     ),
   ],
 );
 
+// Custom transition function for non-auth routes
 CustomTransitionPage _buildSlidePage(GoRouterState state, Widget child) {
   return CustomTransitionPage(
     key: state.pageKey,

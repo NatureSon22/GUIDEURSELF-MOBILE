@@ -5,9 +5,30 @@ import 'package:guideurself/features/home/cardbot.dart';
 import 'package:guideurself/features/home/header.dart';
 import 'package:guideurself/features/home/history.dart';
 import 'package:guideurself/features/home/navfeature.dart';
+import 'package:guideurself/providers/account.dart';
+import 'package:guideurself/services/auth.dart';
+import 'package:provider/provider.dart';
 
-class Home extends StatelessWidget {
+class Home extends StatefulWidget {
   const Home({super.key});
+
+  @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserAccount();
+  }
+
+  Future<void> _fetchUserAccount() async {
+    final account = await userAccount();
+    if (mounted) {
+      context.read<AccountProvider>().setAccount(account: account);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +37,6 @@ class Home extends StatelessWidget {
         height: MediaQuery.of(context).size.height,
         child: Stack(
           children: [
-            // Custom Curved Background
             Positioned(
               top: 0,
               left: 0,
@@ -34,8 +54,6 @@ class Home extends StatelessWidget {
                 ),
               ),
             ),
-
-            // Content on top
             Padding(
               padding: const EdgeInsets.only(
                   top: 40, left: 30, right: 30, bottom: 20),

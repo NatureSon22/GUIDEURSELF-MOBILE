@@ -152,6 +152,8 @@ class Chatbot extends HookWidget {
               Questions(handleSelectQuestion: handleSelectQuestion)
             else
               const SizedBox.shrink(),
+
+            // put here the function to open
             MessageInput(
               question: question.value,
               handleSendQuestion: sendQuestion,
