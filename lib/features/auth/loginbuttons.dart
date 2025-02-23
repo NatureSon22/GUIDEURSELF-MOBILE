@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 
 class LoginButtons extends StatefulWidget {
   final VoidCallback handleLogin;
-  const LoginButtons({super.key, required this.handleLogin});
+  final bool isLoading;
+  const LoginButtons(
+      {super.key, required this.handleLogin, required this.isLoading});
 
   @override
   State<LoginButtons> createState() => _LoginButtonsState();
@@ -19,8 +21,8 @@ class _LoginButtonsState extends State<LoginButtons> {
             widget.handleLogin();
           },
           style: Theme.of(context).elevatedButtonTheme.style,
-          child: const Text(
-            "Login",
+          child: Text(
+            widget.isLoading ? "Logging in" : "Login",
           ),
         ),
         const SizedBox(height: 5),
