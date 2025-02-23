@@ -36,13 +36,13 @@ final GoRouter router = GoRouter(
           pageBuilder: (context, state) => _buildPage(state, const Home()),
         ),
         GoRoute(
-          path: '/explore',
-          pageBuilder: (context, state) => _buildPage(state, const Explore()),
+          path: '/chat',
+          pageBuilder: (context, state) => _buildPage(state, const ChatPreview()),
         ),
         GoRoute(
-          path: '/chat',
+          path: '/explore',
           pageBuilder: (context, state) =>
-              _buildPage(state, const ChatPreview()),
+              _buildPage(state, const Explore()),
         ),
         GoRoute(
           path: '/profile',
