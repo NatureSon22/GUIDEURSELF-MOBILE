@@ -2,43 +2,58 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:guideurself/services/auth.dart';
 
-class AuthLayer extends StatelessWidget {
+class AuthLayer extends StatefulWidget {
   const AuthLayer({super.key});
 
-  Future<Map<String, dynamic>> _validateUser() async {
-    return await validateUser();
+  @override
+  State<AuthLayer> createState() => _AuthLayerState();
+}
+
+class _AuthLayerState extends State<AuthLayer> {
+  late Future<Map<String, dynamic>> _authFuture;
+  bool _hasNavigated = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _authFuture = validateUser();
   }
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<Map<String, dynamic>>(
-      future: _validateUser(),
+      future: _authFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Scaffold(
+          return Scaffold(
             body: Center(
               child: CircularProgressIndicator(
-                color: Color(0xFF12A5BC),
+                color: const Color(0xFF12A5BC),
+                backgroundColor: const Color(0xFF323232).withOpacity(0.1),
               ),
             ),
           );
         }
 
-        Future.microtask(() {
-          if (!snapshot.hasData || snapshot.hasError) {
-            if (context.mounted) {
-              context.go('/login');
-            }
-          } else {
-            final isValid = snapshot.data?['valid'] == true;
-            if (context.mounted) {
-              context.go(isValid ? '/' : '/login');
-            }
-          }
-        });
+        // Handle navigation once
+        if (!_hasNavigated && context.mounted) {
+          _hasNavigated = true;
 
-        // Empty placeholder to avoid build errors
-        return const Scaffold(body: SizedBox());
+          final isValid = snapshot.data?['valid'] == true;
+          final destination = isValid ? '/' : '/login';
+
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            context.go(destination);
+          });
+        }
+
+        return const Scaffold(
+          body: Center(
+            child: CircularProgressIndicator(
+              color: Color(0xFF12A5BC),
+            ),
+          ),
+        );
       },
     );
   }

@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:guideurself/core/themes/style.dart';
+import 'package:guideurself/providers/conversation.dart';
+import 'package:provider/provider.dart';
 
 class HeaderDrawer extends StatelessWidget {
-  const HeaderDrawer({
-    super.key,
-    required this.context,
-  });
+  const HeaderDrawer({super.key, required this.context});
 
   final BuildContext context;
 
   @override
   Widget build(BuildContext context) {
+    final conversationProvider =
+        context.watch<ConversationProvider>(); 
+
     return Container(
       height: 90,
       alignment: Alignment.bottomCenter,
@@ -26,6 +28,8 @@ class HeaderDrawer extends StatelessWidget {
         children: [
           GestureDetector(
             onTap: () {
+              conversationProvider
+                  .resetConversation(); // ✅ Triggers UI updates now
               Navigator.of(context).pop();
               FocusScope.of(context).unfocus();
             },

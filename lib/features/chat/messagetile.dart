@@ -12,10 +12,12 @@ class MessageTile extends StatelessWidget {
     super.key,
     required this.message,
     required this.title,
+    required this.handleCloseDrawer,
   });
 
   final Map<String, dynamic> message;
   final String title;
+  final Function handleCloseDrawer;
 
   void _showSnackBar(BuildContext context, String message, bool isSuccess) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -49,6 +51,8 @@ class MessageTile extends StatelessWidget {
       if (context.mounted) {
         _showSnackBar(context, 'Failed to delete conversation.', false);
       }
+    } finally {
+      handleCloseDrawer();
     }
   }
 

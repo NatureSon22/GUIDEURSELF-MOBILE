@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
 import 'package:guideurself/features/chat/recordinput.dart';
 import 'package:guideurself/providers/conversation.dart';
+import 'package:guideurself/providers/loading.dart';
 import 'package:guideurself/services/conversation.dart';
 import 'package:provider/provider.dart';
 
@@ -43,59 +44,78 @@ class _MessageInputState extends State<MessageInput> {
   Future<void> handleSendQuestion({required String question}) async {
     final conversationProvider =
         Provider.of<ConversationProvider>(context, listen: false);
+    final loadingProvider = context.read<LoadingProvider>();
     final conversation = conversationProvider.conversation;
+    String? conversationId = conversation['conversation_id'];
 
-    // Optimistically show user message
-    final String? initialConversationId = conversation['conversation_id'];
+    final String tempMessageId =
+        DateTime.now().millisecondsSinceEpoch.toString();
 
-    widget.handleSendQuestion(
-      {
-        "_id": initialConversationId,
-        "content": question,
-        "is_machine_generated": false,
-      },
-    );
+    // Immediately show the user's question in the UI
+    widget.handleSendQuestion({
+      "_id": tempMessageId,
+      "content": question,
+      "is_machine_generated": false,
+    });
 
     _controller.clear();
 
-    Map<String, dynamic>? newConversation;
-
-    // If no conversation_id, create a new one
-    String conversationId = initialConversationId ?? '';
-    if (initialConversationId == null) {
-      newConversation = await createConversation(name: question);
-      conversationId = newConversation["conversation_id"];
-      conversationProvider.setConversation(conversation: newConversation);
-    }
-
     try {
-      final response = await sendMessage(
-        conversationId: conversationId,
-        content: question,
-      );
+      // If there's no conversation, create a temporary one
+      if (conversationId == null) {
+        if (conversation.isEmpty) {
+          final tempId = 'temp-${DateTime.now().millisecondsSinceEpoch}';
+          conversationProvider.setConversation(
+              conversation: {'conversation_id': tempId}, isNew: true);
+          conversationId = tempId;
+        }
 
-      // Use the correct conversation_id after creation for bot response
-      final resolvedConversationId =
-          initialConversationId ?? newConversation?['conversation_id'];
+        // Create a new conversation in the backend
+        final newConversation = await createConversation(name: question);
 
-      final responseMessage = {
-        "_id": resolvedConversationId,
-        "content": response["answer"]["content"],
-        "is_machine_generated": true,
-      };
+        if (!newConversation.containsKey("conversation_id")) {
+          throw Exception(
+              "Invalid conversation response: Missing conversation_id");
+        }
 
-      widget.handleSendQuestion(responseMessage);
-    } catch (e) {
-      // Use the correct conversation_id after creation for failed message
-      final resolvedConversationId =
-          initialConversationId ?? newConversation?['conversation_id'];
+        // Update the conversation with the real ID
+        conversationProvider.setConversation(conversation: newConversation);
+        conversationId = newConversation["conversation_id"];
+      }
+
+      loadingProvider.setIsGeneratingResponse(true);
+
+      // Send the message to the backend
+      final response =
+          await sendMessage(conversationId: conversationId!, content: question);
 
       widget.handleSendQuestion({
-        "_id": resolvedConversationId,
-        "content": "Failed to send message. Please try again.",
+        "_id": DateTime.now().millisecondsSinceEpoch.toString(),
+        "content": response["answer"]["content"],
+        "is_machine_generated": true,
+      });
+
+      loadingProvider.setIsGeneratingResponse(false);
+    } catch (e) {
+      // More detailed error handling
+      final String errorMessage;
+      if (e.toString().contains("network")) {
+        errorMessage = "Network error. Please check your connection.";
+      } else if (e.toString().contains("500")) {
+        errorMessage = "Server error. Please try again later.";
+      } else {
+        errorMessage = "Failed to send message. Please try again.";
+      }
+
+      // Show error message in the UI
+      widget.handleSendQuestion({
+        "_id": conversationId ?? tempMessageId,
+        "content": errorMessage,
         "is_machine_generated": true,
         "is_failed": true,
       });
+
+      debugPrint("Message error: $e");
     }
   }
 
@@ -114,7 +134,7 @@ class _MessageInputState extends State<MessageInput> {
       child: Row(
         children: [
           OutlinedButton(
-            onPressed: () => recordInput(context),
+            onPressed: () => recordInput(context, widget.handleSendQuestion),
             style: OutlinedButton.styleFrom(
               shape: const CircleBorder(),
               side: BorderSide(

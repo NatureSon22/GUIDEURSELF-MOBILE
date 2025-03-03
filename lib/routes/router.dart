@@ -69,7 +69,7 @@ final GoRouter router = GoRouter(
         ),
       ],
     ),
-    
+
     // Other routes with transitions
     GoRoute(
       path: '/chatbot',

@@ -52,7 +52,7 @@ class ChatPreview extends StatelessWidget {
                       ),
                       const Gap(10),
                       Text(
-                        "As part of the URS Giants family, I’m here to help you navigate all things URS, from campus information to support with university processes. Whether you’re looking for answers, need directions, or just have a question about university life, I’m your go-to guide!",
+                        "As part of the URS Giants family, I'm here to help you navigate all things URS, from campus information to support with university processes. Whether you’re looking for answers, need directions, or just have a question about university life, I’m your go-to guide!",
                         style: styleText(
                             context: context,
                             fontSizeOption: FontSizeOption.size100,
@@ -60,24 +60,24 @@ class ChatPreview extends StatelessWidget {
                         textAlign: TextAlign.center,
                       ),
                       const Gap(14),
-                      SizedBox(
-                        width: 200,
-                        child: Text(
-                          "Just ask, ang let's make your URS experience giant-sized!",
-                          style: styleText(
-                              context: context,
-                              fontSizeOption: FontSizeOption.size100,
-                              lineHeightOption: LineHeightOption.height200,
-                              fontWeight: CustomFontWeight.weight600),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
+                      // SizedBox(
+                      //   width: 200,
+                      //   child: Text(
+                      //     "Just ask, and let's make your URS experience giant-sized!",
+                      //     style: styleText(
+                      //         context: context,
+                      //         fontSizeOption: FontSizeOption.size100,
+                      //         lineHeightOption: LineHeightOption.height200,
+                      //         fontWeight: CustomFontWeight.weight600),
+                      //     textAlign: TextAlign.center,
+                      //   ),
+                      // ),
                       const Spacer(),
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
                           onPressed: () {
-                            context.go("/chatbot");
+                            context.go("/chatbot/");
                           },
                           style: Theme.of(context).elevatedButtonTheme.style,
                           child: const Text(

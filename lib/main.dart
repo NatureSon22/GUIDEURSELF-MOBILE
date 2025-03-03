@@ -5,6 +5,7 @@ import 'package:guideurself/core/themes/dark_theme.dart';
 import 'package:guideurself/core/themes/light_theme.dart';
 import 'package:guideurself/providers/account.dart';
 import 'package:guideurself/providers/conversation.dart';
+import 'package:guideurself/providers/loading.dart';
 import 'package:guideurself/routes/router.dart';
 import 'package:guideurself/services/storage.dart';
 import 'package:provider/provider.dart';
@@ -20,6 +21,7 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (context) => ConversationProvider()),
         ChangeNotifierProvider(create: (context) => AccountProvider()),
+        ChangeNotifierProvider(create: (context) => LoadingProvider())
       ],
       child: QueryClientProvider(
         queryClient: queryClient,

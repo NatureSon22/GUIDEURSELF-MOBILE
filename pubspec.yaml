@@ -39,7 +39,8 @@ dependencies:
   dio_cookie_manager: ^3.2.0
   gap: ^3.0.1
   http: ^1.3.0
-  flutter_html: ^3.0.0-beta.2provider: ^6.1.2
+  flutter_html: ^3.0.0-beta.2
+  provider: ^6.1.2
   shimmer: ^3.0.0
   flutter_widget_from_html: ^0.15.3
   flutter_slidable: ^3.0.0
@@ -47,6 +48,9 @@ dependencies:
   record: ^5.2.1
   permission_handler: ^11.4.0
   audioplayers: ^5.0.0
+  path_provider: ^2.1.5
+  speech_to_text: ^7.0.0
+  lottie: ^3.2.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -74,6 +78,7 @@ flutter:
 
   assets:
     - lib/assets/images/
+    - lib/assets/webp/
 
   fonts:
     - family: Poppins

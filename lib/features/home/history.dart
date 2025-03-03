@@ -1,6 +1,11 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:guideurself/features/chat/chatbot.dart';
+import 'package:guideurself/providers/conversation.dart';
+import 'package:guideurself/services/conversation.dart';
+import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:go_router/go_router.dart';
 
 Future<List<Map<String, dynamic>>> getConversations() async {
   await Future.delayed(const Duration(seconds: 1));
@@ -23,7 +28,7 @@ class _HistoryListState extends State<HistoryList> {
   @override
   void initState() {
     super.initState();
-    _futureMessages = getConversations();
+    _futureMessages = getAllConversations(limit: 3);
   }
 
   @override
@@ -43,10 +48,19 @@ class _HistoryListState extends State<HistoryList> {
           final messages = snapshot.data ?? [];
 
           if (messages.isEmpty) {
-            return const Center(
-              child: Text(
-                "Your chat is empty",
-                style: TextStyle(fontSize: 12.0),
+            return Container(
+              decoration: BoxDecoration(
+                color: const Color(0xFF323232).withOpacity(0.03),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Center(
+                child: Text(
+                  "Your chat is empty",
+                  style: TextStyle(
+                    fontSize: 12.0,
+                    color: const Color(0xFF323232).withOpacity(0.7),
+                  ),
+                ),
               ),
             );
           }
@@ -116,6 +130,8 @@ class _HistoryListState extends State<HistoryList> {
   }
 
   Widget _buildMessageList(List<Map<String, dynamic>> messages) {
+    final conversationProvider = context.read<ConversationProvider>();
+
     return ListView.builder(
       padding: const EdgeInsets.all(0),
       physics: const AlwaysScrollableScrollPhysics(),
@@ -156,7 +172,10 @@ class _HistoryListState extends State<HistoryList> {
                 size: 18,
               ),
             ),
-            onTap: () {},
+            onTap: () {
+              conversationProvider.setConversation(conversation: message);
+              context.go("/chatbot");
+            },
           ),
         );
       },

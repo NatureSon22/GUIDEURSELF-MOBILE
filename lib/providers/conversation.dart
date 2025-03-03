@@ -2,15 +2,19 @@ import 'package:flutter/material.dart';
 
 class ConversationProvider extends ChangeNotifier {
   Map<String, dynamic> conversation = {};
+  bool isNewConversation = true;
 
-  void setConversation({required Map<String, dynamic> conversation}) {
+  void setConversation(
+      {required Map<String, dynamic> conversation, bool? isNew}) {
     this.conversation = conversation;
+    isNewConversation = isNew ?? false;
     notifyListeners();
   }
 
-  void resetConversation() async {
-    await Future.delayed(const Duration(seconds: 1));
-    conversation = {};
+  void resetConversation() {
+    debugPrint("Resetting conversation...");
+    conversation = <String, dynamic>{};
+    isNewConversation = true;
     notifyListeners();
   }
 }

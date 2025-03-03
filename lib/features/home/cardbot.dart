@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:guideurself/core/themes/style.dart';
 import 'package:guideurself/widgets/textgradient.dart';
+import 'package:go_router/go_router.dart';
 
 class CardBot extends StatelessWidget {
   const CardBot({
@@ -47,7 +48,9 @@ class CardBot extends StatelessWidget {
                   width: double.infinity,
                   padding: const EdgeInsets.only(right: 50),
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      context.go("/chat");
+                    },
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 10),
                       textStyle: const TextStyle(fontSize: 13.5),

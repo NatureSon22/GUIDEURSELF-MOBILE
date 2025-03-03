@@ -109,7 +109,7 @@ class _MessageBubbleState extends State<MessageBubble> {
                 },
               ),
             ),
-            if (widget.isMachine)
+            if (widget.isMachine && !widget.isFailed)
               Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
