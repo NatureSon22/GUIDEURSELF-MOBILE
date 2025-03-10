@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
 import 'package:guideurself/features/chat/recordinput.dart';
+import 'package:guideurself/providers/account.dart';
 import 'package:guideurself/providers/conversation.dart';
 import 'package:guideurself/providers/loading.dart';
 import 'package:guideurself/services/conversation.dart';
@@ -46,6 +47,9 @@ class _MessageInputState extends State<MessageInput> {
         Provider.of<ConversationProvider>(context, listen: false);
     final loadingProvider = context.read<LoadingProvider>();
     final conversation = conversationProvider.conversation;
+    final accountProvider = context.read<AccountProvider>();
+    final account = accountProvider.account;
+    final isGuest = account.isEmpty;
     String? conversationId = conversation['conversation_id'];
 
     final String tempMessageId =
@@ -71,7 +75,9 @@ class _MessageInputState extends State<MessageInput> {
         }
 
         // Create a new conversation in the backend
-        final newConversation = await createConversation(name: question);
+        final newConversation = isGuest
+            ? await createConversationAsGuest(name: question)
+            : await createConversation(name: question);
 
         if (!newConversation.containsKey("conversation_id")) {
           throw Exception(
@@ -90,7 +96,7 @@ class _MessageInputState extends State<MessageInput> {
           await sendMessage(conversationId: conversationId!, content: question);
 
       widget.handleSendQuestion({
-        "_id": DateTime.now().millisecondsSinceEpoch.toString(),
+        "_id": response["answer"]["id"],
         "content": response["answer"]["content"],
         "is_machine_generated": true,
       });
@@ -106,6 +112,8 @@ class _MessageInputState extends State<MessageInput> {
       } else {
         errorMessage = "Failed to send message. Please try again.";
       }
+
+      loadingProvider.setIsGeneratingResponse(false);
 
       // Show error message in the UI
       widget.handleSendQuestion({

@@ -10,8 +10,7 @@ class HeaderDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final conversationProvider =
-        context.watch<ConversationProvider>(); 
+    final conversationProvider = context.watch<ConversationProvider>();
 
     return Container(
       height: 90,
@@ -28,12 +27,11 @@ class HeaderDrawer extends StatelessWidget {
         children: [
           GestureDetector(
             onTap: () {
-              conversationProvider
-                  .resetConversation(); // ✅ Triggers UI updates now
+              conversationProvider.resetConversation();
               Navigator.of(context).pop();
               FocusScope.of(context).unfocus();
             },
-            child: const Icon(Icons.menu),
+            child: const Icon(Icons.create, color: Color(0xFF323232)),
           ),
           Text(
             'History',
@@ -42,7 +40,14 @@ class HeaderDrawer extends StatelessWidget {
                 fontSizeOption: FontSizeOption.size300,
                 lineHeightOption: LineHeightOption.height100),
           ),
-          const SizedBox(),
+          GestureDetector(
+            onTap: () {
+              // conversationProvider.resetConversation();
+              // Navigator.of(context).pop();
+              // FocusScope.of(context).unfocus();
+            },
+            child: const Icon(Icons.person, color: Color(0xFF323232)),
+          ),
         ],
       ),
     );

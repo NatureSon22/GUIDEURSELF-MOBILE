@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'dart:async';
+import 'package:guideurself/services/storage.dart';
 
 class Splash extends StatefulWidget {
   const Splash({super.key});
@@ -10,38 +10,36 @@ class Splash extends StatefulWidget {
 }
 
 class SplashState extends State<Splash> {
-  int _currentStage = 0; // 0: Background, 1: Logo, 2: Loader
+  int _currentStage = 0; // 0: Background, 1: Logo, 2: GIF, 3: Loader
+  final storage = StorageService();
 
   @override
   void initState() {
     super.initState();
+    _startAnimationSequence();
+  }
 
-    // Start stage 1: Background fade in
-    Future.delayed(const Duration(milliseconds: 1500), () {
-      setState(() => _currentStage = 1);
+  void _startAnimationSequence() async {
+    await Future.delayed(const Duration(milliseconds: 1500)); // Background
+    if (mounted) setState(() => _currentStage = 1); // Show logo
 
-      // Stage 2: Fade out background & fade in logo
-      Future.delayed(const Duration(milliseconds: 2200), () {
-        setState(() => _currentStage = 2);
+    await Future.delayed(const Duration(milliseconds: 2200));
+    if (mounted) setState(() => _currentStage = 2); // Show GIF intro
 
-        // Stage 3: Fade out logo & show loader
-        Future.delayed(const Duration(milliseconds: 2500), () {
-          setState(() => _currentStage = 3);
+    await Future.delayed(const Duration(milliseconds: 8500));
+    if (mounted) setState(() => _currentStage = 3); // Show loader
 
-          // Navigate after last animation
-          Future.delayed(const Duration(milliseconds: 2000), () {
-            if (mounted) context.go("/feature-overview");
-          });
-        });
-      });
-    });
+    await Future.delayed(const Duration(milliseconds: 2000));
+    if (mounted) context.go("/feature-overview"); // Navigate
+
+    storage.saveData(key: "hasVisitedSplash", value: true);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 1200), // Smooth transitions
+        duration: const Duration(milliseconds: 1000), // Smooth fade transition
         child: _buildStage(),
       ),
     );
@@ -54,6 +52,8 @@ class SplashState extends State<Splash> {
       case 1:
         return _buildLogo();
       case 2:
+        return _buildGifIntro();
+      case 3:
         return _buildLoader();
       default:
         return Container(); // Empty after animation
@@ -72,33 +72,26 @@ class SplashState extends State<Splash> {
   Widget _buildLogo() {
     return Center(
       key: const ValueKey(1),
-      child: AnimatedOpacity(
-        opacity: 1.0,
-        duration: const Duration(milliseconds: 1500),
-        child: Image.asset('lib/assets/images/LOGO-md.png'),
-      ),
+      child: Image.asset('lib/assets/images/LOGO-md.png'),
+    );
+  }
+
+  Widget _buildGifIntro() {
+    return Center(
+      key: const ValueKey(2),
+      child: SizedBox(
+          width: double.infinity,
+          child: Image.asset('lib/assets/webp/full_intro.gif')),
     );
   }
 
   Widget _buildLoader() {
-    return const Center(
-      key: ValueKey(2),
-      child: AnimatedOpacity(
-        opacity: 1.0,
-        duration: Duration(milliseconds: 1500),
-        child: LoadingIndicator(),
+    return Center(
+      key: const ValueKey(3),
+      child: CircularProgressIndicator(
+        backgroundColor: const Color(0xFF323232).withOpacity(0.1),
+        valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF12A5BC)),
       ),
-    );
-  }
-}
-
-class LoadingIndicator extends StatelessWidget {
-  const LoadingIndicator({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const CircularProgressIndicator(
-      valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF12A5BC)),
     );
   }
 }

@@ -24,14 +24,21 @@ class _HomeState extends State<Home> {
   }
 
   Future<void> _fetchUserAccount() async {
-    final account = await userAccount();
-    if (mounted) {
-      context.read<AccountProvider>().setAccount(account: account);
+    try {
+      final account = await userAccount();
+      if (mounted) {
+        context.read<AccountProvider>().setAccount(account: account);
+      }
+    } catch (e) {
+      debugPrint('Failed to fetch user account: $e');
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final accountProvider = context.watch<AccountProvider>();
+    final account = accountProvider.account;
+
     return Scaffold(
       body: SizedBox(
         height: MediaQuery.of(context).size.height,
@@ -70,25 +77,33 @@ class _HomeState extends State<Home> {
                   const NavFeature(),
                   const Gap(40),
                   Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(left: 10),
-                          child: Text(
-                            "Recent Chats",
-                            style: styleText(
-                                context: context, fontSizeOption: 14.0),
+                    child: account.isEmpty
+                        ? Opacity(
+                            opacity: 0.4,
+                            child: Image.asset(
+                              'lib/assets/webp/asset_chat.gif',
+                              fit: BoxFit.contain,
+                            ),
+                          )
+                        : Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(left: 10),
+                                child: Text(
+                                  "Recent Chats",
+                                  style: styleText(
+                                      context: context, fontSizeOption: 14.0),
+                                ),
+                              ),
+                              const Gap(10),
+                              const Expanded(
+                                child: HistoryList(),
+                              ),
+                            ],
                           ),
-                        ),
-                        const Gap(10),
-                        const Expanded(
-                          child: HistoryList(),
-                        ),
-                      ],
-                    ),
-                  )
+                  ),
                 ],
               ),
             ),

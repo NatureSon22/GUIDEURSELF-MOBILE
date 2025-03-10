@@ -48,7 +48,7 @@ class Header extends StatelessWidget {
                 const Gap(1),
                 Text(
                   account["username"] ??
-                      "Guest", // Use name from account or "Guest"
+                      "Guest",
                   style: styleText(
                     context: context,
                     fontSizeOption: 12.2,

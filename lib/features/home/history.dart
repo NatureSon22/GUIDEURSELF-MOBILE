@@ -1,19 +1,10 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:guideurself/features/chat/chatbot.dart';
 import 'package:guideurself/providers/conversation.dart';
 import 'package:guideurself/services/conversation.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:go_router/go_router.dart';
-
-Future<List<Map<String, dynamic>>> getConversations() async {
-  await Future.delayed(const Duration(seconds: 1));
-  return [
-    {'conversation_name': 'University Enrollment Steps'},
-    {'conversation_name': 'History of University of Rizal System'},
-  ];
-}
 
 class HistoryList extends StatefulWidget {
   const HistoryList({super.key});
@@ -28,7 +19,7 @@ class _HistoryListState extends State<HistoryList> {
   @override
   void initState() {
     super.initState();
-    _futureMessages = getAllConversations(limit: 3);
+    _futureMessages = getAllConversations(limit: 5);
   }
 
   @override
@@ -75,7 +66,7 @@ class _HistoryListState extends State<HistoryList> {
     return ListView.builder(
       padding: const EdgeInsets.all(0),
       physics: const AlwaysScrollableScrollPhysics(),
-      itemCount: 2,
+      itemCount: 3,
       itemBuilder: (context, index) {
         return Padding(
           padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
@@ -108,17 +99,24 @@ class _HistoryListState extends State<HistoryList> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text(
+                Text(
                   'Failed to fetch messages',
                   textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: const Color(0xFF323232).withOpacity(0.5),
+                  ),
                 ),
                 const SizedBox(height: 10),
                 ElevatedButton(
                   onPressed: () {
                     setState(() {
-                      _futureMessages = getConversations();
+                      _futureMessages = getAllConversations(limit: 5);
                     });
                   },
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 10),
+                  ),
                   child: const Text('Retry'),
                 ),
               ],

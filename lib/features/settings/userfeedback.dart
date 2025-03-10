@@ -32,9 +32,22 @@ class _UserFeedbackState extends State<UserFeedback> {
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text("Feedback submitted successfully!"),
-              backgroundColor: Colors.green,
+            SnackBar(
+              content: Text(
+                "Thank you for your feedback!",
+                style: styleText(
+                  context: context,
+                  fontSizeOption: 12.0,
+                  color: Colors.white,
+                ),
+              ),
+              backgroundColor: const Color(0xFF323232),
+              duration: const Duration(seconds: 2),
+              behavior: SnackBarBehavior.floating,
+              margin: const EdgeInsets.all(16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
             ),
           );
         }
@@ -48,8 +61,21 @@ class _UserFeedbackState extends State<UserFeedback> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text("Error submitting feedback: $error"),
+              content: Text(
+                "An error occurred while submitting feedback. Please try again later.",
+                style: styleText(
+                  context: context,
+                  fontSizeOption: 12.0,
+                  color: Colors.white,
+                ),
+              ),
               backgroundColor: const Color.fromRGBO(239, 68, 68, 1),
+              duration: const Duration(seconds: 2),
+              behavior: SnackBarBehavior.floating,
+              margin: const EdgeInsets.all(16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
             ),
           );
         }

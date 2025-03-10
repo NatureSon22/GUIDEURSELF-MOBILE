@@ -30,12 +30,14 @@ class MessageTile extends StatelessWidget {
             color: Colors.white,
           ),
         ),
-        backgroundColor: isSuccess ? Colors.green : Colors.red,
+        backgroundColor: isSuccess
+            ? const Color(0xFF323232)
+            : const Color.fromRGBO(239, 68, 68, 1),
         duration: const Duration(seconds: 2),
         behavior: SnackBarBehavior.floating,
         margin: const EdgeInsets.all(16),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(10),
         ),
       ),
     );
@@ -106,6 +108,12 @@ class MessageTile extends StatelessWidget {
                       onPressed: () async {
                         Navigator.pop(dialogContext);
                         await handleDeleteChat(rootContext);
+                        // if mounted
+                        if (rootContext.mounted) {
+                          rootContext
+                              .read<ConversationProvider>()
+                              .resetConversation();
+                        }
                       },
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(horizontal: 10),

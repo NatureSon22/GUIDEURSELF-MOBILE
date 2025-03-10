@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class LoginFields extends StatefulWidget {
   final TextEditingController emailController;
@@ -25,6 +26,7 @@ class _LoginFieldsState extends State<LoginFields> {
     return Column(
       children: [
         TextFormField(
+          autofocus: false,
           cursorColor: const Color(0xFF323232),
           style: const TextStyle(fontSize: 14),
           controller: widget.emailController,
@@ -46,6 +48,7 @@ class _LoginFieldsState extends State<LoginFields> {
         Column(
           children: [
             TextFormField(
+              autofocus: false,
               cursorColor: const Color(0xFF323232),
               style: const TextStyle(fontSize: 14),
               controller: widget.passwordController,
@@ -107,7 +110,7 @@ class _LoginFieldsState extends State<LoginFields> {
                 ),
                 GestureDetector(
                   onTap: () {
-                    // Forgot password action
+                    context.go("/forgot-password");
                   },
                   child: Text(
                     "Forgot Password?",

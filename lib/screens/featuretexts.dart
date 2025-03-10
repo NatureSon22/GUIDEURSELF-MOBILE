@@ -62,7 +62,7 @@ class FeatureTexts extends StatelessWidget {
                 fontFamily: "Poppins",
                 fontSize: 12,
                 color: Color(0xFF323232),
-                height: 2),
+                height: 1.8),
           ),
         ),
       ],

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:guideurself/core/themes/style.dart';
 import 'package:guideurself/features/chat/showlistening.dart';
+import 'package:guideurself/providers/account.dart';
 import 'package:guideurself/providers/conversation.dart';
 import 'package:guideurself/providers/loading.dart';
+import 'package:guideurself/providers/transcribing.dart';
 import 'package:guideurself/services/conversation.dart';
 import 'package:provider/provider.dart';
 import 'package:record/record.dart';
@@ -33,6 +36,9 @@ class _RecordInputModalState extends State<RecordInputModal> {
         Provider.of<ConversationProvider>(context, listen: false);
     final loadingProvider = context.read<LoadingProvider>();
     final conversation = conversationProvider.conversation;
+    final accountProvider = context.read<AccountProvider>();
+    final account = accountProvider.account;
+    final isGuest = account.isEmpty;
     String? conversationId = conversation['conversation_id'];
 
     final String tempMessageId =
@@ -46,16 +52,19 @@ class _RecordInputModalState extends State<RecordInputModal> {
     });
 
     try {
-      // If there's no conversation, create a temporary one
+      //If there's no conversation, create a temporary one
       if (conversationId == null) {
         if (conversation.isEmpty) {
           final tempId = 'temp-${DateTime.now().millisecondsSinceEpoch}';
           conversationProvider.setConversation(
-              conversation: {'conversation_id': tempId}, isNew: false);
+              conversation: {'conversation_id': tempId}, isNew: true);
+          conversationId = tempId;
         }
 
         // Create a new conversation in the backend
-        final newConversation = await createConversation(name: question);
+        final newConversation = isGuest
+            ? await createConversationAsGuest(name: question)
+            : await createConversation(name: question);
 
         if (!newConversation.containsKey("conversation_id")) {
           throw Exception(
@@ -63,24 +72,22 @@ class _RecordInputModalState extends State<RecordInputModal> {
         }
 
         // Update the conversation with the real ID
-        conversationProvider.setConversation(
-            conversation: newConversation, isNew: true);
+        conversationProvider.setConversation(conversation: newConversation);
         conversationId = newConversation["conversation_id"];
       }
 
       loadingProvider.setIsGeneratingResponse(true);
 
-      // Send the message to the backend
       final response =
           await sendMessage(conversationId: conversationId!, content: question);
 
-      loadingProvider.setIsGeneratingResponse(false);
-
       widget.handleSendQuestion({
-        "_id": DateTime.now().millisecondsSinceEpoch.toString(),
+        "_id": response["answer"]["id"],
         "content": response["answer"]["content"],
         "is_machine_generated": true,
       });
+
+      loadingProvider.setIsGeneratingResponse(false);
     } catch (e) {
       // More detailed error handling
       final String errorMessage;
@@ -92,7 +99,8 @@ class _RecordInputModalState extends State<RecordInputModal> {
         errorMessage = "Failed to send message. Please try again.";
       }
 
-      // Show error message in the UI
+      loadingProvider.setIsGeneratingResponse(false);
+
       widget.handleSendQuestion({
         "_id": conversationId ?? tempMessageId,
         "content": errorMessage,
@@ -105,54 +113,130 @@ class _RecordInputModalState extends State<RecordInputModal> {
   }
 
   Future<void> _startRecording() async {
-    final hasPermission = await _record.hasPermission();
-    if (!hasPermission) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Microphone permission denied')),
-        );
+    try {
+      if (_isRecording) return;
+
+      final hasPermission = await _record.hasPermission();
+      if (!hasPermission) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                "Permission denied!",
+                style: styleText(
+                  context: context,
+                  fontSizeOption: 12.0,
+                  color: Colors.white,
+                ),
+              ),
+              backgroundColor: const Color.fromRGBO(239, 68, 68, 1),
+              duration: const Duration(seconds: 2),
+              behavior: SnackBarBehavior.floating,
+              margin: const EdgeInsets.all(16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+          );
+        }
+        return;
       }
-      return;
+
+      final dir = await getApplicationDocumentsDirectory();
+      final filePath =
+          '${dir.path}/audio_${DateTime.now().millisecondsSinceEpoch}.wav';
+      setState(() => _filePath = filePath);
+
+      await _record.start(
+        const RecordConfig(encoder: AudioEncoder.wav),
+        path: filePath,
+      );
+
+      setState(() => _isRecording = true);
+    } catch (e) {
+      debugPrint("Recording error: $e");
     }
-
-    final dir = await getApplicationDocumentsDirectory();
-    final filePath =
-        '${dir.path}/audio_${DateTime.now().millisecondsSinceEpoch}.wav';
-    setState(() => _filePath = filePath);
-
-    await _record.start(
-      const RecordConfig(encoder: AudioEncoder.wav),
-      path: filePath,
-    );
-
-    setState(() => _isRecording = true);
   }
 
   Future<void> _stopRecording() async {
-    await _record.stop();
-    setState(() => _isRecording = false);
+    try {
+      if (!_isRecording) return;
 
-    if (_filePath != null && await File(_filePath!).exists()) {
-      _transcribeAudio();
-    } else {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Recording failed!')),
-        );
+      await _record.stop();
+      setState(() => _isRecording = false);
+
+      if (_filePath != null && await File(_filePath!).exists()) {
+        _transcribeAudio();
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                "Recording stopped. Please try again.",
+                style: styleText(
+                  context: context,
+                  fontSizeOption: 12.0,
+                  color: Colors.white,
+                ),
+              ),
+              backgroundColor: const Color.fromRGBO(239, 68, 68, 1),
+              duration: const Duration(seconds: 2),
+              behavior: SnackBarBehavior.floating,
+              margin: const EdgeInsets.all(16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+          );
+        }
       }
+    } catch (e) {
+      debugPrint("Stop recording error: $e");
     }
   }
 
   Future<void> _transcribeAudio() async {
-    if (_filePath == null) return;
+    try {
+      final transcribingProvider = context.read<Transcribing>();
+      if (_filePath == null) return;
 
-    String transcript = await transcribeAudio(_filePath!);
+      transcribingProvider.setIsTranscribing(true);
+      String transcript = await transcribeAudio(_filePath!);
+      transcribingProvider.setIsTranscribing(false);
 
-    if (mounted) {
-      Navigator.pop(context);
+      if (mounted) {
+        Navigator.pop(context);
+      }
+
+      if (transcript.isEmpty) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                "Transcription failed! Try again.",
+                style: styleText(
+                  context: context,
+                  fontSizeOption: 12.0,
+                  color: Colors.white,
+                ),
+              ),
+              backgroundColor: const Color.fromRGBO(239, 68, 68, 1),
+              duration: const Duration(seconds: 2),
+              behavior: SnackBarBehavior.floating,
+              margin: const EdgeInsets.all(16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+          );
+        }
+        return;
+      }
+
+      await handleSendQuestion(question: transcript);
+    } catch (e) {
+      debugPrint("Transcription error: $e");
     }
-
-    await handleSendQuestion(question: transcript);
   }
 
   @override
@@ -191,8 +275,8 @@ Future<void> recordInput(BuildContext context, Function handleSendQuestion) {
   return showModalBottomSheet(
     context: context,
     isScrollControlled: true,
-    // isDismissible: isLoading,
-    // enableDrag: false,
+    isDismissible: false,
+    enableDrag: false,
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
     ),

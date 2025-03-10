@@ -6,30 +6,49 @@ import 'package:guideurself/providers/account.dart';
 import 'package:guideurself/services/auth.dart';
 import 'package:provider/provider.dart';
 
-final settingsFeatures = [
+final allSettingsFeatures = [
   {
     "icon": Icons.chat_bubble,
     "label": "Chatbot Preferences",
-    "goto": "/chatbot-preference"
+    "goto": "/chatbot-preference",
+    "requiresAuth": true
   },
   {
     "icon": Icons.location_pin,
     "label": "Virtual Tour Preferences",
-    "goto": "/virtual-preference"
+    "goto": "/virtual-preference",
+    "requiresAuth": false
   },
-  {"icon": Icons.key, "label": "Change Password", "goto": "/change-password"},
+  {
+    "icon": Icons.key,
+    "label": "Change Password",
+    "goto": "/change-password",
+    "requiresAuth": true
+  },
   {
     "icon": Icons.thumb_up_alt_rounded,
     "label": "Feedback",
-    "goto": "/feedback"
+    "goto": "/feedback",
+    "requiresAuth": true
   },
   {
     "icon": Icons.privacy_tip,
     "label": "Privacy and Legal",
-    "goto": "/privacy-legal"
+    "goto": "/privacy-legal",
+    "requiresAuth": false
   },
-  {"icon": Icons.info, "label": "About", "goto": "/about"},
-  {"icon": Icons.logout, "label": "Logout", "goto": "/logout"}
+  {
+    "icon": Icons.info,
+    "label": "About",
+    "goto": "/about",
+    "requiresAuth": false
+  },
+  {
+    "icon": Icons.logout,
+    "label": "Logout",
+    "goto": "/logout",
+    "requiresAuth": false
+  }
 ];
 
 class Settings extends StatelessWidget {
@@ -43,6 +62,11 @@ class Settings extends StatelessWidget {
   Widget build(BuildContext context) {
     final accountProvider = context.watch<AccountProvider>();
     final account = accountProvider.account;
+    final isGuest = account.isEmpty;
+
+    final settingsFeatures = allSettingsFeatures
+        .where((feature) => isGuest ? !(feature['requiresAuth'] as bool) : true)
+        .toList();
 
     return Scaffold(
       body: SafeArea(
@@ -52,7 +76,8 @@ class Settings extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Card(
+              if (!isGuest)
+                Card(
                   shadowColor:
                       const Color.fromARGB(255, 50, 50, 50).withOpacity(0.1),
                   shape: RoundedRectangleBorder(
@@ -72,10 +97,11 @@ class Settings extends StatelessWidget {
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             image: DecorationImage(
-                              image: NetworkImage(
-                                account["user_photo_url"] ??
-                                    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRzrwYBCJ5bXdYy6i-tgg7Pn9lOOp-DDyKIuA&s',
-                              ),
+                              image: isGuest
+                                  ? const AssetImage(
+                                      "lib/assets/images/avatar_placeholder.png")
+                                  : NetworkImage(
+                                      account["user_photo_url"] ?? ''),
                               fit: BoxFit.cover,
                             ),
                           ),
@@ -87,8 +113,8 @@ class Settings extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                account["username"].toUpperCase() ??
-                                    'John Doe'.toUpperCase(),
+                                account["username"]?.toUpperCase() ??
+                                    'GUEST'.toUpperCase(),
                                 style: const TextStyle(
                                   fontSize: 13,
                                   fontWeight: FontWeight.w600,
@@ -98,7 +124,7 @@ class Settings extends StatelessWidget {
                               ),
                               const Gap(1.5),
                               Text(
-                                'ID No: ${account["user_number"]}',
+                                'ID No: ${account["user_number"] ?? "-- --"}',
                                 style: TextStyle(
                                   fontFamily: "Poppins",
                                   fontSize: 11,
@@ -111,7 +137,9 @@ class Settings extends StatelessWidget {
                               SizedBox(
                                 width: double.infinity,
                                 child: ElevatedButton(
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    context.go('/edit-profile');
+                                  },
                                   style: ElevatedButton.styleFrom(
                                     padding: const EdgeInsets.all(0),
                                     textStyle: const TextStyle(fontSize: 12),
@@ -124,7 +152,8 @@ class Settings extends StatelessWidget {
                         )
                       ],
                     ),
-                  )),
+                  ),
+                ),
               const SizedBox(height: 30),
               Expanded(
                 child: ListView.separated(
@@ -146,7 +175,7 @@ class Settings extends StatelessWidget {
                       leading: Icon(
                         feature['icon'] as IconData,
                         size: 18,
-                        color: index == settingsFeatures.length - 1
+                        color: feature["label"] == "Logout"
                             ? const Color.fromRGBO(239, 68, 68, 1)
                             : const Color(0xFF323232),
                       ),
@@ -156,14 +185,18 @@ class Settings extends StatelessWidget {
                           context: context,
                           fontSizeOption: 12.0,
                           fontWeight: CustomFontWeight.weight500,
-                          color: index == settingsFeatures.length - 1
+                          color: feature["label"] == "Logout"
                               ? const Color.fromRGBO(239, 68, 68, 1)
                               : const Color(0xFF323232),
                         ),
                       ),
                       onTap: () async {
                         if (feature['label'] == "Logout") {
-                          await handleLogout();
+                          if (!isGuest) {
+                            await handleLogout();
+                            accountProvider.resetAccount();
+                          }
+
                           if (context.mounted) {
                             context.go("/auth-layer");
                           }
@@ -174,7 +207,7 @@ class Settings extends StatelessWidget {
                       trailing: Icon(
                         Icons.arrow_forward_ios,
                         size: 18,
-                        color: index == settingsFeatures.length - 1
+                        color: feature["label"] == "Logout"
                             ? const Color.fromRGBO(239, 68, 68, 1)
                             : const Color(0xFF323232),
                       ),

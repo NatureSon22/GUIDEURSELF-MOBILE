@@ -60,19 +60,27 @@ class ChatPreview extends StatelessWidget {
                         textAlign: TextAlign.center,
                       ),
                       const Gap(14),
-                      // SizedBox(
-                      //   width: 200,
-                      //   child: Text(
-                      //     "Just ask, and let's make your URS experience giant-sized!",
-                      //     style: styleText(
-                      //         context: context,
-                      //         fontSizeOption: FontSizeOption.size100,
-                      //         lineHeightOption: LineHeightOption.height200,
-                      //         fontWeight: CustomFontWeight.weight600),
-                      //     textAlign: TextAlign.center,
-                      //   ),
-                      // ),
-                      const Spacer(),
+                      SizedBox(
+                        width: 200,
+                        child: Text(
+                          "Just ask, and let's make your URS experience giant-sized!",
+                          style: styleText(
+                              context: context,
+                              fontSizeOption: FontSizeOption.size100,
+                              lineHeightOption: LineHeightOption.height200,
+                              fontWeight: CustomFontWeight.weight600),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      Expanded(
+                        child: SizedBox(
+                          width: 200,
+                          child: Image.asset(
+                            'lib/assets/webp/full_float3.gif',
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(

@@ -27,6 +27,28 @@ Future<Map<String, dynamic>> createConversation({required String name}) async {
   }
 }
 
+Future<Map<String, dynamic>> createConversationAsGuest(
+    {required String name}) async {
+  try {
+    final response = await dio.post(
+      "/conversation/create-conversation-as-guest",
+      data: {
+        "name": name,
+      },
+    );
+
+    final newConversation =
+        response.data["newConversation"] as Map<String, dynamic>;
+
+    final setConversation = Map<String, dynamic>.from(newConversation);
+    setConversation["id"] = newConversation["conversation_id"];
+
+    return setConversation;
+  } on DioException catch (_) {
+    throw Exception('Failed to create conversation. Please try again.');
+  }
+}
+
 Future<List<Map<String, dynamic>>> getAllConversations({int limit = 0}) async {
   try {
     final response = await dio.get("/conversation/get-all-conversations");
@@ -106,18 +128,24 @@ Future<void> reviewIsHelpful({required messageId, required isHelpful}) async {
 
 Future<String> transcribeAudio(String filePath) async {
   final url = Uri.parse(
-      "https://api.deepgram.com/v1/listen?smart_format=true&model=nova-2&language=en-US");
+      "https://api.deepgram.com/v1/listen?model=nova-3&smart_format=true");
 
+  // Check if file exists
   final File file = File(filePath);
-  final List<int> fileBytes = await file.readAsBytes();
-
-  final request = http.Request("POST", url);
-  request.headers["Authorization"] =
-      "Token 1844dafb385d43cd40876df8be69b43bd9e1e129";
-  request.headers["Content-Type"] = "audio/wav";
-  request.bodyBytes = fileBytes;
+  if (!await file.exists()) {
+    print("File does not exist: $filePath");
+    return "Error: File not found";
+  }
 
   try {
+    final List<int> fileBytes = await file.readAsBytes();
+
+    final request = http.Request("POST", url);
+    request.headers["Authorization"] =
+        "Token c87148c253bf5f5c4088f7f12bebace1b36bb9af";
+    request.headers["Content-Type"] = "audio/wav";
+    request.bodyBytes = fileBytes;
+
     final streamedResponse = await request.send();
 
     if (streamedResponse.statusCode == 200) {
@@ -127,12 +155,11 @@ Future<String> transcribeAudio(String filePath) async {
           ['alternatives'][0]['transcript'];
 
       print("Transcript: $transcript");
-
       return transcript;
     } else {
       final errorResponse = await streamedResponse.stream.bytesToString();
       print("Error ${streamedResponse.statusCode}: $errorResponse");
-      return "Error: ${streamedResponse.statusCode}";
+      return "Error: ${streamedResponse.statusCode} - $errorResponse";
     }
   } catch (e) {
     print("Exception: $e");

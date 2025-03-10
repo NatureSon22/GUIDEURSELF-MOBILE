@@ -6,9 +6,11 @@ import 'package:guideurself/features/chat/messagedrawer.dart';
 import 'package:guideurself/features/chat/messageinput.dart';
 import 'package:guideurself/features/chat/messagelist.dart';
 import 'package:guideurself/features/chat/questions.dart';
+import 'package:guideurself/providers/account.dart';
 import 'package:guideurself/providers/conversation.dart';
 import 'package:guideurself/providers/loading.dart';
 import 'package:guideurself/services/conversation.dart';
+import 'package:guideurself/services/storage.dart';
 import 'package:guideurself/widgets/textgradient.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
@@ -29,6 +31,10 @@ class Chatbot extends HookWidget {
     final messages = useState<List<Map<String, dynamic>>>([]);
     final isLoading = useState<bool>(false);
     final isCreatingConversation = useState<bool>(false);
+    final accountProvider = context.read<AccountProvider>();
+    final account = accountProvider.account;
+    final isGuest = account.isEmpty;
+    final StorageService storage = StorageService();
 
     final conversation = context.watch<ConversationProvider>().conversation;
     final isNewConversation =
@@ -161,37 +167,56 @@ class Chatbot extends HookWidget {
       }
 
       // Default welcome screen for new conversations
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          const GradientText(
-            "Hey there, I'm Giga!",
-            style: TextStyle(
-              fontSize: 30,
-              fontWeight: FontWeight.w700,
-            ),
-            gradient: LinearGradient(
-              colors: [
-                Color(0xFF12A5BC),
-                Color(0xFF0E46A3),
+      return Container(
+        alignment: Alignment.center,
+        height: double.infinity,
+        child: SingleChildScrollView(
+          child: Container(
+            color: Colors.white,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                  width: 280,
+                  height: 250,
+                  decoration: const BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage('lib/assets/webp/full_float.gif'),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+                const GradientText(
+                  "Hey there, I'm Giga!",
+                  style: TextStyle(
+                    fontSize: 29,
+                    fontWeight: FontWeight.w700,
+                  ),
+                  gradient: LinearGradient(
+                    colors: [
+                      Color(0xFF12A5BC),
+                      Color(0xFF0E46A3),
+                    ],
+                  ),
+                ),
+                const Gap(4),
+                SizedBox(
+                  width: 270,
+                  child: Text(
+                    "Got questions? Ask away, and I'll do my best to help you out!",
+                    textAlign: TextAlign.center,
+                    style: styleText(
+                      context: context,
+                      fontSizeOption: 12.0,
+                      lineHeightOption: LineHeightOption.height200,
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
-          const Gap(4),
-          SizedBox(
-            width: 280,
-            child: Text(
-              "Got questions? Ask away, and I'll do my best to help you out!",
-              textAlign: TextAlign.center,
-              style: styleText(
-                context: context,
-                fontSizeOption: FontSizeOption.size200,
-                lineHeightOption: LineHeightOption.height200,
-              ),
-            ),
-          ),
-        ],
+        ),
       );
     }
 
@@ -213,29 +238,39 @@ class Chatbot extends HookWidget {
         scrolledUnderElevation: 0,
         leading: IconButton(
           onPressed: () async {
-            context.go("/chat");
+            final hasVisited = storage.getData(key: "visited-chat");
+
             FocusScope.of(context).unfocus();
-            context.read<ConversationProvider>().resetConversation();
+
+            await Future.delayed(const Duration(milliseconds: 100));
+            if (context.mounted) {
+              context.go(hasVisited == true ? "/" : "/chat");
+              context.read<ConversationProvider>().resetConversation();
+            }
           },
           icon: const Icon(Icons.arrow_back_ios_sharp),
         ),
-        actions: [
-          IconButton(
-            onPressed: () {
-              scaffoldKey.currentState?.openEndDrawer();
-            },
-            icon: const Icon(
-              Icons.menu,
-              size: 27,
-            ),
-          ),
-        ],
+        actions: !isGuest
+            ? [
+                IconButton(
+                  onPressed: () {
+                    scaffoldKey.currentState?.openEndDrawer();
+                  },
+                  icon: const Icon(
+                    Icons.menu,
+                    size: 27,
+                  ),
+                ),
+              ]
+            : [],
         title: Text("Giga", style: Theme.of(context).textTheme.headlineSmall),
         centerTitle: true,
       ),
-      endDrawer: MessageDrawer(
-        handleCloseDrawer: handleCloseDrawer,
-      ),
+      onDrawerChanged: (_) {
+        FocusManager.instance.primaryFocus?.unfocus();
+      },
+      endDrawer:
+          !isGuest ? MessageDrawer(handleCloseDrawer: handleCloseDrawer) : null,
       body: SafeArea(
         child: Column(
           children: [
@@ -244,7 +279,6 @@ class Chatbot extends HookWidget {
               child: buildMainContent(),
             ),
 
-            // Typing indicator - show when generating response
             if (isGeneratingResponse)
               Padding(
                 padding: const EdgeInsets.only(left: 20, right: 20),
@@ -262,12 +296,10 @@ class Chatbot extends HookWidget {
                 ),
               ),
 
-            // Questions widget or empty space
             shouldShowQuestions()
                 ? Questions(handleSelectQuestion: handleSelectQuestion)
                 : const SizedBox.shrink(),
 
-            // Message input - always shown
             MessageInput(
               question: question.value,
               handleSendQuestion: sendQuestion,
