@@ -3,6 +3,7 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:html/parser.dart' as html_parser;
 import '../../services/university_management_service.dart';
 import '../../models/university_management.dart';
+import 'package:go_router/go_router.dart';
 
 class VisionMissionScreen extends StatefulWidget {
   const VisionMissionScreen({super.key});
@@ -12,13 +13,12 @@ class VisionMissionScreen extends StatefulWidget {
 }
 
 class _VisionMissionScreenState extends State<VisionMissionScreen> {
-  final UniversityManagementService _service = UniversityManagementService();
   late Future<UniversityManagement> _universityFuture;
 
   @override
   void initState() {
     super.initState();
-    _universityFuture = _service.fetchUniversityDetails();
+    _universityFuture = fetchUniversityDetails();
   }
 
   @override
@@ -29,14 +29,13 @@ class _VisionMissionScreenState extends State<VisionMissionScreen> {
         scrolledUnderElevation: 0,
         leading: IconButton(
           onPressed: () {
-            Navigator.pop(context);
+            context.go("/explore");
           },
           icon: const Icon(Icons.arrow_back_ios_sharp),
         ),
       ),
       body: Stack(
         children: [
-          // Background Image
           Opacity(
             opacity: 0.3,
             child: Container(
@@ -47,9 +46,8 @@ class _VisionMissionScreenState extends State<VisionMissionScreen> {
                   alignment: Alignment(0.2, -1),
                 ),
               ),
-            ), // <-- Added missing closing parenthesis here
-          ), // <-- Add this closing parenthesis
-          // Scrollable Content
+            ),
+          ),
           FutureBuilder<UniversityManagement>(
             future: _universityFuture,
             builder: (context, snapshot) {
@@ -65,27 +63,36 @@ class _VisionMissionScreenState extends State<VisionMissionScreen> {
                   padding: const EdgeInsets.all(16.0),
                   child: SingleChildScrollView(
                     child: Column(
-                      crossAxisAlignment:
-                          CrossAxisAlignment.center, // Center the column
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        // Header with Images and Text
                         Padding(
                           padding: const EdgeInsets.all(16.0),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Image.asset(
-                                'lib/assets/images/UrsVector.png', // Replace with your image path
-                                width: 60,
-                                height: 60,
-                                fit: BoxFit.cover,
-                              ),
-                              const SizedBox(width: 2), // Space between images
-                              Image.asset(
-                                'lib/assets/images/UrsLogo.png', // Replace with your image path
-                                width: 60,
-                                fit: BoxFit.cover,
-                              ),
+                              if (snapshot.data!.universityVectorUrl != null)
+                                Image.network(
+                                  snapshot.data!.universityVectorUrl!,
+                                  width: 60,
+                                  height: 60,
+                                  fit: BoxFit.contain,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return const Icon(Icons
+                                        .image_not_supported); 
+                                  },
+                                ),
+                              const SizedBox(width: 4),
+                              if (snapshot.data!.universityLogoUrl != null)
+                                Image.network(
+                                  snapshot.data!.universityLogoUrl!,
+                                  width: 60,
+                                  height: 60,
+                                  fit: BoxFit.contain,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return const Icon(Icons
+                                        .image_not_supported); 
+                                  },
+                                ),
                             ],
                           ),
                         ),
@@ -99,9 +106,7 @@ class _VisionMissionScreenState extends State<VisionMissionScreen> {
                           textAlign: TextAlign.center,
                           style: TextStyle(fontSize: 12, color: Colors.black),
                         ),
-                        const SizedBox(
-                            height: 20), // Space between header and content
-                        // Main Content
+                        const SizedBox(height: 20),
                         if (university.universityVision != null)
                           _buildHtmlSection("", university.universityVision!),
                         if (university.universityMission != null)
@@ -125,7 +130,7 @@ class _VisionMissionScreenState extends State<VisionMissionScreen> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16.0),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center, // Center the column
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           if (title.isNotEmpty)
             Padding(
@@ -134,14 +139,14 @@ class _VisionMissionScreenState extends State<VisionMissionScreen> {
                 title,
                 style:
                     const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center, // Center the title text
+                textAlign: TextAlign.center,
               ),
             ),
           Html(
             data: _removeBrTagsAndStyleStrong(htmlContent),
             style: {
               "body": Style(
-                textAlign: TextAlign.center, // Center the HTML content
+                textAlign: TextAlign.center,
               ),
             },
           ),
@@ -150,21 +155,12 @@ class _VisionMissionScreenState extends State<VisionMissionScreen> {
     );
   }
 
-  /// Removes `<br>` tags from HTML content
   String _removeBrTagsAndStyleStrong(String htmlContent) {
-    // Parse the HTML content
     var document = html_parser.parse(htmlContent);
-
-    // Remove all <br> tags
     document.querySelectorAll('br').forEach((br) => br.remove());
-
-    // Find all <strong> tags and apply custom styling
     document.querySelectorAll('strong').forEach((strong) {
-      // Add inline style to set font size to 20px
       strong.attributes['style'] = 'font-size: 20px;';
     });
-
-    // Return the modified HTML content
     return document.body?.innerHtml ?? htmlContent;
   }
 }

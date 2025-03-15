@@ -1,32 +1,36 @@
-// explore.dart
 import 'package:flutter/material.dart';
 import 'package:guideurself/widgets/textgradient.dart';
-import 'menu_drawer.dart'; // Import the drawer component
+import 'menu_drawer.dart';
+import 'package:go_router/go_router.dart';
+import '../../services/university_management_service.dart';
+import '../../models/university_management.dart';
 
-// Import your screens
-import 'history_screen.dart';
-import 'logo_vector_screen.dart';
-import 'vision_mission_screen.dart';
-import 'key_officials_screen.dart';
-import 'campus_location_screen.dart';
-import 'virtual_tour_screen.dart';
-
-class Explore extends StatelessWidget {
+class Explore extends StatefulWidget {
   const Explore({super.key});
 
   @override
+  State<Explore> createState() => _ExploreState();
+}
+
+class _ExploreState extends State<Explore> {
+  late Future<UniversityManagement> futureUniversityDetails;
+
+  @override
+  void initState() {
+    super.initState();
+    futureUniversityDetails =
+        fetchUniversityDetails(); // Fetch images from backend
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // List of buttons with corresponding screens
-    final List<Map<String, dynamic>> sections = [
-      {"title": "History", "screen": const HistoryScreen()},
-      {"title": "Logo & Vector", "screen": const LogoVectorScreen()},
-      {
-        "title": "Vision, Mission & Core Values",
-        "screen": const VisionMissionScreen()
-      },
-      {"title": "Key Officials", "screen": const KeyOfficialsScreen()},
-      {"title": "Campus Location", "screen": const CampusLocationScreen()},
-      {"title": "Virtual Campus Tour", "screen": const VirtualTourScreen()},
+    final List<Map<String, String>> sections = [
+      {"title": "History", "route": "/history"},
+      {"title": "Logo & Vector", "route": "/logo-vector"},
+      {"title": "Vision, Mission & Core Values", "route": "/vision-mission"},
+      {"title": "Key Officials", "route": "/key-officials"},
+      {"title": "Campus Location", "route": "/campus-location"},
+      {"title": "Virtual Campus Tour", "route": "/loading-screen"},
     ];
 
     return Scaffold(
@@ -40,8 +44,7 @@ class Explore extends StatelessWidget {
                 return IconButton(
                   icon: const Icon(Icons.menu),
                   onPressed: () {
-                    Scaffold.of(context)
-                        .openEndDrawer(); // Open drawer on button tap
+                    Scaffold.of(context).openEndDrawer();
                   },
                 );
               },
@@ -49,8 +52,7 @@ class Explore extends StatelessWidget {
           ),
         ],
       ),
-      endDrawer:
-          const MenuDrawer(), // ✅ Ensure this is inside Scaffold, NOT in Stack!
+      endDrawer: const MenuDrawer(),
       body: Stack(
         children: [
           // Background Image
@@ -103,39 +105,44 @@ class Explore extends StatelessWidget {
                           ),
                           const SizedBox(width: 14.0),
                           ElevatedButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              // Navigate to the virtual tour screen
+                              context.go("/loading-screen");
+                            },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.transparent,
-                              shadowColor: Colors.transparent,
+                              backgroundColor:
+                                  Colors.transparent, // Transparent background
+                              shadowColor: Colors.transparent, // No shadow
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 16.0, vertical: 10.0),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8.0),
                                 side: const BorderSide(
-                                    color: Color(0xFF12A5BC), width: 2),
+                                    color: Color(0xFF12A5BC),
+                                    width: 2), // Border color
                               ),
                             ),
                             child: const Row(
                               mainAxisSize: MainAxisSize
-                                  .min, // Ensure the Row takes only the space it needs
+                                  .min, // Ensure the row takes minimum space
                               children: [
                                 Icon(
-                                  Icons.arrow_forward, // Right arrow icon
-                                  color: Color(0xFF12A5BC), // Arrow color
-                                  size: 16, // Arrow size
+                                  Icons.arrow_forward,
+                                  color: Color(0xFF12A5BC), // Icon color
+                                  size: 16,
                                 ),
                                 SizedBox(
-                                    width:
-                                        8), // Space between the arrow and text
+                                    width: 8), // Spacing between icon and text
                                 GradientText(
                                   'Enter Virtual Tour',
                                   style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold),
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                   gradient: LinearGradient(
                                     colors: [
                                       Color(0xFF12A5BC),
-                                      Color(0xFF0E46A3)
+                                      Color(0xFF0E46A3),
                                     ],
                                   ),
                                 ),
@@ -150,7 +157,6 @@ class Explore extends StatelessWidget {
 
                 const SizedBox(height: 15.0),
 
-                // Description + Divider
                 const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 25.0),
                   child: Column(
@@ -162,7 +168,7 @@ class Explore extends StatelessWidget {
                       ),
                       SizedBox(height: 15.0),
                       Divider(
-                        color: Colors.grey,
+                        color: Color.fromARGB(255, 207, 207, 207),
                         thickness: 0.5,
                         height: 20.0,
                         indent: 100.0,
@@ -174,7 +180,6 @@ class Explore extends StatelessWidget {
 
                 const SizedBox(height: 10.0),
 
-                // Horizontally Scrollable Buttons for Navigation
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: Row(
@@ -193,11 +198,7 @@ class Explore extends StatelessWidget {
                           ),
                           child: ElevatedButton(
                             onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => section["screen"]),
-                              );
+                              context.go(section["route"]!);
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.transparent,
@@ -210,7 +211,7 @@ class Explore extends StatelessWidget {
                               ),
                             ),
                             child: Text(
-                              section["title"],
+                              section["title"]!,
                               style: const TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w500,
@@ -224,60 +225,73 @@ class Explore extends StatelessWidget {
                   ),
                 ),
 
-                const SizedBox(height: 20.0), // Add space before the container
+                const SizedBox(height: 20.0),
 
-                // Container just beneath the content
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25.0),
                   child: Container(
-                    width: double.infinity, // Full width
-                    height: 300, // Space inside the border
+                    width: double.infinity,
+                    height: 300,
                     decoration: BoxDecoration(
-                      borderRadius:
-                          BorderRadius.circular(20), // Rounded corners
-                      border: Border.all(
-                        color: const Color(0xFF12A5BC), // Black border color
-                        width: 2, // Border width
-                      ),
+                      borderRadius: BorderRadius.circular(20),
+                      border:
+                          Border.all(color: const Color(0xFF12A5BC), width: 2),
                     ),
                     child: Container(
                       decoration: BoxDecoration(
                         color: const Color.fromARGB(255, 94, 139, 197)
-                            .withOpacity(0.15), // Semi-transparent background
+                            .withOpacity(0.15),
                       ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Row(
+                      child: FutureBuilder<UniversityManagement>(
+                        future: futureUniversityDetails,
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const Center(
+                                child: CircularProgressIndicator());
+                          } else if (snapshot.hasError ||
+                              snapshot.data?.universityLogoUrl == null) {
+                            return const Center(child: Text("Failed to load"));
+                          }
+
+                          final university = snapshot.data!;
+                          return Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Image.asset(
-                                'lib/assets/images/UrsVector.png', // Replace with your image path
-                                width: 70,
-                                height: 70,
-                                fit: BoxFit.cover,
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Image.network(
+                                    university.universityVectorUrl ?? '',
+                                    width: 70,
+                                    height: 70,
+                                    fit: BoxFit.contain,
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Image.network(
+                                    university.universityLogoUrl ?? '',
+                                    width: 70,
+                                    height: 70,
+                                    fit: BoxFit.contain,
+                                  ),
+                                ],
                               ),
-                              const SizedBox(width: 10), // Space between images
-                              Image.asset(
-                                'lib/assets/images/UrsLogo.png', // Replace with your image path
-                                width: 70,
-                                fit: BoxFit.cover,
+                              const SizedBox(height: 10),
+                              const Text(
+                                'University Of Rizal System',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                    fontSize: 16, color: Colors.black),
+                              ),
+                              const Text(
+                                "Nurturing Tomorrow's Noblest",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                    fontSize: 13, color: Colors.black),
                               ),
                             ],
-                          ),
-                          const SizedBox(
-                              height: 10), // Space between images and text
-                          const Text(
-                            'University Of Rizal System',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(fontSize: 16, color: Colors.black),
-                          ),
-                          const Text(
-                            "Nurturing Tomorrow's Noblest",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(fontSize: 12, color: Colors.black),
-                          ),
-                        ],
+                          );
+                        },
                       ),
                     ),
                   ),

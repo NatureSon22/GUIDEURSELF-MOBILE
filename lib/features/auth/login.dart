@@ -103,12 +103,16 @@ class Login extends HookWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     TextButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        context.go("/privacy");
+                      },
                       child: const Text("Terms of Service"),
                     ),
                     const SizedBox(width: 5),
                     TextButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        context.go("/privacy");
+                      },
                       child: const Text("Privacy Policy"),
                     )
                   ],

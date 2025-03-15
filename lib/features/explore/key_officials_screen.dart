@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
-import '../../services/key_official_service.dart';
+import '../../services/key_official_service.dart'; // Import the university management service
 import '../../models/key_official.dart';
+import '../../services/university_management_service.dart';
+import '../../models/university_management.dart'; // Import the university management model
+import 'package:go_router/go_router.dart';
 
 class KeyOfficialsScreen extends StatefulWidget {
   const KeyOfficialsScreen({super.key});
@@ -10,13 +13,15 @@ class KeyOfficialsScreen extends StatefulWidget {
 }
 
 class _KeyOfficialsScreenState extends State<KeyOfficialsScreen> {
-  final KeyOfficialService _service = KeyOfficialService();
   late Future<List<KeyOfficial>> _keyOfficialsFuture;
+  late Future<UniversityManagement>
+      _universityFuture; // Future for university details
 
   @override
   void initState() {
     super.initState();
-    _keyOfficialsFuture = _service.fetchKeyOfficials();
+    _keyOfficialsFuture = fetchKeyOfficials();
+    _universityFuture = fetchUniversityDetails(); // Fetch university details
   }
 
   @override
@@ -26,9 +31,7 @@ class _KeyOfficialsScreenState extends State<KeyOfficialsScreen> {
         backgroundColor: Colors.white,
         scrolledUnderElevation: 0,
         leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
+          onPressed: () => context.go("/explore"),
           icon: const Icon(Icons.arrow_back_ios_sharp),
         ),
       ),
@@ -47,105 +50,195 @@ class _KeyOfficialsScreenState extends State<KeyOfficialsScreen> {
               ),
             ),
           ),
-          // FutureBuilder to handle data fetching
-          FutureBuilder<List<KeyOfficial>>(
-            future: _keyOfficialsFuture,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
+          // FutureBuilder for fetching university details
+          FutureBuilder<UniversityManagement>(
+            future: _universityFuture,
+            builder: (context, universitySnapshot) {
+              if (universitySnapshot.connectionState ==
+                  ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
-              } else if (snapshot.hasError) {
-                return Center(child: Text("Error: ${snapshot.error}"));
-              } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                return const Center(child: Text("No key officials found"));
+              } else if (universitySnapshot.hasError) {
+                return Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Text(
+                      "Error loading university details: ${universitySnapshot.error}",
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(color: Colors.red, fontSize: 16),
+                    ),
+                  ),
+                );
+              } else if (!universitySnapshot.hasData) {
+                return const Center(
+                  child: Text(
+                    "No university details found",
+                    style: TextStyle(fontSize: 16, color: Colors.grey),
+                  ),
+                );
               }
 
-              List<KeyOfficial> keyOfficials = snapshot.data!;
-
-              // Scrollable Content
-              return SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 16.0, vertical: 20.0),
-                child: Column(
-                  children: [
-                    // Header Section
-                    Padding(
-                      padding: const EdgeInsets.only(top: 16.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Image.asset(
-                            'lib/assets/images/UrsVector.png',
-                            width: 60,
-                            height: 60,
-                            fit: BoxFit.cover,
-                          ),
-                          const SizedBox(width: 2),
-                          Image.asset(
-                            'lib/assets/images/UrsLogo.png',
-                            width: 60,
-                            fit: BoxFit.cover,
-                          ),
-                        ],
+              // University details are available, now fetch key officials
+              return FutureBuilder<List<KeyOfficial>>(
+                future: _keyOfficialsFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Text(
+                          "Error: ${snapshot.error}",
+                          textAlign: TextAlign.center,
+                          style:
+                              const TextStyle(color: Colors.red, fontSize: 16),
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 8),
-                    const Text(
-                      'University Of Rizal System',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 16, color: Colors.black),
-                    ),
-                    const Text(
-                      "Nurturing Tomorrow's Noblest",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 12, color: Colors.black),
-                    ),
-                    const SizedBox(height: 20),
+                    );
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return const Center(
+                      child: Text(
+                        "No key officials found",
+                        style: TextStyle(fontSize: 16, color: Colors.grey),
+                      ),
+                    );
+                  }
 
-                    // Key Officials List
-                    Column(
-                      children: keyOfficials.map((official) {
-                        return Container(
-                          margin: const EdgeInsets.only(bottom: 12.0),
-                          padding: const EdgeInsets.all(16.0),
-                          child: Column(
+                  List<KeyOfficial> keyOfficials = snapshot.data!;
+
+                  return SingleChildScrollView(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 20),
+                    child: Column(
+                      children: [
+                        // Header Section
+                        Padding(
+                          padding: const EdgeInsets.only(top: 16.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(10.0),
-                                child: Image.network(
-                                  official.keyOfficialPhotoUrl,
-                                  width: 200,
-                                  height: 200,
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) =>
-                                      const Icon(Icons.person,
-                                          size: 100, color: Colors.grey),
+                              // Use Image.network for the vector URL from the database
+                              if (universitySnapshot
+                                      .data!.universityVectorUrl !=
+                                  null)
+                                Image.network(
+                                  universitySnapshot.data!.universityVectorUrl!,
+                                  width: 60,
+                                  height: 60,
+                                  fit: BoxFit.contain,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return const Icon(Icons
+                                        .image_not_supported); // Fallback if image fails to load
+                                  },
                                 ),
-                              ),
-                              const SizedBox(height: 12.0),
-                              Text(
-                                official.name,
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
+                              const SizedBox(width: 4),
+                              // Use Image.network for the logo URL from the database
+                              if (universitySnapshot.data!.universityLogoUrl !=
+                                  null)
+                                Image.network(
+                                  universitySnapshot.data!.universityLogoUrl!,
+                                  width: 60,
+                                  height: 60,
+                                  fit: BoxFit.contain,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return const Icon(Icons
+                                        .image_not_supported); // Fallback if image fails to load
+                                  },
                                 ),
-                              ),
-                              const SizedBox(height: 1.0),
-                              Text(
-                                official.positionName,
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.grey,
-                                ),
-                              ),
                             ],
                           ),
-                        );
-                      }).toList(),
+                        ),
+                        const SizedBox(height: 8),
+                        const Text(
+                          'University Of Rizal System',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 16, color: Colors.black),
+                        ),
+                        const Text(
+                          "Nurturing Tomorrow's Noblest",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 12, color: Colors.black),
+                        ),
+                        const SizedBox(height: 20),
+
+                        // Key Officials List
+                        Column(
+                          children: keyOfficials.map((official) {
+                            // Splitting name to move last word (surname) to the next line
+                            List<String> nameParts = official.name.split(" ");
+                            String formattedName = nameParts.length > 1
+                                ? "${nameParts.sublist(0, nameParts.length - 1).join(" ")}\n${nameParts.last}"
+                                : official.name;
+
+                            return Container(
+                              margin: const EdgeInsets.only(bottom: 12.0),
+                              padding: const EdgeInsets.all(16.0),
+                              width: double.infinity, // Ensures full width
+                              constraints: const BoxConstraints(
+                                minHeight: 250,
+                                maxWidth: 250,
+                              ), // Uniform height
+                              decoration: BoxDecoration(
+                                color: Colors.white
+                                    .withOpacity(0.3), // Opacity added
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color:
+                                      const Color.fromARGB(255, 235, 235, 235),
+                                  width: 0.5,
+                                ),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  // Official Photo
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                    child: Image.network(
+                                      official.keyOfficialPhotoUrl,
+                                      width: 150, // Fixed width
+                                      height: 150, // Fixed height
+                                      fit: BoxFit.cover,
+                                      errorBuilder:
+                                          (context, error, stackTrace) =>
+                                              const Icon(Icons.person,
+                                                  size: 100,
+                                                  color: Colors.grey),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 12.0),
+
+                                  // Official Name
+                                  Text(
+                                    formattedName,
+                                    textAlign: TextAlign.center,
+                                    softWrap: true, // Ensures wrapping
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4.0),
+
+                                  // Official Position
+                                  Text(
+                                    official.positionName,
+                                    textAlign: TextAlign.center,
+                                    softWrap: true, // Ensures wrapping
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }).toList(),
+                        )
+                      ],
                     ),
-                  ],
-                ),
+                  );
+                },
               );
             },
           ),

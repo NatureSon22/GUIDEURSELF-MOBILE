@@ -1,10 +1,5 @@
 import 'package:flutter/material.dart';
-import 'history_screen.dart';
-import 'logo_vector_screen.dart';
-import 'vision_mission_screen.dart';
-import 'key_officials_screen.dart';
-import 'campus_location_screen.dart';
-import 'virtual_tour_screen.dart';
+import 'package:go_router/go_router.dart';
 
 class MenuDrawer extends StatelessWidget {
   const MenuDrawer({super.key});
@@ -18,17 +13,16 @@ class MenuDrawer extends StatelessWidget {
       child: Column(
         children: [
           Padding(
-            padding: EdgeInsets.zero, // Remove any extra padding
+            padding: EdgeInsets.zero,
             child: SizedBox(
               height: 110,
               child: Container(
-                // Replace DrawerHeader with Container
                 decoration: const BoxDecoration(
                   color: Colors.white,
                   border: Border(
                     bottom: BorderSide(
                         color: Color.fromARGB(255, 206, 206, 206),
-                        width: 1.0), // Optional bottom border
+                        width: 1.0),
                   ),
                 ),
                 margin: EdgeInsets.zero,
@@ -61,50 +55,14 @@ class MenuDrawer extends StatelessWidget {
           Expanded(
             child: SingleChildScrollView(
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center, // Center ListTiles
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  _buildCenteredListTile("About", () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const HistoryScreen()),
-                    );
-                  }),
-                  _buildCenteredListTile("Logo & Vector", () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const LogoVectorScreen()),
-                    );
-                  }),
-                  _buildCenteredListTile("Vision, Mission, and Core Values", () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const VisionMissionScreen()),
-                    );
-                  }),
-                  _buildCenteredListTile("Key Officials", () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const KeyOfficialsScreen()),
-                    );
-                  }),
-                  _buildCenteredListTile("Campus Location", () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const CampusLocationScreen()),
-                    );
-                  }),
-                  _buildCenteredListTile("Virtual Campus Tour", () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const VirtualTourScreen()),
-                    );
-                  }),
+                  _buildCenteredListTile(context, "History", "/history"),
+                  _buildCenteredListTile(context, "Logo & Vector", "/logo-vector"),
+                  _buildCenteredListTile(context, "Vision, Mission, and Core Values", "/vision-mission"),
+                  _buildCenteredListTile(context, "Key Officials", "/key-officials"),
+                  _buildCenteredListTile(context, "Campus Location", "/campus-location"),
+                  _buildCenteredListTile(context, "Virtual Campus Tour", "/loading-screen"),
                 ],
               ),
             ),
@@ -114,21 +72,23 @@ class MenuDrawer extends StatelessWidget {
     );
   }
 
-  /// Helper method to create a centered ListTile
-  Widget _buildCenteredListTile(String title, VoidCallback onTap) {
+  /// Helper method to create a centered ListTile with GoRouter navigation
+  Widget _buildCenteredListTile(BuildContext context, String title, String path) {
     return ListTile(
-      contentPadding: EdgeInsets.zero, // Remove ListTile padding
+      contentPadding: EdgeInsets.zero,
       title: Center(
         child: Text(
           title,
           textAlign: TextAlign.center,
           style: const TextStyle(
-            fontWeight: FontWeight.w600, // Change font weight here
-            fontSize: 12, // Adjust font size if needed
+            fontWeight: FontWeight.w600,
+            fontSize: 12,
           ),
         ),
       ),
-      onTap: onTap,
+      onTap: () {
+        context.go(path); // Navigate using GoRouter
+      },
     );
   }
 }
