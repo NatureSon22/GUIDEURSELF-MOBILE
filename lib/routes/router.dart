@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:guideurself/features/auth/forgotpassword.dart';
 import 'package:guideurself/features/auth/login.dart';
+import 'package:guideurself/features/auth/privacy.dart';
 import 'package:guideurself/features/chat/chatbot.dart';
 import 'package:guideurself/features/messageschat/messageschat.dart';
 import 'package:guideurself/features/settings/editprofile.dart';
@@ -16,9 +17,59 @@ import 'package:guideurself/features/settings/privacylegal.dart';
 import 'package:guideurself/features/settings/settings.dart';
 import 'package:guideurself/features/settings/virtualtourpreference.dart';
 import 'package:guideurself/features/settings/userfeedback.dart';
+import 'package:guideurself/models/campus_model.dart';
 import 'package:guideurself/screens/featureoverview.dart';
 import 'package:guideurself/screens/splash.dart';
 import 'package:guideurself/widgets/bottomnavlayout.dart';
+
+import 'package:guideurself/features/explore/history_screen.dart';
+import 'package:guideurself/features/explore/logo_vector_screen.dart';
+import 'package:guideurself/features/explore/vision_mission_screen.dart';
+import 'package:guideurself/features/explore/key_officials_screen.dart';
+import 'package:guideurself/features/explore/campus_location_screen.dart';
+import 'package:guideurself/features/explore/campus_location_screen_II.dart';
+import 'package:guideurself/features/explore/virtual_tour_screen.dart';
+import 'package:guideurself/features/explore/campus_details_screen_II.dart';
+import 'package:guideurself/features/explore/loading_screen.dart';
+
+final List<Map<String, dynamic>> sections = [
+  {"title": "History", "path": "/history", "screen": const HistoryScreen()},
+  {
+    "title": "Logo & Vector",
+    "path": "/logo-vector",
+    "screen": const LogoVectorScreen()
+  },
+  {
+    "title": "Vision, Mission & Core Values",
+    "path": "/vision-mission",
+    "screen": const VisionMissionScreen()
+  },
+  {
+    "title": "Key Officials",
+    "path": "/key-officials",
+    "screen": const KeyOfficialsScreen()
+  },
+  {
+    "title": "Campus Location",
+    "path": "/campus-location",
+    "screen": const CampusLocationScreen()
+  },
+  {
+    "title": "Campus Location",
+    "path": "/campus-location-II",
+    "screen": const CampusLocationScreenII()
+  },
+  {
+    "title": "Virtual Campus Tour",
+    "path": "/virtual-tour",
+    "screen": const VirtualTourScreen()
+  },
+  {
+    "title": "LoadingScreen",
+    "path": "/loading-screen",
+    "screen": const LoadingScreen()
+  },
+];
 
 GoRouter router(String initialRoute) {
   return GoRouter(

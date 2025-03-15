@@ -3,6 +3,7 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:html/parser.dart' as html_parser;
 import '../../services/university_management_service.dart';
 import '../../models/university_management.dart';
+import 'package:go_router/go_router.dart';
 
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({super.key});
@@ -12,25 +13,24 @@ class HistoryScreen extends StatefulWidget {
 }
 
 class _HistoryScreenState extends State<HistoryScreen> {
-  final UniversityManagementService _service = UniversityManagementService();
   late Future<UniversityManagement> _universityFuture;
 
   @override
   void initState() {
     super.initState();
-    _universityFuture = _service.fetchUniversityDetails();
+    _universityFuture = fetchUniversityDetails(); // Fetch university details
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white, // Ensure the background is white
-        elevation: 0, // Remove default elevation
-        scrolledUnderElevation: 0, // Disable elevation
+        backgroundColor: Colors.white,
+        elevation: 0,
+        scrolledUnderElevation: 0,
         leading: IconButton(
           onPressed: () {
-            Navigator.pop(context);
+            context.go("/explore");
           },
           icon: const Icon(Icons.arrow_back_ios_sharp),
         ),
@@ -78,18 +78,31 @@ class _HistoryScreenState extends State<HistoryScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Image.asset(
-                            'lib/assets/images/UrsVector.png',
-                            width: 60,
-                            height: 60,
-                            fit: BoxFit.cover,
-                          ),
-                          const SizedBox(width: 2),
-                          Image.asset(
-                            'lib/assets/images/UrsLogo.png',
-                            width: 60,
-                            fit: BoxFit.cover,
-                          ),
+                          // Use Image.network for the vector URL from the database
+                          if (snapshot.data!.universityVectorUrl != null)
+                            Image.network(
+                              snapshot.data!.universityVectorUrl!,
+                              width: 60,
+                              height: 60,
+                              fit: BoxFit.contain,
+                              errorBuilder: (context, error, stackTrace) {
+                                return const Icon(Icons
+                                    .image_not_supported); // Fallback if image fails to load
+                              },
+                            ),
+                          const SizedBox(width: 4),
+                          // Use Image.network for the logo URL from the database
+                          if (snapshot.data!.universityLogoUrl != null)
+                            Image.network(
+                              snapshot.data!.universityLogoUrl!,
+                              width: 60,
+                              height: 60,
+                              fit: BoxFit.contain,
+                              errorBuilder: (context, error, stackTrace) {
+                                return const Icon(Icons
+                                    .image_not_supported); // Fallback if image fails to load
+                              },
+                            ),
                         ],
                       ),
                     ),
@@ -110,7 +123,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                       data: cleanedHtml,
                       style: {
                         "body": Style(
-                          textAlign: TextAlign.center, // Center text
+                          textAlign: TextAlign.center,
                         ),
                       },
                     ),
@@ -124,21 +137,13 @@ class _HistoryScreenState extends State<HistoryScreen> {
     );
   }
 
-  /// Removes `<br>` tags from HTML content
+  /// Cleans up HTML content: removes `<br>` tags and styles `<strong>` elements
   String _removeBrTagsAndStyleStrong(String htmlContent) {
-    // Parse the HTML content
     var document = html_parser.parse(htmlContent);
-
-    // Remove all <br> tags
     document.querySelectorAll('br').forEach((br) => br.remove());
-
-    // Find all <strong> tags and apply custom styling
     document.querySelectorAll('strong').forEach((strong) {
-      // Add inline style to set font size to 20px
       strong.attributes['style'] = 'font-size: 20px;';
     });
-
-    // Return the modified HTML content
     return document.body?.innerHtml ?? htmlContent;
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../services/university_management_service.dart';
 import '../../models/university_management.dart';
+import 'package:go_router/go_router.dart';
 
 class LogoVectorScreen extends StatefulWidget {
   const LogoVectorScreen({super.key});
@@ -10,13 +11,12 @@ class LogoVectorScreen extends StatefulWidget {
 }
 
 class _LogoVectorScreenState extends State<LogoVectorScreen> {
-  final UniversityManagementService _service = UniversityManagementService();
   late Future<UniversityManagement> _universityFuture;
 
   @override
   void initState() {
     super.initState();
-    _universityFuture = _service.fetchUniversityDetails();
+    _universityFuture = fetchUniversityDetails();
   }
 
   @override
@@ -26,11 +26,11 @@ class _LogoVectorScreenState extends State<LogoVectorScreen> {
           backgroundColor: Colors.white,
           scrolledUnderElevation: 0,
           leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: const Icon(Icons.arrow_back_ios_sharp),
-        ),
+            onPressed: () {
+              context.go("/explore");
+            },
+            icon: const Icon(Icons.arrow_back_ios_sharp),
+          ),
         ),
         body: Stack(children: [
           Opacity(

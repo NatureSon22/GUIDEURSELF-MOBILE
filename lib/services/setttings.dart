@@ -24,9 +24,9 @@ Future<Map<String, String>> getPrivacyAndLegal() async {
 
     return {
       "privacyPolicy":
-          general["privacy_policies"] ?? "No privacy policy available.",
+          general["privacy_policies_mobile"] ?? "No privacy policy available.",
       "termsAndConditions":
-          general["terms_conditions"] ?? "No terms and conditions available.",
+          general["terms_conditions_mobile"] ?? "No terms and conditions available.",
     };
   } on DioException catch (_) {
     throw Exception('Failed to fetch privacy and legal information.');
