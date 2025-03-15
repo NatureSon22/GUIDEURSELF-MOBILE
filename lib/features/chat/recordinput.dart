@@ -6,10 +6,13 @@ import 'package:guideurself/providers/conversation.dart';
 import 'package:guideurself/providers/loading.dart';
 import 'package:guideurself/providers/transcribing.dart';
 import 'package:guideurself/services/conversation.dart';
+import 'package:guideurself/services/storage.dart';
 import 'package:provider/provider.dart';
 import 'package:record/record.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
+import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
 
 class RecordInputModal extends StatefulWidget {
   final Function handleSendQuestion;
@@ -24,11 +27,59 @@ class _RecordInputModalState extends State<RecordInputModal> {
   bool _isRecording = false;
   String? _filePath;
   final String _transcription = "Press the mic and start speaking...";
+  final storage = StorageService();
 
   @override
   void dispose() {
     _record.dispose();
     super.dispose();
+  }
+
+  void outOfQueries() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        insetPadding: const EdgeInsets.symmetric(horizontal: 35),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        content: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: const EdgeInsets.only(top: 5),
+              width: MediaQuery.of(context).size.width * 0.9,
+              child: const Text(
+                "Oops! You've reached your limit for this feature. Log in for more access.",
+                textAlign: TextAlign.center,
+                softWrap: true,
+                style: TextStyle(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 11.5,
+                    height: 1.5,
+                    color: Color(0xFF323232)),
+              ),
+            ),
+            const Gap(20),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  context.go("/login");
+                },
+                style: ElevatedButton.styleFrom(
+                  textStyle: const TextStyle(fontSize: 14),
+                ),
+                child: const Text('Login'),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Future<void> handleSendQuestion({required String question}) async {
@@ -40,6 +91,12 @@ class _RecordInputModalState extends State<RecordInputModal> {
     final account = accountProvider.account;
     final isGuest = account.isEmpty;
     String? conversationId = conversation['conversation_id'];
+    int query = storage.getData(key: "query") ?? 0;
+
+    if (query == 5) {
+      outOfQueries();
+      return;
+    }
 
     final String tempMessageId =
         DateTime.now().millisecondsSinceEpoch.toString();
@@ -88,6 +145,10 @@ class _RecordInputModalState extends State<RecordInputModal> {
       });
 
       loadingProvider.setIsGeneratingResponse(false);
+
+      if (isGuest) {
+        storage.saveData(key: "query", value: query + 1);
+      }
     } catch (e) {
       // More detailed error handling
       final String errorMessage;

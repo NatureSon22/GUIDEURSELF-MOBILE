@@ -47,10 +47,11 @@ class _AuthLayerState extends State<AuthLayer> {
           });
         }
 
-        return const Scaffold(
+        return Scaffold(
           body: Center(
             child: CircularProgressIndicator(
-              color: Color(0xFF12A5BC),
+              color: const Color(0xFF12A5BC),
+              backgroundColor: const Color(0xFF323232).withOpacity(0.1),
             ),
           ),
         );

@@ -79,19 +79,35 @@ Future<Map<String, dynamic>> updateProfile(File img, String accountId) async {
   }
 }
 
-Future<List<Map<String, dynamic>>> getAllCampuses() async {
+Future<List<Map<String, String>>> getAllCampuses() async {
   try {
     final response = await dio.get("/campuses");
 
-    final List<dynamic> campusList = response.data ?? [];
+    if (response.statusCode == 200 && response.data is List) {
+      final List<dynamic> campusList = response.data;
 
-    return campusList
-        .map((campus) => {
-              "_id": campus["_id"],
-              "campus_name": campus["campus_name"],
-            })
-        .toList();
+      return campusList.map((campus) {
+        return {
+          "_id": campus["_id"]?.toString() ?? "",
+          "campus_name": campus["campus_name"]?.toString() ?? "Unknown Campus",
+        };
+      }).toList();
+    } else {
+      throw Exception('Failed to fetch campuses: ${response.statusMessage}');
+    }
+  } on DioException catch (e) {
+    throw Exception('Failed to fetch campuses: ${e.message}');
+  }
+}
+
+Future<void> resetPasswordAccount(String email, String? campusId) async {
+  try {
+    final response = await dio.put("/accounts/reset-password",
+        data: {"email": email, "campusId": campusId, "device": "mobile"});
+
+    final user = response.data;
+    print(user);
   } on DioException catch (_) {
-    throw Exception('Failed to fetch campuses');
+    throw Exception('Failed to reset password.');
   }
 }

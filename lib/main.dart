@@ -39,7 +39,7 @@ void main() {
         child: QueryClientProvider(
           queryClient: queryClient,
           child: MyApp(
-            initialRoute: hasVisitedSplash ? "/forgot-password" : "/splash",
+            initialRoute: hasVisitedSplash ? "/messages-chat" : "/splash",
           ),
         ),
       ),

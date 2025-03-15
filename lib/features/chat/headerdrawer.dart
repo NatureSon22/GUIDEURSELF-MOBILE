@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:guideurself/core/themes/style.dart';
 import 'package:guideurself/providers/conversation.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 
 class HeaderDrawer extends StatelessWidget {
   const HeaderDrawer({super.key, required this.context});
@@ -42,9 +43,7 @@ class HeaderDrawer extends StatelessWidget {
           ),
           GestureDetector(
             onTap: () {
-              // conversationProvider.resetConversation();
-              // Navigator.of(context).pop();
-              // FocusScope.of(context).unfocus();
+              context.go("/messages-chat");
             },
             child: const Icon(Icons.person, color: Color(0xFF323232)),
           ),

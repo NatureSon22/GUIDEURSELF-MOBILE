@@ -6,7 +6,9 @@ import 'package:guideurself/providers/account.dart';
 import 'package:guideurself/providers/conversation.dart';
 import 'package:guideurself/providers/loading.dart';
 import 'package:guideurself/services/conversation.dart';
+import 'package:guideurself/services/storage.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 
 class MessageInput extends StatefulWidget {
   final String? question;
@@ -24,6 +26,7 @@ class MessageInput extends StatefulWidget {
 
 class _MessageInputState extends State<MessageInput> {
   final TextEditingController _controller = TextEditingController();
+  final storage = StorageService();
 
   @override
   void initState() {
@@ -42,6 +45,53 @@ class _MessageInputState extends State<MessageInput> {
     }
   }
 
+  void outOfQueries() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        insetPadding: const EdgeInsets.symmetric(horizontal: 35),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        content: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: const EdgeInsets.only(top: 5),
+              width: MediaQuery.of(context).size.width * 0.9,
+              child: const Text(
+                "Oops! You've reached your limit for this feature. Log in for more access.",
+                textAlign: TextAlign.center,
+                softWrap: true,
+                style: TextStyle(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 11.5,
+                    height: 1.5,
+                    color: Color(0xFF323232)),
+              ),
+            ),
+            const Gap(20),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  context.go("/login");
+                },
+                style: ElevatedButton.styleFrom(
+                  textStyle: const TextStyle(fontSize: 14),
+                ),
+                child: const Text('Login'),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Future<void> handleSendQuestion({required String question}) async {
     final conversationProvider =
         Provider.of<ConversationProvider>(context, listen: false);
@@ -51,6 +101,12 @@ class _MessageInputState extends State<MessageInput> {
     final account = accountProvider.account;
     final isGuest = account.isEmpty;
     String? conversationId = conversation['conversation_id'];
+    int query = storage.getData(key: "query") ?? 0;
+
+    if (query == 5) {
+      outOfQueries();
+      return;
+    }
 
     final String tempMessageId =
         DateTime.now().millisecondsSinceEpoch.toString();
@@ -102,6 +158,10 @@ class _MessageInputState extends State<MessageInput> {
       });
 
       loadingProvider.setIsGeneratingResponse(false);
+
+      if (isGuest) {
+        storage.saveData(key: "query", value: query + 1);
+      }
     } catch (e) {
       // More detailed error handling
       final String errorMessage;
@@ -115,7 +175,7 @@ class _MessageInputState extends State<MessageInput> {
 
       loadingProvider.setIsGeneratingResponse(false);
 
-      // Show error message in the UI
+      //Show error message in the UI
       widget.handleSendQuestion({
         "_id": conversationId ?? tempMessageId,
         "content": errorMessage,

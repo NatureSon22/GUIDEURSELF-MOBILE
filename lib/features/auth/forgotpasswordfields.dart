@@ -4,15 +4,15 @@ import 'package:guideurself/services/account.dart';
 class ForgotPasswordFields extends StatefulWidget {
   final GlobalKey<FormState> formKey;
   final TextEditingController emailController;
-  final String? accountType;
-  final ValueChanged<String?> onAccountTypeChanged;
+  final String? selectedCampusName;
+  final Function onSelectedCampusChanged;
 
   const ForgotPasswordFields({
     super.key,
     required this.formKey,
     required this.emailController,
-    required this.accountType,
-    required this.onAccountTypeChanged,
+    required this.selectedCampusName,
+    required this.onSelectedCampusChanged,
   });
 
   @override
@@ -67,8 +67,12 @@ class _ForgotPasswordFieldsState extends State<ForgotPasswordFields> {
               contentPadding: EdgeInsets.symmetric(horizontal: 10),
               labelText: "Select Account Type",
             ),
-            value: widget.accountType,
-            onChanged: widget.onAccountTypeChanged,
+            value: widget.selectedCampusName,
+            onChanged: (value) {
+              Map<String, String> campus = campuses
+                  .firstWhere((campus) => campus["campus_name"] == value);
+              widget.onSelectedCampusChanged(campus);
+            },
             validator: (value) =>
                 value == null ? "Please select an account type" : null,
             items: campuses.map<DropdownMenuItem<String>>((campus) {

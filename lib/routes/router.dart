@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:guideurself/features/auth/forgotpassword.dart';
 import 'package:guideurself/features/auth/login.dart';
 import 'package:guideurself/features/chat/chatbot.dart';
+import 'package:guideurself/features/messageschat/messageschat.dart';
 import 'package:guideurself/features/settings/editprofile.dart';
 import 'package:guideurself/features/settings/about.dart';
 import 'package:guideurself/features/settings/changepassword.dart';
@@ -78,6 +79,10 @@ GoRouter router(String initialRoute) {
         path: '/chatbot',
         pageBuilder: (context, state) =>
             _buildSlidePage(state, const Chatbot()),
+      ),
+      GoRoute(
+        path: '/messages-chat',
+        pageBuilder: (context, state) => _buildSlidePage(state, const Messageschat()),
       ),
       GoRoute(
         path: '/edit-profile',

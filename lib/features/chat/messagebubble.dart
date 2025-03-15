@@ -3,7 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:gap/gap.dart';
 import 'package:guideurself/core/themes/style.dart';
+import 'package:guideurself/providers/account.dart';
 import 'package:guideurself/services/conversation.dart';
+import 'package:provider/provider.dart';
 
 class MessageBubble extends StatefulWidget {
   const MessageBubble({
@@ -102,6 +104,9 @@ class _MessageBubbleState extends State<MessageBubble> {
   @override
   Widget build(BuildContext context) {
     final iconColor = const Color(0xFF323232).withOpacity(0.7);
+    final accountProvider = context.read<AccountProvider>();
+    final account = accountProvider.account;
+    final isGuest = account.isEmpty;
 
     return Align(
       alignment:
@@ -178,7 +183,7 @@ class _MessageBubbleState extends State<MessageBubble> {
                         size: 18,
                         color: iconColor,
                       )
-                    else ...[
+                    else if (!isGuest) ...[
                       GestureDetector(
                         onTap: () => handleReview(true),
                         child: Icon(Icons.thumb_up_off_alt_outlined,

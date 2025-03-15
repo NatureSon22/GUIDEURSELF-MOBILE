@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:guideurself/features/auth/forgotpasswordfields.dart';
+import 'package:guideurself/services/account.dart';
 
 class ForgotPassword extends StatefulWidget {
   const ForgotPassword({super.key});
@@ -12,45 +13,67 @@ class ForgotPassword extends StatefulWidget {
 class _ForgotPasswordState extends State<ForgotPassword> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   final TextEditingController emailController = TextEditingController();
-  String? accountType;
+  String? selectedCampusId;
+  String? selectedCampusName;
+  bool isLoading = true;
 
-  void handleResendPassword() {
-    // if (formKey.currentState!.validate()) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => AlertDialog(
-        insetPadding: const EdgeInsets.symmetric(horizontal: 35),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-        content: Stack(
-          alignment: Alignment.center,
-          children: [
-            SizedBox(
-              width: 150,
-              height: 100,
-              child: Center(
-                child: Image.asset(
+  Future<void> handleResetPassword() async {
+    try {
+      await resetPasswordAccount(emailController.text, selectedCampusId);
+    } catch (e) {
+      debugPrint("Error resetting password: $e");
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Failed to reset password")),
+        );
+      }
+    } finally {
+      setState(() => isLoading = false);
+    }
+  }
+
+  void handleResendPassword() async {
+    if (formKey.currentState!.validate()) {
+      setState(() => isLoading = true);
+
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => StatefulBuilder(
+          builder: (context, setDialogState) => AlertDialog(
+            insetPadding: const EdgeInsets.symmetric(horizontal: 35),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Image.asset(
                   'lib/assets/webp/head_send.gif',
                   width: 150,
                   height: 100,
                   fit: BoxFit.cover,
                 ),
-              ),
+                const SizedBox(height: 10),
+                Text(
+                  isLoading ? "Sending Password..." : "Password Sent!",
+                  style: const TextStyle(fontWeight: FontWeight.w500),
+                ),
+              ],
             ),
-            const Positioned(
-              bottom: 6,
-              child: Text(
-                "Sending Password...",
-                style: TextStyle(fontWeight: FontWeight.w500),
-              ),
-            ),
-          ],
+          ),
         ),
-      ),
-    );
-    //}
+      );
+
+      await handleResetPassword();
+
+      await Future.delayed(const Duration(seconds: 3));
+
+      if (mounted) {
+        Navigator.pop(context);
+        context.go("/login");
+      }
+    }
   }
 
   @override
@@ -97,10 +120,11 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                 ForgotPasswordFields(
                   formKey: formKey,
                   emailController: emailController,
-                  accountType: accountType,
-                  onAccountTypeChanged: (value) {
+                  selectedCampusName: selectedCampusName,
+                  onSelectedCampusChanged: (Map<String, String> value) {
                     setState(() {
-                      accountType = value;
+                      selectedCampusId = value['_id'];
+                      selectedCampusName = value['campus_name'];
                     });
                   },
                 ),
