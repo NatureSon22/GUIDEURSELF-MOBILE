@@ -23,10 +23,11 @@ class Header extends StatelessWidget {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 image: DecorationImage(
-                  image: NetworkImage(
-                    account["user_photo_url"] ??
-                        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRzrwYBCJ5bXdYy6i-tgg7Pn9lOOp-DDyKIuA&s',
-                  ),
+                  image: account["user_photo_url"] != null &&
+                          account["user_photo_url"].isNotEmpty
+                      ? NetworkImage(account["user_photo_url"])
+                      : const AssetImage("lib/assets/images/avatar_placeholder.png")
+                          as ImageProvider,
                   fit: BoxFit.cover,
                 ),
               ),
@@ -47,7 +48,7 @@ class Header extends StatelessWidget {
                 const Gap(1),
                 Text(
                   account["username"] ??
-                      "Guest", // Use name from account or "Guest"
+                      "Guest",
                   style: styleText(
                     context: context,
                     fontSizeOption: 12.2,

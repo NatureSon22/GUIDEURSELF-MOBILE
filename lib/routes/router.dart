@@ -4,6 +4,8 @@ import 'package:guideurself/features/auth/forgotpassword.dart';
 import 'package:guideurself/features/auth/login.dart';
 import 'package:guideurself/features/auth/privacy.dart';
 import 'package:guideurself/features/chat/chatbot.dart';
+import 'package:guideurself/features/messageschat/messageschat.dart';
+import 'package:guideurself/features/settings/editprofile.dart';
 import 'package:guideurself/features/settings/about.dart';
 import 'package:guideurself/features/settings/changepassword.dart';
 import 'package:guideurself/features/settings/chatbotpreference.dart';
@@ -69,114 +71,107 @@ final List<Map<String, dynamic>> sections = [
   },
 ];
 
-final GoRouter router = GoRouter(
-  initialLocation: "/auth-layer",
-  routes: [
-    GoRoute(
-      path: "/splash",
-      pageBuilder: (context, state) => _buildSlidePage(state, const Splash()),
-    ),
-    GoRoute(
-      path: "/feature-overview",
-      pageBuilder: (context, state) =>
-          _buildSlidePage(state, const FeatureOverview()),
-    ),
-    GoRoute(
-      path: "/login",
-      builder: (context, state) => const Login(),
-    ),
-    GoRoute(
-      path: "/privacy",
-      builder: (context, state) => const PrivacyAndTerms(),
-    ),
-    GoRoute(
-      path: "/forgot-password",
-      builder: (context, state) => const ForgotPassword(),
-    ),
-    GoRoute(
-      path: "/auth-layer",
-      builder: (context, state) => const AuthLayer(),
-    ),
-
-    ShellRoute(
-      builder: (context, state, child) {
-        return BottomNavLayout(child: child);
-      },
-      routes: [
-        GoRoute(
-          path: '/',
-          pageBuilder: (context, state) => _buildSlidePage(state, const Home()),
-        ),
-        GoRoute(
-          path: '/explore',
-          pageBuilder: (context, state) =>
-              _buildSlidePage(state, const Explore()),
-        ),
-        GoRoute(
-          path: '/chat',
-          pageBuilder: (context, state) =>
-              _buildSlidePage(state, const ChatPreview()),
-        ),
-        GoRoute(
-          path: '/settings',
-          pageBuilder: (context, state) =>
-              _buildSlidePage(state, const Settings()),
-        ),
-      ],
-    ),
-
-    ...sections.map(
-      (section) => GoRoute(
-        path: section["path"], 
-        pageBuilder: (context, state) =>
-            _buildSlidePage(state, section["screen"]),
+GoRouter router(String initialRoute) {
+  return GoRouter(
+    initialLocation: initialRoute,
+    routes: [
+      GoRoute(
+        path: "/splash",
+        pageBuilder: (context, state) => _buildSlidePage(state, const Splash()),
       ),
-    ),
+      GoRoute(
+        path: "/feature-overview",
+        pageBuilder: (context, state) =>
+            _buildSlidePage(state, const FeatureOverview()),
+      ),
+      GoRoute(
+        path: "/login",
+        builder: (context, state) => const Login(),
+      ),
+      GoRoute(
+        path: "/forgot-password",
+        builder: (context, state) => const ForgotPassword(),
+      ),
+      GoRoute(
+        path: "/auth-layer",
+        builder: (context, state) => const AuthLayer(),
+      ),
 
-    GoRoute(
-      path: '/campus-details',
-      pageBuilder: (context, state) {
-        final campus = state.extra as Campus;
-        return _buildSlidePage(state, CampusDetailsScreen(campus: campus));
-      },
-    ),
+      ShellRoute(
+        builder: (context, state, child) {
+          return BottomNavLayout(child: child);
+        },
+        routes: [
+          GoRoute(
+            path: '/',
+            pageBuilder: (context, state) =>
+                _buildSlidePage(state, const Home()),
+          ),
+          GoRoute(
+            path: '/explore',
+            pageBuilder: (context, state) =>
+                _buildSlidePage(state, const Explore()),
+          ),
+          GoRoute(
+            path: '/chat',
+            pageBuilder: (context, state) =>
+                _buildSlidePage(state, const ChatPreview()),
+          ),
+          GoRoute(
+            path: '/settings',
+            pageBuilder: (context, state) =>
+                _buildSlidePage(state, const Settings()),
+          ),
+        ],
+      ),
 
-    // Other routes with transitions
-    GoRoute(
-      path: '/chatbot',
-      pageBuilder: (context, state) => _buildSlidePage(state, const Chatbot()),
-    ),
-    GoRoute(
-      path: '/chatbot-preference',
-      pageBuilder: (context, state) =>
-          _buildSlidePage(state, const ChatbotPreference()),
-    ),
-    GoRoute(
-      path: '/virtual-preference',
-      pageBuilder: (context, state) =>
-          _buildSlidePage(state, const VirtualTourPreference()),
-    ),
-    GoRoute(
-      path: '/change-password',
-      pageBuilder: (context, state) =>
-          _buildSlidePage(state, const Changepassword()),
-    ),
-    GoRoute(
-      path: '/feedback',
-      pageBuilder: (context, state) =>
-          _buildSlidePage(state, const UserFeedback()),
-    ),
-    GoRoute(
-      path: '/privacy-legal',
-      pageBuilder: (context, state) =>
-          _buildSlidePage(state, const PrivacyLegal()),
-    ),
-    GoRoute(
-      path: '/about',
-      pageBuilder: (context, state) => _buildSlidePage(state, const About()),
-    ),
-  ],
-);
+      // Other routes with transitions
+      GoRoute(
+        path: '/chatbot',
+        pageBuilder: (context, state) =>
+            _buildSlidePage(state, const Chatbot()),
+      ),
+      GoRoute(
+        path: '/messages-chat',
+        pageBuilder: (context, state) => _buildSlidePage(state, const Messageschat()),
+      ),
+      GoRoute(
+        path: '/edit-profile',
+        pageBuilder: (context, state) =>
+            _buildSlidePage(state, const EditProfile()),
+      ),
+      GoRoute(
+        path: '/chatbot-preference',
+        pageBuilder: (context, state) =>
+            _buildSlidePage(state, const ChatbotPreference()),
+      ),
+      GoRoute(
+        path: '/virtual-preference',
+        pageBuilder: (context, state) =>
+            _buildSlidePage(state, const VirtualTourPreference()),
+      ),
+      GoRoute(
+        path: '/change-password',
+        pageBuilder: (context, state) =>
+            _buildSlidePage(state, const Changepassword()),
+      ),
+      GoRoute(
+        path: '/feedback',
+        pageBuilder: (context, state) =>
+            _buildSlidePage(state, const UserFeedback()),
+      ),
+      GoRoute(
+        path: '/privacy-legal',
+        pageBuilder: (context, state) =>
+            _buildSlidePage(state, const PrivacyLegal()),
+      ),
+      GoRoute(
+        path: '/about',
+        pageBuilder: (context, state) => _buildSlidePage(state, const About()),
+      ),
+    ],
+  );
+}
 
 // Custom transition function for non-auth routes
 CustomTransitionPage _buildSlidePage(GoRouterState state, Widget child) {

@@ -1,14 +1,10 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:guideurself/providers/conversation.dart';
+import 'package:guideurself/services/conversation.dart';
+import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
-
-Future<List<Map<String, dynamic>>> getConversations() async {
-  await Future.delayed(const Duration(seconds: 1));
-  return [
-    {'conversation_name': 'University Enrollment Steps'},
-    {'conversation_name': 'History of University of Rizal System'},
-  ];
-}
+import 'package:go_router/go_router.dart';
 
 class HistoryList extends StatefulWidget {
   const HistoryList({super.key});
@@ -23,7 +19,7 @@ class _HistoryListState extends State<HistoryList> {
   @override
   void initState() {
     super.initState();
-    _futureMessages = getConversations();
+    _futureMessages = getAllConversations(limit: 5);
   }
 
   @override
@@ -43,10 +39,19 @@ class _HistoryListState extends State<HistoryList> {
           final messages = snapshot.data ?? [];
 
           if (messages.isEmpty) {
-            return const Center(
-              child: Text(
-                "Your chat is empty",
-                style: TextStyle(fontSize: 12.0),
+            return Container(
+              decoration: BoxDecoration(
+                color: const Color(0xFF323232).withOpacity(0.03),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Center(
+                child: Text(
+                  "Your chat is empty",
+                  style: TextStyle(
+                    fontSize: 12.0,
+                    color: const Color(0xFF323232).withOpacity(0.7),
+                  ),
+                ),
               ),
             );
           }
@@ -61,7 +66,7 @@ class _HistoryListState extends State<HistoryList> {
     return ListView.builder(
       padding: const EdgeInsets.all(0),
       physics: const AlwaysScrollableScrollPhysics(),
-      itemCount: 2,
+      itemCount: 3,
       itemBuilder: (context, index) {
         return Padding(
           padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
@@ -94,17 +99,24 @@ class _HistoryListState extends State<HistoryList> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text(
+                Text(
                   'Failed to fetch messages',
                   textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: const Color(0xFF323232).withOpacity(0.5),
+                  ),
                 ),
                 const SizedBox(height: 10),
                 ElevatedButton(
                   onPressed: () {
                     setState(() {
-                      _futureMessages = getConversations();
+                      _futureMessages = getAllConversations(limit: 5);
                     });
                   },
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 10),
+                  ),
                   child: const Text('Retry'),
                 ),
               ],
@@ -116,6 +128,8 @@ class _HistoryListState extends State<HistoryList> {
   }
 
   Widget _buildMessageList(List<Map<String, dynamic>> messages) {
+    final conversationProvider = context.read<ConversationProvider>();
+
     return ListView.builder(
       padding: const EdgeInsets.all(0),
       physics: const AlwaysScrollableScrollPhysics(),
@@ -156,7 +170,10 @@ class _HistoryListState extends State<HistoryList> {
                 size: 18,
               ),
             ),
-            onTap: () {},
+            onTap: () {
+              conversationProvider.setConversation(conversation: message);
+              context.go("/chatbot");
+            },
           ),
         );
       },

@@ -57,10 +57,28 @@ class _ChangepasswordState extends State<Changepassword> {
       newPasswordController.clear();
       confirmPasswordController.clear();
     } catch (e) {
-      Navigator.of(context).pop();
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to update password')),
-      );
+      if (mounted) {
+        Navigator.of(context).pop();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Failed to update password.',
+              style: styleText(
+                context: context,
+                fontSizeOption: 12.0,
+                color: Colors.white,
+              ),
+            ),
+            backgroundColor: const Color.fromRGBO(239, 68, 68, 1),
+            duration: const Duration(seconds: 2),
+            behavior: SnackBarBehavior.floating,
+            margin: const EdgeInsets.all(16),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+        );
+      }
     }
   }
 

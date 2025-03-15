@@ -24,18 +24,54 @@ class Login extends HookWidget {
         password: data['password'],
         rememberMe: data['rememberMe'],
       ),
-      onError: (error, variables, context) {},
       onSuccess: (data, variables, build) {
+        Navigator.pop(context); // Close loading dialog on success
         context.go("/");
-      },
-      onSettled: (data, error, variables, context) {
         emailController.clear();
         passwordController.clear();
+      },
+      onError: (error, variables, build) {
+        Navigator.pop(context);
       },
     );
 
     void handleLogin() {
       if (formKey.value.currentState!.validate()) {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => AlertDialog(
+            insetPadding: const EdgeInsets.symmetric(horizontal: 35),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            content: Stack(
+              alignment: Alignment.center,
+              children: [
+                SizedBox(
+                  width: 150,
+                  height: 100,
+                  child: Center(
+                    child: Image.asset(
+                      'lib/assets/webp/head_idle2.gif',
+                      width: 150,
+                      height: 100,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+                const Positioned(
+                  bottom: 6,
+                  child: Text(
+                    "Logging in...",
+                    style: TextStyle(fontWeight: FontWeight.w500),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+
         loginMutation.mutate({
           'email': emailController.text,
           'password': passwordController.text,

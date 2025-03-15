@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:gap/gap.dart';
+import 'package:guideurself/core/themes/style.dart';
+import 'package:guideurself/providers/account.dart';
 import 'package:guideurself/services/conversation.dart';
+import 'package:provider/provider.dart';
 
 class MessageBubble extends StatefulWidget {
   const MessageBubble({
@@ -24,38 +28,86 @@ class MessageBubble extends StatefulWidget {
 }
 
 class _MessageBubbleState extends State<MessageBubble> {
-  bool?
-      isHelpful; // null -> Not reviewed, true -> Helpful, false -> Not helpful
+  bool? isHelpful;
 
   @override
   void initState() {
     super.initState();
     isHelpful = widget.initialIsHelpful;
+    print("MessageBubble: isHelpful: $isHelpful");
   }
 
   bool get isReviewed => isHelpful != null;
 
   Future<void> handleReview(bool helpful) async {
+    final previousState = isHelpful;
     setState(() {
       isHelpful = helpful;
     });
 
     try {
-      await reviewIsHelpful(
-        messageId: widget.messageId,
-        isHelpful: helpful,
-      );
+      await reviewIsHelpful(messageId: widget.messageId, isHelpful: helpful);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              "Feedback submitted!",
+              style: styleText(
+                context: context,
+                fontSizeOption: 12.0,
+                color: Colors.white,
+              ),
+            ),
+            backgroundColor: const Color(0xFF323232),
+            duration: const Duration(seconds: 2),
+            behavior: SnackBarBehavior.floating,
+            margin: const EdgeInsets.all(16),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+        );
+      }
     } catch (e) {
-      // Optional: Show error and revert state if API call fails
       setState(() {
-        isHelpful = null; // Revert if failed
+        isHelpful = previousState;
       });
     }
   }
 
-  @override
+  Future<void> _copyToClipboard() async {
+    await Clipboard.setData(ClipboardData(text: widget.content));
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            "Copied to clipboard!",
+            style: styleText(
+              context: context,
+              fontSizeOption: 12.0,
+              color: Colors.white,
+            ),
+          ),
+          backgroundColor: const Color(0xFF323232),
+          duration: const Duration(seconds: 2),
+          behavior: SnackBarBehavior.floating,
+          margin: const EdgeInsets.all(16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final iconColor = const Color(0xFF323232).withOpacity(0.7);
+    final accountProvider = context.read<AccountProvider>();
+    final account = accountProvider.account;
+    final isGuest = account.isEmpty;
+
     return Align(
       alignment:
           widget.isMachine ? Alignment.centerLeft : Alignment.centerRight,
@@ -64,8 +116,7 @@ class _MessageBubbleState extends State<MessageBubble> {
           maxWidth: MediaQuery.of(context).size.width * 0.7,
         ),
         child: Column(
-          mainAxisSize: MainAxisSize
-              .min, 
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Container(
@@ -100,58 +151,49 @@ class _MessageBubbleState extends State<MessageBubble> {
                   fontSize: 12,
                 ),
                 customStylesBuilder: (element) {
-                  if (element.localName == 'h1' ||
-                      element.localName == 'h2' ||
-                      element.localName == 'h3') {
+                  const headingTags = {'h1', 'h2', 'h3'};
+                  if (headingTags.contains(element.localName)) {
                     return {'line-height': '1.4', 'font-size': '14px'};
                   }
                   return null;
                 },
               ),
             ),
-            if (widget.isMachine)
+            if (widget.isMachine && !widget.isFailed)
               Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
                 child: Row(
                   children: [
-                    Icon(
-                      Icons.copy_all_outlined,
-                      size: 18,
-                      color: const Color(0xFF323232).withOpacity(0.7),
+                    GestureDetector(
+                      onTap: _copyToClipboard,
+                      child: Icon(Icons.copy_all_outlined,
+                          size: 18, color: iconColor),
                     ),
                     const Gap(17),
-                    Icon(
-                      Icons.note_add_outlined,
-                      size: 18,
-                      color: const Color(0xFF323232).withOpacity(0.7),
-                    ),
-                    const Gap(17),
-                    if (isReviewed)
+                    if (isHelpful == true)
                       Icon(
-                        isHelpful == true
-                            ? Icons.thumb_up_alt_rounded
-                            : Icons.thumb_down_alt_rounded,
+                        Icons.thumb_up_alt_rounded,
                         size: 18,
-                        color: const Color(0xFF323232).withOpacity(0.7),
+                        color: iconColor,
                       )
-                    else ...[
+                    else if (isHelpful == false)
+                      Icon(
+                        Icons.thumb_down_alt_rounded,
+                        size: 18,
+                        color: iconColor,
+                      )
+                    else if (!isGuest) ...[
                       GestureDetector(
                         onTap: () => handleReview(true),
-                        child: Icon(
-                          Icons.thumb_up_off_alt_outlined,
-                          size: 18,
-                          color: const Color(0xFF323232).withOpacity(0.7),
-                        ),
+                        child: Icon(Icons.thumb_up_off_alt_outlined,
+                            size: 18, color: iconColor),
                       ),
                       const Gap(17),
                       GestureDetector(
                         onTap: () => handleReview(false),
-                        child: Icon(
-                          Icons.thumb_down_alt_outlined,
-                          size: 18,
-                          color: const Color(0xFF323232).withOpacity(0.7),
-                        ),
+                        child: Icon(Icons.thumb_down_alt_outlined,
+                            size: 18, color: iconColor),
                       ),
                     ],
                   ],

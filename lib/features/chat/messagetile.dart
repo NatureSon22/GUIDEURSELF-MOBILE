@@ -12,10 +12,12 @@ class MessageTile extends StatelessWidget {
     super.key,
     required this.message,
     required this.title,
+    required this.handleCloseDrawer,
   });
 
   final Map<String, dynamic> message;
   final String title;
+  final Function handleCloseDrawer;
 
   void _showSnackBar(BuildContext context, String message, bool isSuccess) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -28,12 +30,14 @@ class MessageTile extends StatelessWidget {
             color: Colors.white,
           ),
         ),
-        backgroundColor: isSuccess ? Colors.green : Colors.red,
+        backgroundColor: isSuccess
+            ? const Color(0xFF323232)
+            : const Color.fromRGBO(239, 68, 68, 1),
         duration: const Duration(seconds: 2),
         behavior: SnackBarBehavior.floating,
         margin: const EdgeInsets.all(16),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(10),
         ),
       ),
     );
@@ -49,6 +53,8 @@ class MessageTile extends StatelessWidget {
       if (context.mounted) {
         _showSnackBar(context, 'Failed to delete conversation.', false);
       }
+    } finally {
+      handleCloseDrawer();
     }
   }
 
@@ -102,6 +108,12 @@ class MessageTile extends StatelessWidget {
                       onPressed: () async {
                         Navigator.pop(dialogContext);
                         await handleDeleteChat(rootContext);
+                        // if mounted
+                        if (rootContext.mounted) {
+                          rootContext
+                              .read<ConversationProvider>()
+                              .resetConversation();
+                        }
                       },
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(horizontal: 10),

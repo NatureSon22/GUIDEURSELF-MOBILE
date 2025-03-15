@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class LoginButtons extends StatefulWidget {
   final VoidCallback handleLogin;
@@ -19,6 +20,10 @@ class _LoginButtonsState extends State<LoginButtons> {
         ElevatedButton(
           onPressed: () {
             widget.handleLogin();
+            final FocusScopeNode currentScope = FocusScope.of(context);
+            if (!currentScope.hasPrimaryFocus && currentScope.hasFocus) {
+              FocusManager.instance.primaryFocus?.unfocus();
+            }
           },
           style: Theme.of(context).elevatedButtonTheme.style,
           child: Text(
@@ -27,7 +32,9 @@ class _LoginButtonsState extends State<LoginButtons> {
         ),
         const SizedBox(height: 5),
         OutlinedButton(
-          onPressed: () {},
+          onPressed: () {
+            context.go("/");
+          },
           style: Theme.of(context).outlinedButtonTheme.style,
           child: const Text(
             "Continue as Guest",

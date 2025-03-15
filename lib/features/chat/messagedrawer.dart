@@ -7,7 +7,8 @@ import 'package:guideurself/services/conversation.dart';
 import 'package:shimmer/shimmer.dart';
 
 class MessageDrawer extends StatefulWidget {
-  const MessageDrawer({super.key});
+  final Function handleCloseDrawer;
+  const MessageDrawer({super.key, required this.handleCloseDrawer});
 
   @override
   State<MessageDrawer> createState() => _MessageDrawerState();
@@ -122,6 +123,7 @@ class _MessageDrawerState extends State<MessageDrawer> {
         messageWidgets.add(MessageTile(
           message: message,
           title: title,
+          handleCloseDrawer: widget.handleCloseDrawer,
         ));
       }
     });
@@ -176,8 +178,7 @@ class _MessageDrawerState extends State<MessageDrawer> {
                         ElevatedButton(
                           onPressed: () {
                             setState(() {
-                              _futureMessages =
-                                  getAllConversations(); // Retry Future
+                              _futureMessages = getAllConversations();
                             });
                           },
                           child: const Text('Retry'),

@@ -2,9 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
 import 'package:guideurself/features/chat/recordinput.dart';
+import 'package:guideurself/providers/account.dart';
 import 'package:guideurself/providers/conversation.dart';
+import 'package:guideurself/providers/loading.dart';
 import 'package:guideurself/services/conversation.dart';
+import 'package:guideurself/services/storage.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 
 class MessageInput extends StatefulWidget {
   final String? question;
@@ -22,6 +26,7 @@ class MessageInput extends StatefulWidget {
 
 class _MessageInputState extends State<MessageInput> {
   final TextEditingController _controller = TextEditingController();
+  final storage = StorageService();
 
   @override
   void initState() {
@@ -40,62 +45,145 @@ class _MessageInputState extends State<MessageInput> {
     }
   }
 
+  void outOfQueries() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        insetPadding: const EdgeInsets.symmetric(horizontal: 35),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        content: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: const EdgeInsets.only(top: 5),
+              width: MediaQuery.of(context).size.width * 0.9,
+              child: const Text(
+                "Oops! You've reached your limit for this feature. Log in for more access.",
+                textAlign: TextAlign.center,
+                softWrap: true,
+                style: TextStyle(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 11.5,
+                    height: 1.5,
+                    color: Color(0xFF323232)),
+              ),
+            ),
+            const Gap(20),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  context.go("/login");
+                },
+                style: ElevatedButton.styleFrom(
+                  textStyle: const TextStyle(fontSize: 14),
+                ),
+                child: const Text('Login'),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Future<void> handleSendQuestion({required String question}) async {
     final conversationProvider =
         Provider.of<ConversationProvider>(context, listen: false);
+    final loadingProvider = context.read<LoadingProvider>();
     final conversation = conversationProvider.conversation;
+    final accountProvider = context.read<AccountProvider>();
+    final account = accountProvider.account;
+    final isGuest = account.isEmpty;
+    String? conversationId = conversation['conversation_id'];
+    int query = storage.getData(key: "query") ?? 0;
 
-    // Optimistically show user message
-    final String? initialConversationId = conversation['conversation_id'];
+    if (query == 5) {
+      outOfQueries();
+      return;
+    }
 
-    widget.handleSendQuestion(
-      {
-        "_id": initialConversationId,
-        "content": question,
-        "is_machine_generated": false,
-      },
-    );
+    final String tempMessageId =
+        DateTime.now().millisecondsSinceEpoch.toString();
+
+    // Immediately show the user's question in the UI
+    widget.handleSendQuestion({
+      "_id": tempMessageId,
+      "content": question,
+      "is_machine_generated": false,
+    });
 
     _controller.clear();
 
-    Map<String, dynamic>? newConversation;
-
-    // If no conversation_id, create a new one
-    String conversationId = initialConversationId ?? '';
-    if (initialConversationId == null) {
-      newConversation = await createConversation(name: question);
-      conversationId = newConversation["conversation_id"];
-      conversationProvider.setConversation(conversation: newConversation);
-    }
-
     try {
-      final response = await sendMessage(
-        conversationId: conversationId,
-        content: question,
-      );
+      // If there's no conversation, create a temporary one
+      if (conversationId == null) {
+        if (conversation.isEmpty) {
+          final tempId = 'temp-${DateTime.now().millisecondsSinceEpoch}';
+          conversationProvider.setConversation(
+              conversation: {'conversation_id': tempId}, isNew: true);
+          conversationId = tempId;
+        }
 
-      // Use the correct conversation_id after creation for bot response
-      final resolvedConversationId =
-          initialConversationId ?? newConversation?['conversation_id'];
+        // Create a new conversation in the backend
+        final newConversation = isGuest
+            ? await createConversationAsGuest(name: question)
+            : await createConversation(name: question);
 
-      final responseMessage = {
-        "_id": resolvedConversationId,
-        "content": response["answer"]["content"],
-        "is_machine_generated": true,
-      };
+        if (!newConversation.containsKey("conversation_id")) {
+          throw Exception(
+              "Invalid conversation response: Missing conversation_id");
+        }
 
-      widget.handleSendQuestion(responseMessage);
-    } catch (e) {
-      // Use the correct conversation_id after creation for failed message
-      final resolvedConversationId =
-          initialConversationId ?? newConversation?['conversation_id'];
+        // Update the conversation with the real ID
+        conversationProvider.setConversation(conversation: newConversation);
+        conversationId = newConversation["conversation_id"];
+      }
+
+      loadingProvider.setIsGeneratingResponse(true);
+
+      // Send the message to the backend
+      final response =
+          await sendMessage(conversationId: conversationId!, content: question);
 
       widget.handleSendQuestion({
-        "_id": resolvedConversationId,
-        "content": "Failed to send message. Please try again.",
+        "_id": response["answer"]["id"],
+        "content": response["answer"]["content"],
+        "is_machine_generated": true,
+      });
+
+      loadingProvider.setIsGeneratingResponse(false);
+
+      if (isGuest) {
+        storage.saveData(key: "query", value: query + 1);
+      }
+    } catch (e) {
+      // More detailed error handling
+      final String errorMessage;
+      if (e.toString().contains("network")) {
+        errorMessage = "Network error. Please check your connection.";
+      } else if (e.toString().contains("500")) {
+        errorMessage = "Server error. Please try again later.";
+      } else {
+        errorMessage = "Failed to send message. Please try again.";
+      }
+
+      loadingProvider.setIsGeneratingResponse(false);
+
+      //Show error message in the UI
+      widget.handleSendQuestion({
+        "_id": conversationId ?? tempMessageId,
+        "content": errorMessage,
         "is_machine_generated": true,
         "is_failed": true,
       });
+
+      debugPrint("Message error: $e");
     }
   }
 
@@ -114,7 +202,7 @@ class _MessageInputState extends State<MessageInput> {
       child: Row(
         children: [
           OutlinedButton(
-            onPressed: () => recordInput(context),
+            onPressed: () => recordInput(context, widget.handleSendQuestion),
             style: OutlinedButton.styleFrom(
               shape: const CircleBorder(),
               side: BorderSide(

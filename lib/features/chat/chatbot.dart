@@ -6,8 +6,11 @@ import 'package:guideurself/features/chat/messagedrawer.dart';
 import 'package:guideurself/features/chat/messageinput.dart';
 import 'package:guideurself/features/chat/messagelist.dart';
 import 'package:guideurself/features/chat/questions.dart';
+import 'package:guideurself/providers/account.dart';
 import 'package:guideurself/providers/conversation.dart';
+import 'package:guideurself/providers/loading.dart';
 import 'package:guideurself/services/conversation.dart';
+import 'package:guideurself/services/storage.dart';
 import 'package:guideurself/widgets/textgradient.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
@@ -27,24 +30,82 @@ class Chatbot extends HookWidget {
     final question = useState<String?>(null);
     final messages = useState<List<Map<String, dynamic>>>([]);
     final isLoading = useState<bool>(false);
+    final isCreatingConversation = useState<bool>(false);
+    final accountProvider = context.read<AccountProvider>();
+    final account = accountProvider.account;
+    final isGuest = account.isEmpty;
+    final StorageService storage = StorageService();
 
     final conversation = context.watch<ConversationProvider>().conversation;
+    final isNewConversation =
+        context.watch<ConversationProvider>().isNewConversation;
+    final isGeneratingResponse =
+        context.watch<LoadingProvider>().isGeneratingResponse;
 
-    // Effect to fetch messages when conversation changes
+    // Extract conversationId for easier reference
+    final conversationId = conversation['conversation_id'];
+
     useEffect(() {
-      final conversationId = conversation['conversation_id'];
-      if (conversationId != null) {
+      // Only reset messages when explicitly starting a new conversation
+      // but not when we're in the process of creating one
+      if (isNewConversation &&
+          !(conversationId != null &&
+              conversationId.toString().startsWith('temp-')) &&
+          !isCreatingConversation.value) {
+        messages.value = [];
+        isCreatingConversation.value = false;
+        return null;
+      }
+
+      // Only fetch messages for established conversations (not temporary ones)
+      if (conversationId != null &&
+          !conversationId.toString().startsWith('temp-') &&
+          !isCreatingConversation.value) {
         isLoading.value = true;
+
         getAllMessages(conversationId).then((fetchedMessages) {
-          messages.value = fetchedMessages.reversed.toList();
-        }).catchError((_) {
-          // Handle error if needed
+          // Only update messages if we get valid results and aren't creating a conversation
+          if (fetchedMessages.isNotEmpty) {
+            messages.value = fetchedMessages.reversed.toList();
+          } else if (messages.value.isEmpty) {
+            // Only set to empty if we don't already have messages (optimistic updates)
+            messages.value = [];
+          }
+        }).catchError((error) {
+          debugPrint("Error fetching messages: $error");
+          // Do not clear existing messages on error
         }).whenComplete(() {
           isLoading.value = false;
         });
+      } else if (!isCreatingConversation.value) {
+        // Only reset for brand new conversations, not during creation
+        if (conversationId == null) {
+          messages.value = [];
+        }
+        isLoading.value = false;
       }
+
       return null;
-    }, [conversation]);
+    }, [conversation, isNewConversation]);
+
+    // Track conversation creation state changes
+    useEffect(() {
+      // If we have messages but the conversation ID is temporary or null,
+      // we're in the process of creating a conversation
+      if (messages.value.isNotEmpty &&
+          (conversationId == null ||
+              (conversationId != null &&
+                  conversationId.toString().startsWith('temp-')))) {
+        isCreatingConversation.value = true;
+      }
+      // If we now have a real conversation ID, we're done creating
+      else if (conversationId != null &&
+          !conversationId.toString().startsWith('temp-')) {
+        isCreatingConversation.value = false;
+      }
+
+      return null;
+    }, [conversationId, messages.value]);
 
     // Handlers
     void handleSelectQuestion(String selectedQuestion) {
@@ -52,11 +113,121 @@ class Chatbot extends HookWidget {
     }
 
     void sendQuestion(Map<String, dynamic> message) {
+      // Add new message to the beginning of the list (optimistic update)
       messages.value = [
         message,
         ...messages.value,
       ];
+
+      // If this is our first message, mark that we're creating a conversation
+      if (conversationId == null ||
+          conversationId.toString().startsWith('temp-')) {
+        isCreatingConversation.value = true;
+      }
+
+      // Clear the selected question if one was used
+      if (question.value != null) {
+        question.value = null;
+      }
+
       FocusScope.of(context).unfocus();
+    }
+
+    void handleCloseDrawer() {
+      scaffoldKey.currentState?.closeEndDrawer();
+    }
+
+    // Build the main content based on the current state
+    Widget buildMainContent() {
+      // Show loading indicator only when fetching existing messages
+      // Don't show when we're creating a new conversation
+      if (conversationId != null &&
+          !conversationId.toString().startsWith('temp-') &&
+          !isNewConversation &&
+          isLoading.value &&
+          !isCreatingConversation.value) {
+        return Center(
+          child: CircularProgressIndicator(
+            color: const Color(0xFF12A5BC),
+            backgroundColor: const Color(0xFF323232).withOpacity(0.1),
+          ),
+        );
+      }
+
+      // Always show messages when we have them, regardless of conversation state
+      if (messages.value.isNotEmpty) {
+        return MessageList(messages: messages.value);
+      }
+
+      // For established but empty conversations
+      if (conversationId != null &&
+          !conversationId.toString().startsWith('temp-') &&
+          !isNewConversation &&
+          !isCreatingConversation.value) {
+        return const Center(child: Text("No messages yet"));
+      }
+
+      // Default welcome screen for new conversations
+      return Container(
+        alignment: Alignment.center,
+        height: double.infinity,
+        child: SingleChildScrollView(
+          child: Container(
+            color: Colors.white,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                  width: 280,
+                  height: 250,
+                  decoration: const BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage('lib/assets/webp/full_float.gif'),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+                const GradientText(
+                  "Hey there, I'm Giga!",
+                  style: TextStyle(
+                    fontSize: 29,
+                    fontWeight: FontWeight.w700,
+                  ),
+                  gradient: LinearGradient(
+                    colors: [
+                      Color(0xFF12A5BC),
+                      Color(0xFF0E46A3),
+                    ],
+                  ),
+                ),
+                const Gap(4),
+                SizedBox(
+                  width: 270,
+                  child: Text(
+                    "Got questions? Ask away, and I'll do my best to help you out!",
+                    textAlign: TextAlign.center,
+                    style: styleText(
+                      context: context,
+                      fontSizeOption: 12.0,
+                      lineHeightOption: LineHeightOption.height200,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
+    // Determine whether to show the questions widget
+    bool shouldShowQuestions() {
+      return question.value == null &&
+          messages.value.isEmpty &&
+          conversationId == null &&
+          !isCreatingConversation.value &&
+          !isGeneratingResponse;
     }
 
     return Scaffold(
@@ -68,92 +239,68 @@ class Chatbot extends HookWidget {
         scrolledUnderElevation: 0,
         leading: IconButton(
           onPressed: () async {
-            
-            context.go("/chat");
+            final hasVisited = storage.getData(key: "visited-chat");
+
             FocusScope.of(context).unfocus();
-            context.read<ConversationProvider>().resetConversation();
+
+            await Future.delayed(const Duration(milliseconds: 100));
+            if (context.mounted) {
+              context.go(hasVisited == true ? "/" : "/chat");
+              context.read<ConversationProvider>().resetConversation();
+            }
           },
           icon: const Icon(Icons.arrow_back_ios_sharp),
         ),
-        actions: [
-          IconButton(
-            onPressed: () {
-              scaffoldKey.currentState?.openEndDrawer();
-            },
-            icon: const Icon(
-              Icons.menu,
-              size: 27,
-            ),
-          ),
-        ],
+        actions: !isGuest
+            ? [
+                IconButton(
+                  onPressed: () {
+                    scaffoldKey.currentState?.openEndDrawer();
+                  },
+                  icon: const Icon(
+                    Icons.menu,
+                    size: 27,
+                  ),
+                ),
+              ]
+            : [],
         title: Text("Giga", style: Theme.of(context).textTheme.headlineSmall),
         centerTitle: true,
       ),
-      endDrawer: const MessageDrawer(),
+      onDrawerChanged: (_) {
+        FocusManager.instance.primaryFocus?.unfocus();
+      },
+      endDrawer:
+          !isGuest ? MessageDrawer(handleCloseDrawer: handleCloseDrawer) : null,
       body: SafeArea(
         child: Column(
           children: [
+            // Main content area
             Expanded(
-              child: Builder(
-                builder: (context) {
-                  final conversationId = conversation['conversation_id'];
-
-                  if (conversationId != null) {
-                    if (isLoading.value) {
-                      return const Center(
-                        child: CircularProgressIndicator(
-                          color: Color(0xFF12A5BC),
-                        ),
-                      );
-                    }
-                    return messages.value.isNotEmpty
-                        ? MessageList(messages: messages.value)
-                        : const Center(child: Text("No messages"));
-                  } else {
-                    return Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        const GradientText(
-                          "Hey there, I'm Giga!",
-                          style: TextStyle(
-                            fontSize: 30,
-                            fontWeight: FontWeight.w700,
-                          ),
-                          gradient: LinearGradient(
-                            colors: [
-                              Color(0xFF12A5BC),
-                              Color(0xFF0E46A3),
-                            ],
-                          ),
-                        ),
-                        const Gap(4),
-                        SizedBox(
-                          width: 280,
-                          child: Text(
-                            "Got questions? Ask away, and I'll do my best to help you out!",
-                            textAlign: TextAlign.center,
-                            style: styleText(
-                              context: context,
-                              fontSizeOption: FontSizeOption.size200,
-                              lineHeightOption: LineHeightOption.height200,
-                            ),
-                          ),
-                        ),
-                      ],
-                    );
-                  }
-                },
-              ),
+              child: buildMainContent(),
             ),
-            if (question.value == null &&
-                messages.value.isEmpty &&
-                (conversation["conversation_id"] == null))
-              Questions(handleSelectQuestion: handleSelectQuestion)
-            else
-              const SizedBox.shrink(),
 
-            // put here the function to open
+            if (isGeneratingResponse)
+              Padding(
+                padding: const EdgeInsets.only(left: 20, right: 20),
+                child: Row(
+                  children: [
+                    SizedBox(
+                      width: 80,
+                      height: 80,
+                      child: Image.asset(
+                        'lib/assets/webp/head_type.gif',
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+            shouldShowQuestions()
+                ? Questions(handleSelectQuestion: handleSelectQuestion)
+                : const SizedBox.shrink(),
+
             MessageInput(
               question: question.value,
               handleSendQuestion: sendQuestion,
