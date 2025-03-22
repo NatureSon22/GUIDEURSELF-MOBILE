@@ -11,16 +11,35 @@ class ChatbotPreference extends StatelessWidget {
     return showDialog<void>(
       context: rootContext,
       builder: (dialogContext) {
+        bool isDeleting = false;
         return StatefulBuilder(
           builder: (context, setDialogState) {
-            bool isDeleting = false;
-
             Future<void> handleDeleteAllConversation() async {
               setDialogState(() => isDeleting = true);
               try {
                 await deleteAllConversation();
                 if (rootContext.mounted) {
                   Navigator.pop(rootContext);
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        "All conversations deleted successfully!",
+                        style: styleText(
+                          context: context,
+                          fontSizeOption: 12.0,
+                          color: Colors.white,
+                        ),
+                      ),
+                      backgroundColor: const Color(0xFF323232),
+                      duration: const Duration(seconds: 2),
+                      behavior: SnackBarBehavior.floating,
+                      margin: const EdgeInsets.all(16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                  );
                 }
               } catch (e) {
                 if (rootContext.mounted) {
@@ -81,27 +100,29 @@ class ChatbotPreference extends StatelessWidget {
                     ),
                     const SizedBox(height: 15),
                     isDeleting
-                        ? ElevatedButton(
-                            onPressed: null,
-                            style: ElevatedButton.styleFrom(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 10),
-                              textStyle: const TextStyle(fontSize: 13.5),
-                            ),
-                            child: const Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                SizedBox(
-                                  width: 18,
-                                  height: 18,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    color: Colors.white,
+                        ? Align(
+                            alignment: Alignment.centerRight,
+                            child: ElevatedButton(
+                              onPressed: null,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.grey,
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 10),
+                                textStyle: const TextStyle(fontSize: 13.5),
+                              ),
+                              child: const Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  SizedBox(
+                                    width: 18,
+                                    height: 18,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: Colors.white,
+                                    ),
                                   ),
-                                ),
-                                SizedBox(width: 10),
-                                Text('Deleting'),
-                              ],
+                                ],
+                              ),
                             ),
                           )
                         : Row(

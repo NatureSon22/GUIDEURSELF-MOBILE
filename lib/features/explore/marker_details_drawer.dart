@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:guideurself/features/explore/category.dart'; // Ensure this file contains getCategoryIcon() & getCategoryColor()
+import 'package:guideurself/features/explore/category.dart'; 
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class MarkerDetailsDrawer extends StatefulWidget {
@@ -9,12 +9,12 @@ class MarkerDetailsDrawer extends StatefulWidget {
   final String markerDescription;
 
   const MarkerDetailsDrawer({
-    Key? key,
+    super.key,
     required this.markerPhotoUrl,
     required this.category,
     required this.markerName,
     required this.markerDescription,
-  }) : super(key: key);
+  });
 
   @override
   _MarkerDetailsDrawerState createState() => _MarkerDetailsDrawerState();
@@ -22,7 +22,8 @@ class MarkerDetailsDrawer extends StatefulWidget {
 
 class _MarkerDetailsDrawerState extends State<MarkerDetailsDrawer> {
   bool _isExpanded = false;
-  final DraggableScrollableController _controller = DraggableScrollableController();
+  final DraggableScrollableController _controller =
+      DraggableScrollableController();
 
   void _toggleExpansion() {
     setState(() {
@@ -31,10 +32,16 @@ class _MarkerDetailsDrawerState extends State<MarkerDetailsDrawer> {
 
     if (_isExpanded) {
       _controller.animateTo(
-      _isExpanded ? 1.0 : 0.7,
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
-    );
+        1.0,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    } else {
+      _controller.animateTo(
+        0.7,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
     }
   }
 
@@ -163,8 +170,7 @@ class _MarkerDetailsDrawerState extends State<MarkerDetailsDrawer> {
                           child: Icon(
                             _isExpanded
                                 ? FontAwesomeIcons.downLeftAndUpRightToCenter
-                                : FontAwesomeIcons
-                                    .upRightAndDownLeftFromCenter,
+                                : FontAwesomeIcons.upRightAndDownLeftFromCenter,
                             color: _isExpanded
                                 ? const Color.fromARGB(255, 18, 165, 188)
                                 : Colors.black,

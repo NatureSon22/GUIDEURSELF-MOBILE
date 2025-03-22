@@ -20,11 +20,13 @@ class _UserFeedbackState extends State<UserFeedback> {
   final storage = StorageService();
   int rating = 0;
   bool isSubmitting = false;
+  bool isFeedbackSubmitted = false;
 
   Future<void> _submitFeedback() async {
     if (_formKey.currentState!.validate() && rating > 0) {
       setState(() {
         isSubmitting = true;
+        isFeedbackSubmitted = false;
       });
 
       try {
@@ -54,8 +56,14 @@ class _UserFeedbackState extends State<UserFeedback> {
 
         storage.saveData(key: "feedback", value: true);
         _commentController.clear();
+
+        if (mounted) {
+          FocusScope.of(context).unfocus();
+        }
+
         setState(() {
           rating = 0;
+          isFeedbackSubmitted = true;
         });
       } catch (error) {
         if (mounted) {
@@ -147,11 +155,13 @@ class _UserFeedbackState extends State<UserFeedback> {
                     color: const Color(0xFF323232).withOpacity(0.1),
                   ),
                 ),
-                Stars(onRatingSelected: (selectedRating) {
-                  setState(() {
-                    rating = selectedRating;
-                  });
-                }),
+                Stars(
+                    isFeedbackSubmitted: isFeedbackSubmitted,
+                    onRatingSelected: (selectedRating) {
+                      setState(() {
+                        rating = selectedRating;
+                      });
+                    }),
                 const Gap(10),
                 FeedbackComment(controller: _commentController),
                 const Gap(10),

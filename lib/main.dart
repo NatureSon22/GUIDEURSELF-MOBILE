@@ -6,8 +6,10 @@ import 'package:guideurself/core/themes/light_theme.dart';
 import 'package:guideurself/providers/account.dart';
 import 'package:guideurself/providers/conversation.dart';
 import 'package:guideurself/providers/loading.dart';
+import 'package:guideurself/providers/messagechat.dart';
 import 'package:guideurself/providers/transcribing.dart';
 import 'package:guideurself/routes/router.dart';
+import 'package:guideurself/services/socket.dart';
 import 'package:guideurself/services/storage.dart';
 import 'package:provider/provider.dart';
 import 'dart:async';
@@ -25,6 +27,8 @@ void main() {
       debugPrint("Error during initialization: $e");
     }
 
+    final socketService = SocketService();
+    socketService.connect();
     final storage = StorageService();
     final hasVisitedSplash = storage.getData(key: "hasVisitedSplash") == true;
 
@@ -34,12 +38,13 @@ void main() {
           ChangeNotifierProvider(create: (context) => ConversationProvider()),
           ChangeNotifierProvider(create: (context) => AccountProvider()),
           ChangeNotifierProvider(create: (context) => LoadingProvider()),
-          ChangeNotifierProvider(create: (context) => Transcribing())
+          ChangeNotifierProvider(create: (context) => Transcribing()),
+          ChangeNotifierProvider(create: (context) => MessageChatProvider()),
         ],
         child: QueryClientProvider(
           queryClient: queryClient,
           child: MyApp(
-            initialRoute: hasVisitedSplash ? "/messages-chat" : "/splash",
+            initialRoute: hasVisitedSplash ? "/auth-layer" : "/splash",
           ),
         ),
       ),

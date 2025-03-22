@@ -70,11 +70,19 @@ class _FloorListDrawerState extends State<FloorListDrawer> {
     setState(() {
       _isExpanded = !_isExpanded;
     });
-    _scrollController.animateTo(
-      _isExpanded ? 1.0 : 0.7,
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
-    );
+    if (_isExpanded) {
+      _scrollController.animateTo(
+        1.0,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    } else {
+      _scrollController.animateTo(
+        0.7,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    }
   }
 
   void _searchMarker() {

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:guideurself/features/auth/forgotpassword.dart';
 import 'package:guideurself/features/auth/login.dart';
-import 'package:guideurself/features/auth/privacy.dart';
 import 'package:guideurself/features/chat/chatbot.dart';
+import 'package:guideurself/features/messageschat/messagechatlist.dart';
 import 'package:guideurself/features/messageschat/messageschat.dart';
 import 'package:guideurself/features/settings/editprofile.dart';
 import 'package:guideurself/features/settings/about.dart';
@@ -125,6 +125,22 @@ GoRouter router(String initialRoute) {
         ],
       ),
 
+      ...sections.map(
+        (section) => GoRoute(
+          path: section["path"],
+          pageBuilder: (context, state) =>
+              _buildSlidePage(state, section["screen"]),
+        ),
+      ),
+
+      GoRoute(
+        path: '/campus-details',
+        pageBuilder: (context, state) {
+          final campus = state.extra as Campus;
+          return _buildSlidePage(state, CampusDetailsScreen(campus: campus));
+        },
+      ),
+
       // Other routes with transitions
       GoRoute(
         path: '/chatbot',
@@ -133,7 +149,13 @@ GoRouter router(String initialRoute) {
       ),
       GoRoute(
         path: '/messages-chat',
-        pageBuilder: (context, state) => _buildSlidePage(state, const Messageschat()),
+        pageBuilder: (context, state) =>
+            _buildSlidePage(state, const Messageschat()),
+      ),
+      GoRoute(
+        path: '/messages-chatlist',
+        pageBuilder: (context, state) =>
+            _buildSlidePage(state, const MessageChatList()),
       ),
       GoRoute(
         path: '/edit-profile',

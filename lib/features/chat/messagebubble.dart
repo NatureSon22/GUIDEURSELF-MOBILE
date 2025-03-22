@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:gap/gap.dart';
 import 'package:guideurself/core/themes/style.dart';
 import 'package:guideurself/providers/account.dart';
@@ -34,7 +34,6 @@ class _MessageBubbleState extends State<MessageBubble> {
   void initState() {
     super.initState();
     isHelpful = widget.initialIsHelpful;
-    print("MessageBubble: isHelpful: $isHelpful");
   }
 
   bool get isReviewed => isHelpful != null;
@@ -144,18 +143,58 @@ class _MessageBubbleState extends State<MessageBubble> {
                   bottomRight: Radius.circular(widget.isMachine ? 20 : 0),
                 ),
               ),
-              child: HtmlWidget(
-                widget.content,
-                textStyle: const TextStyle(
-                  color: Color(0xFF323232),
-                  fontSize: 12,
-                ),
-                customStylesBuilder: (element) {
-                  const headingTags = {'h1', 'h2', 'h3'};
-                  if (headingTags.contains(element.localName)) {
-                    return {'line-height': '1.4', 'font-size': '14px'};
-                  }
-                  return null;
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  return MarkdownBody(
+                    data: widget.content,
+                    shrinkWrap: true,
+                    fitContent: true,
+                    styleSheet: MarkdownStyleSheet(
+                      // Heading styles
+                      h1: styleText(
+                        context: context,
+                        fontSizeOption: 13.5,
+                        color: const Color(0xFF323232),
+                      ),
+                      h2: styleText(
+                        context: context,
+                        fontSizeOption: 12.0,
+                        color: const Color(0xFF323232),
+                      ),
+                      h3: styleText(
+                        context: context,
+                        fontSizeOption: 12.0,
+                        color: const Color(0xFF323232),
+                      ),
+                      // Paragraph styles
+                      p: styleText(
+                        context: context,
+                        fontSizeOption: 11.5,
+                        color: const Color(0xFF323232),
+                      ),
+                      // List styles
+                      listBullet: styleText(
+                        context: context,
+                        fontSizeOption: 11.5,
+                        color: const Color(0xFF323232),
+                      ),
+                      tableBody: const TextStyle(
+                        fontSize: 11,
+                        color: Color(0xFF323232),
+                      ),
+                      // Spacing
+                      blockSpacing: 8.0,
+                      h1Padding: const EdgeInsets.only(top: 16.0, bottom: 8.0),
+                      h2Padding: const EdgeInsets.only(top: 12.0, bottom: 6.0),
+                      h3Padding: const EdgeInsets.only(top: 8.0, bottom: 4.0),
+                      pPadding: const EdgeInsets.symmetric(vertical: 4.0),
+                      listIndent: 20.0,
+                      listBulletPadding: const EdgeInsets.only(right: 4),
+                      tableCellsPadding: const EdgeInsets.symmetric(
+                          horizontal: 8.0, vertical: 4.0),
+                      tableColumnWidth: const FlexColumnWidth(),
+                    ),
+                  );
                 },
               ),
             ),
@@ -172,17 +211,11 @@ class _MessageBubbleState extends State<MessageBubble> {
                     ),
                     const Gap(17),
                     if (isHelpful == true)
-                      Icon(
-                        Icons.thumb_up_alt_rounded,
-                        size: 18,
-                        color: iconColor,
-                      )
+                      Icon(Icons.thumb_up_alt_rounded,
+                          size: 18, color: iconColor)
                     else if (isHelpful == false)
-                      Icon(
-                        Icons.thumb_down_alt_rounded,
-                        size: 18,
-                        color: iconColor,
-                      )
+                      Icon(Icons.thumb_down_alt_rounded,
+                          size: 18, color: iconColor)
                     else if (!isGuest) ...[
                       GestureDetector(
                         onTap: () => handleReview(true),
