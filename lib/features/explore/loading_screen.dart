@@ -21,7 +21,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
     _universityFuture = fetchUniversityDetails();
 
     // Start a timer for 5 seconds
-    _timer = Timer(const Duration(seconds: 2), () {
+    _timer = Timer(const Duration(seconds: 6), () {
       // Navigate to another component after 5 seconds
       context.go('/virtual-tour'); // Replace with your desired route
     });
