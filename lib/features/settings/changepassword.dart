@@ -53,9 +53,34 @@ class _ChangepasswordState extends State<Changepassword> {
 
       accountProvider.setAccount(account: updatedAccount);
 
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Password updated successfully.',
+              style: styleText(
+                context: context,
+                fontSizeOption: 12.0,
+                color: Colors.white,
+              ),
+            ),
+            backgroundColor: const Color(0xFF323232),
+            duration: const Duration(seconds: 2),
+            behavior: SnackBarBehavior.floating,
+            margin: const EdgeInsets.all(16),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+        );
+      }
       // oldPasswordController.clear();
       newPasswordController.clear();
       confirmPasswordController.clear();
+
+      if (mounted) {
+        FocusScope.of(context).unfocus();
+      }
     } catch (e) {
       if (mounted) {
         Navigator.of(context).pop();

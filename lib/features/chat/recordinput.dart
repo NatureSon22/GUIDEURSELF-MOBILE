@@ -93,7 +93,7 @@ class _RecordInputModalState extends State<RecordInputModal> {
     String? conversationId = conversation['conversation_id'];
     int query = storage.getData(key: "query") ?? 0;
 
-    if (query == 5) {
+    if (isGuest == true && query == 5) {
       outOfQueries();
       return;
     }

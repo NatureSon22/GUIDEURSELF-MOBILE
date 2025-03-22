@@ -3,9 +3,13 @@ import 'package:gap/gap.dart';
 import 'package:guideurself/core/themes/style.dart';
 
 class Stars extends StatefulWidget {
+  final bool isFeedbackSubmitted;
   final Function(int) onRatingSelected; // Callback to pass rating
 
-  const Stars({super.key, required this.onRatingSelected});
+  const Stars(
+      {super.key,
+      required this.isFeedbackSubmitted,
+      required this.onRatingSelected});
 
   @override
   State<Stars> createState() => _StarsState();
@@ -13,6 +17,18 @@ class Stars extends StatefulWidget {
 
 class _StarsState extends State<Stars> {
   int selectedRating = 0;
+
+  @override
+  void didUpdateWidget(covariant Stars oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.isFeedbackSubmitted &&
+        !oldWidget.isFeedbackSubmitted &&
+        widget.isFeedbackSubmitted == true) {
+      setState(() {
+        selectedRating = 0;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

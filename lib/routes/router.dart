@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:guideurself/features/auth/forgotpassword.dart';
 import 'package:guideurself/features/auth/login.dart';
-import 'package:guideurself/features/auth/privacy.dart';
 import 'package:guideurself/features/chat/chatbot.dart';
+import 'package:guideurself/features/messageschat/messagechatlist.dart';
 import 'package:guideurself/features/messageschat/messageschat.dart';
 import 'package:guideurself/features/settings/editprofile.dart';
 import 'package:guideurself/features/settings/about.dart';
@@ -151,6 +151,11 @@ GoRouter router(String initialRoute) {
         path: '/messages-chat',
         pageBuilder: (context, state) =>
             _buildSlidePage(state, const Messageschat()),
+      ),
+      GoRoute(
+        path: '/messages-chatlist',
+        pageBuilder: (context, state) =>
+            _buildSlidePage(state, const MessageChatList()),
       ),
       GoRoute(
         path: '/edit-profile',

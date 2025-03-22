@@ -50,7 +50,6 @@ dependencies:
   audioplayers: ^5.0.0
   path_provider: ^2.1.5
   speech_to_text: ^7.0.0
-  lottie: ^3.2.0
   image_picker: ^1.1.2
   path: ^1.9.0
   mime: ^2.0.0
@@ -66,6 +65,9 @@ dependencies:
   flutter_hooks: ^0.20.5
   font_awesome_flutter: ^10.8.0
   panorama_viewer: ^2.0.1
+  flutter_markdown: ^0.7.6+2
+  socket_io_client: ^3.0.2
+  url_launcher: ^6.3.1
 
 dev_dependencies:
   flutter_test:
@@ -89,7 +91,6 @@ flutter:
     - lib/assets/images/
     - lib/assets/webp/
     - lib/assets/lottie/
-
 
   fonts:
     - family: Poppins

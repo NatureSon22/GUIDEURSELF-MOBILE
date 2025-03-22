@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:guideurself/features/explore/category.dart'; // Ensure this file contains getCategoryIcon() & getCategoryColor()
+import 'package:guideurself/features/explore/category.dart'; 
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class MarkerDetailsDrawer extends StatefulWidget {
@@ -9,12 +9,12 @@ class MarkerDetailsDrawer extends StatefulWidget {
   final String markerDescription;
 
   const MarkerDetailsDrawer({
-    Key? key,
+    super.key,
     required this.markerPhotoUrl,
     required this.category,
     required this.markerName,
     required this.markerDescription,
-  }) : super(key: key);
+  });
 
   @override
   _MarkerDetailsDrawerState createState() => _MarkerDetailsDrawerState();
