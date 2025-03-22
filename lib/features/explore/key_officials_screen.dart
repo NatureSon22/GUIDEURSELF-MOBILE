@@ -152,12 +152,19 @@ class _KeyOfficialsScreenState extends State<KeyOfficialsScreen> {
                         const Text(
                           'University Of Rizal System',
                           textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 16, color: Colors.black),
+                          style: TextStyle(
+                              fontFamily: "Cinzel",
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                              color: Colors.black),
                         ),
                         const Text(
                           "Nurturing Tomorrow's Noblest",
                           textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 12, color: Colors.black),
+                          style: TextStyle(
+                              fontFamily: "CinzelDecorative",
+                              fontSize: 12,
+                              color: Colors.black),
                         ),
                         const SizedBox(height: 20),
 

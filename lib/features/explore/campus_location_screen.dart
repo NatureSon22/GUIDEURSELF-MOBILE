@@ -213,34 +213,46 @@ class _CampusLocationScreenState extends State<CampusLocationScreen> {
                                 return Padding(
                                   padding:
                                       const EdgeInsets.symmetric(horizontal: 8),
-                                  child: Stack(
-                                    alignment: Alignment.bottomLeft,
-                                    children: [
-                                      ClipRRect(
-                                        borderRadius: BorderRadius.circular(10),
-                                        child: Image.network(
-                                          campus.campusCoverPhotoUrl,
-                                          width: 150,
-                                          height: 100,
-                                          fit: BoxFit.cover,
-                                        ),
-                                      ),
-                                      Container(
-                                        width: 150,
-                                        padding: const EdgeInsets.all(5),
-                                        decoration: BoxDecoration(
-                                          color: Colors.black.withOpacity(0.5),
+                                  child: InkWell(
+                                    onTap: () {
+                                      // Navigate to CampusDetailsScreen with the selected campus
+                                      context.go("/campus-details",
+                                          extra: campus);
+                                    },
+                                    borderRadius: BorderRadius.circular(
+                                        10), // Ensures ripple effect follows shape
+                                    child: Stack(
+                                      alignment: Alignment.bottomLeft,
+                                      children: [
+                                        ClipRRect(
                                           borderRadius:
-                                              const BorderRadius.vertical(
-                                                  bottom: Radius.circular(10)),
+                                              BorderRadius.circular(10),
+                                          child: Image.network(
+                                            campus.campusCoverPhotoUrl,
+                                            width: 150,
+                                            height: 100,
+                                            fit: BoxFit.cover,
+                                          ),
                                         ),
-                                        child: Text(
-                                          campus.campusName,
-                                          style: const TextStyle(
-                                              color: Colors.white),
+                                        Container(
+                                          width: 150,
+                                          padding: const EdgeInsets.all(5),
+                                          decoration: BoxDecoration(
+                                            color:
+                                                Colors.black.withOpacity(0.5),
+                                            borderRadius:
+                                                const BorderRadius.vertical(
+                                              bottom: Radius.circular(10),
+                                            ),
+                                          ),
+                                          child: Text(
+                                            campus.campusName,
+                                            style: const TextStyle(
+                                                color: Colors.white),
+                                          ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
                                 );
                               },

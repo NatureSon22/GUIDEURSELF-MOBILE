@@ -125,6 +125,22 @@ GoRouter router(String initialRoute) {
         ],
       ),
 
+      ...sections.map(
+        (section) => GoRoute(
+          path: section["path"],
+          pageBuilder: (context, state) =>
+              _buildSlidePage(state, section["screen"]),
+        ),
+      ),
+
+      GoRoute(
+        path: '/campus-details',
+        pageBuilder: (context, state) {
+          final campus = state.extra as Campus;
+          return _buildSlidePage(state, CampusDetailsScreen(campus: campus));
+        },
+      ),
+
       // Other routes with transitions
       GoRoute(
         path: '/chatbot',
@@ -133,7 +149,8 @@ GoRouter router(String initialRoute) {
       ),
       GoRoute(
         path: '/messages-chat',
-        pageBuilder: (context, state) => _buildSlidePage(state, const Messageschat()),
+        pageBuilder: (context, state) =>
+            _buildSlidePage(state, const Messageschat()),
       ),
       GoRoute(
         path: '/edit-profile',

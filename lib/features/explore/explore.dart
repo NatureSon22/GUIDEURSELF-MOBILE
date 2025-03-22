@@ -281,13 +281,16 @@ class _ExploreState extends State<Explore> {
                                 'University Of Rizal System',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
-                                    fontSize: 16, color: Colors.black),
+                                    fontSize: 16, color: Colors.black,
+                                    fontFamily: "Cinzel",
+                                    fontWeight: FontWeight.bold),
                               ),
                               const Text(
                                 "Nurturing Tomorrow's Noblest",
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
-                                    fontSize: 13, color: Colors.black),
+                                    fontFamily: "CinzelDecorative",
+                                    fontSize: 12, color: Colors.black),
                               ),
                             ],
                           );

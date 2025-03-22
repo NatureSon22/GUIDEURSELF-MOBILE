@@ -5,9 +5,8 @@ import 'package:guideurself/services/campus_service.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:guideurself/features/explore/campus_details_screen.dart';
 import 'package:guideurself/features/explore/floor_drawer.dart';
-import 'package:guideurself/features/explore/category.dart';
-import 'package:guideurself/features/explore/category_info_modal.dart';
-import 'package:guideurself/features/explore/marker_details_drawer.dart';
+import '../../services/university_management_service.dart';
+import '../../models/university_management.dart';
 import 'package:guideurself/features/explore/floor_list_drawer.dart';
 
 class PanoramaViewScreen extends StatefulWidget {
@@ -21,6 +20,7 @@ class PanoramaViewScreen extends StatefulWidget {
 
 class _PanoramaViewScreenState extends State<PanoramaViewScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  late Future<UniversityManagement> futureUniversityDetails;
   final CampusService _campusService = CampusService();
 
   List<Campus> _campuses = [];
@@ -49,6 +49,7 @@ class _PanoramaViewScreenState extends State<PanoramaViewScreen> {
   @override
   void initState() {
     super.initState();
+    futureUniversityDetails = fetchUniversityDetails();
     _fetchCampuses();
     if (widget.campus.floors.isNotEmpty) {
       _selectedFloor = widget.campus.floors.first.floorName;
@@ -91,10 +92,7 @@ class _PanoramaViewScreenState extends State<PanoramaViewScreen> {
       List<Campus> campuses = await _campusService.fetchAllCampuses();
 
       // Filter only campuses with markers that have a photo
-      campuses = campuses
-          .where((campus) => campus.floors.any((floor) =>
-              floor.markers.any((marker) => marker.markerPhotoUrl.isNotEmpty)))
-          .toList();
+      campuses = campuses.where((campus) => campus.floors.isNotEmpty).toList();
 
       campuses.sort((a, b) => a.campusName.compareTo(b.campusName));
 
@@ -181,19 +179,21 @@ class _PanoramaViewScreenState extends State<PanoramaViewScreen> {
   @override
   Widget build(BuildContext context) {
     String? currentMarkerPhotoUrl = _selectedMarkerPhotoUrl ?? "";
-    String currentFloorName = "Unknown Floor";
+    String currentFloorName = "No Photo Available";
     List<Marker> currentFloorMarkers = [];
-    final currentMarker = _getMarkerByPhotoUrl(_selectedMarkerPhotoUrl);
+    final currentMarker = _getMarkerByPhotoUrl(currentMarkerPhotoUrl);
+    bool hasMarkerPhoto = currentMarkerPhotoUrl.trim().isNotEmpty;
 
-    if (_selectedCampus != null && _selectedMarkerPhotoUrl != null) {
+    if (_selectedCampus != null && hasMarkerPhoto) {
       for (var floor in _selectedCampus!.floors) {
         for (var marker in floor.markers) {
-          if (marker.markerPhotoUrl == _selectedMarkerPhotoUrl) {
+          if (marker.markerPhotoUrl == currentMarkerPhotoUrl) {
             selectedFloorName = floor.floorName;
+            currentFloorMarkers = floor.markers;
             break;
           }
         }
-        if (selectedFloorName != "Unknown Floor") break; // Stop if found
+        if (selectedFloorName != "No Photo Available") break; // Stop if found
       }
     }
 
@@ -224,7 +224,7 @@ class _PanoramaViewScreenState extends State<PanoramaViewScreen> {
       body: Stack(
         children: [
           Positioned.fill(
-            child: currentMarkerPhotoUrl.isNotEmpty
+            child: hasMarkerPhoto
                 ? PanoramaViewer(
                     latitude: 0,
                     longitude: 0,
@@ -233,12 +233,80 @@ class _PanoramaViewScreenState extends State<PanoramaViewScreen> {
                     maxLatitude: 0.0,
                     minLongitude: -180.0,
                     maxLongitude: 180.0,
-                    child:
-                        Image.network(currentMarkerPhotoUrl, fit: BoxFit.cover),
+                    child: Image.network(
+                      currentMarkerPhotoUrl,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return const Center(
+                          child: Text(
+                            "Image failed to load",
+                            style: TextStyle(fontSize: 18, color: Colors.red),
+                          ),
+                        );
+                      },
+                    ),
                   )
-                : const Center(
-                    child: Text("No 360° image available",
-                        style: TextStyle(fontSize: 16, color: Colors.white)),
+                : Container(
+                    decoration: BoxDecoration(
+                      color: const Color.fromARGB(255, 94, 139, 197)
+                          .withOpacity(0.15),
+                    ),
+                    child: FutureBuilder<UniversityManagement>(
+                      future: futureUniversityDetails,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        } else if (snapshot.hasError ||
+                            snapshot.data?.universityLogoUrl == null) {
+                          return const Center(child: Text("Failed to load"));
+                        }
+
+                        final university = snapshot.data!;
+                        return Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Image.network(
+                                  university.universityVectorUrl ?? '',
+                                  width: 70,
+                                  height: 70,
+                                  fit: BoxFit.contain,
+                                ),
+                                const SizedBox(width: 10),
+                                Image.network(
+                                  university.universityLogoUrl ?? '',
+                                  width: 70,
+                                  height: 70,
+                                  fit: BoxFit.contain,
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 10),
+                            const Text(
+                              'University Of Rizal System',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  fontFamily: "Cinzel",
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black),
+                            ),
+                            const Text(
+                              "Nurturing Tomorrow's Noblest",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  fontFamily: "CinzelDecorative",
+                                  fontSize: 13,
+                                  color: Colors.black),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
                   ),
           ),
 
@@ -251,25 +319,42 @@ class _PanoramaViewScreenState extends State<PanoramaViewScreen> {
               children: [
                 // Back Button
                 Container(
+                  padding: const EdgeInsets.all(4), // Reduce padding
+                  constraints: const BoxConstraints(
+                    maxWidth: 40, // Minimum width
+                    maxHeight: 40, // Minimum height
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(50),
+                    borderRadius: BorderRadius.circular(
+                        25), // Adjusted to fit smaller size
                   ),
                   child: IconButton(
                     onPressed: () {
                       if (Navigator.canPop(context)) {
                         Navigator.pop(context);
-                      } // Navigate back to explore
+                      }
                     },
-                    icon: const Icon(Icons.arrow_back_ios_sharp,
-                        color: Colors.black),
+                    icon: const Icon(
+                      Icons.arrow_back_ios_sharp,
+                      color: Colors.black,
+                      size: 16, // Reduce icon size
+                    ),
+                    padding: EdgeInsets
+                        .zero, // Remove extra padding inside IconButton
+                    constraints:
+                        const BoxConstraints(), // Allow the button to shrink
                   ),
                 ),
+
                 const SizedBox(width: 10),
 
                 // Dropdown for Campus Selection (Unchanged)
                 Expanded(
                   child: Container(
+                    constraints: const BoxConstraints(
+                      maxHeight: 40, // Minimum height
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(50),
@@ -277,10 +362,6 @@ class _PanoramaViewScreenState extends State<PanoramaViewScreen> {
                     child: DropdownButtonHideUnderline(
                       child: Container(
                         padding: const EdgeInsets.only(left: 17, right: 18),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.7),
-                          borderRadius: BorderRadius.circular(50),
-                        ),
                         child: DropdownButton<Campus>(
                           value: _selectedCampus,
                           onChanged: (Campus? newValue) {
@@ -305,7 +386,7 @@ class _PanoramaViewScreenState extends State<PanoramaViewScreen> {
                           },
                           isExpanded: true,
                           dropdownColor: Colors.white,
-                          borderRadius: BorderRadius.circular(50),
+                          borderRadius: BorderRadius.circular(8),
                           icon: const Icon(Icons.arrow_drop_down,
                               color: Colors.black),
                           style: const TextStyle(color: Colors.black),
@@ -329,6 +410,10 @@ class _PanoramaViewScreenState extends State<PanoramaViewScreen> {
 
                 // Alert Icon
                 Container(
+                  constraints: const BoxConstraints(
+                    maxWidth: 40, // Minimum width
+                    maxHeight: 40, // Minimum height
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(50),
@@ -345,14 +430,21 @@ class _PanoramaViewScreenState extends State<PanoramaViewScreen> {
                         );
                       }
                     },
-                    icon: const Icon(FontAwesomeIcons.exclamation,
-                        color: Colors.black),
+                    icon: const Icon(
+                      FontAwesomeIcons.exclamation,
+                      color: Colors.black,
+                      size: 16,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 10),
 
                 // Menu Icon Button
                 Container(
+                  constraints: const BoxConstraints(
+                    maxWidth: 40, // Minimum width
+                    maxHeight: 40, // Minimum height
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(50),
@@ -361,75 +453,38 @@ class _PanoramaViewScreenState extends State<PanoramaViewScreen> {
                     onPressed: () {
                       _scaffoldKey.currentState?.openEndDrawer();
                     },
-                    icon: const Icon(Icons.menu, color: Colors.black),
+                    icon: const Icon(
+                      Icons.menu,
+                      color: Colors.black,
+                      size: 18,
+                    ),
                   ),
                 ),
               ],
             ),
           ),
 
-          // Updated Positioned widgets based on the current marker
           Positioned(
-            top: 100,
+            top: 90,
             left: 16,
             child: SizedBox(
-              height: 35,
-              child: ElevatedButton(
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (context) => CategoryInfoModal(
-                      icon:
-                          getCategoryIcon(currentMarker?.category ?? "Others"),
-                      category: currentMarker?.category ?? "Unknown",
-                      iconColor:
-                          getCategoryColor(currentMarker?.category ?? "Others"),
-                      description: getCategoryDescription(
-                          currentMarker?.category ?? "Others"),
-                    ),
-                  );
-                },
-                style: _buttonStyle(),
-                child: _buildButtonContent(
-                  icon: getCategoryIcon(currentMarker?.category ?? "Others"),
-                  text: currentMarker?.category ?? "Unknown",
-                ),
-              ),
-            ),
-          ),
-
-          Positioned(
-            top: 140,
-            left: 16,
-            child: SizedBox(
-              height: 35,
-              child: ElevatedButton(
-                onPressed: () {
-                  showModalBottomSheet(
-                    context: context,
-                    isScrollControlled: true,
-                    backgroundColor: Colors.transparent,
-                    builder: (context) => MarkerDetailsDrawer(
-                      markerName: currentMarker?.markerName ?? "Unknown",
-                      category: currentMarker?.category ?? "Others",
-                      markerDescription: currentMarker?.markerDescription ??
-                          "No description available.",
-                      markerPhotoUrl: currentMarker?.markerPhotoUrl ?? "",
-                    ),
-                  );
-                },
-                style: _buttonStyle(),
-                child: _buildButtonContent(
-                  icon: Icons.near_me,
-                  text: currentMarker?.markerName ?? "Unknown",
-                ),
-              ),
+              height: 32,
+              child: hasMarkerPhoto
+                  ? ElevatedButton(
+                      style: _buttonStyle(),
+                      onPressed: () {},
+                      child: _buildButtonContent(
+                        icon: Icons.near_me,
+                        text: currentMarker?.markerName ?? "Unknown",
+                      ),
+                    )
+                  : const SizedBox.shrink(),
             ),
           ),
 
           Positioned(
             bottom: 20,
-            right: 15,
+            right: 12,
             child: ElevatedButton(
               onPressed: () {
                 if (_selectedCampus != null) {
@@ -452,7 +507,7 @@ class _PanoramaViewScreenState extends State<PanoramaViewScreen> {
                 elevation: 0,
               ),
               child:
-                  const Icon(Icons.location_on, color: Colors.black, size: 18),
+                  const Icon(Icons.location_on, color: Colors.black, size: 16),
             ),
           ),
         ],

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:guideurself/services/campus_service.dart';
 import 'package:guideurself/models/campus_model.dart';
 import 'package:go_router/go_router.dart';
-import 'package:guideurself/services/university_management_service.dart'; 
-import 'package:guideurself/models/university_management.dart'; 
+import 'package:guideurself/services/university_management_service.dart';
+import 'package:guideurself/models/university_management.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:guideurself/features/explore/panorama_view_screen.dart';
 
@@ -19,8 +19,7 @@ class _VirtualTourScreenState extends State<VirtualTourScreen> {
   List<Campus> _campuses = [];
   bool _isLoading = true;
   String _error = '';
-  late Future<UniversityManagement>
-      _universityFuture;
+  late Future<UniversityManagement> _universityFuture;
 
   @override
   void initState() {
@@ -32,8 +31,7 @@ class _VirtualTourScreenState extends State<VirtualTourScreen> {
   Future<void> _fetchCampuses() async {
     try {
       List<Campus> campuses = await _campusService.fetchAllCampuses();
-      campuses.sort((a, b) =>
-          a.campusName.compareTo(b.campusName)); 
+      campuses.sort((a, b) => a.campusName.compareTo(b.campusName));
       setState(() {
         _campuses = campuses;
         _isLoading = false;
@@ -53,11 +51,11 @@ class _VirtualTourScreenState extends State<VirtualTourScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
         scrolledUnderElevation: 0,
-        centerTitle: true, 
+        centerTitle: true,
         shape: const Border(
           bottom: BorderSide(
-            color: Color.fromARGB(255, 212, 212, 212), 
-            width: 0.5, 
+            color: Color.fromARGB(255, 212, 212, 212),
+            width: 0.5,
           ),
         ),
         leading: IconButton(
@@ -70,10 +68,10 @@ class _VirtualTourScreenState extends State<VirtualTourScreen> {
         title: const Text(
           'List of Campus',
           style: TextStyle(
-            fontSize: 17, 
+            fontSize: 17,
             fontWeight: FontWeight.w600,
           ),
-        ), 
+        ),
         actions: [
           IconButton(
             onPressed: () {
@@ -136,8 +134,8 @@ class _VirtualTourScreenState extends State<VirtualTourScreen> {
                                       fit: BoxFit.contain,
                                       errorBuilder:
                                           (context, error, stackTrace) {
-                                        return const Icon(Icons
-                                            .image_not_supported); 
+                                        return const Icon(
+                                            Icons.image_not_supported);
                                       },
                                     ),
                                   const SizedBox(width: 4),
@@ -152,8 +150,8 @@ class _VirtualTourScreenState extends State<VirtualTourScreen> {
                                       fit: BoxFit.contain,
                                       errorBuilder:
                                           (context, error, stackTrace) {
-                                        return const Icon(Icons
-                                            .image_not_supported); 
+                                        return const Icon(
+                                            Icons.image_not_supported);
                                       },
                                     ),
                                 ],
@@ -162,29 +160,32 @@ class _VirtualTourScreenState extends State<VirtualTourScreen> {
                             const Text(
                               'University Of Rizal System',
                               textAlign: TextAlign.center,
-                              style:
-                                  TextStyle(fontSize: 16, color: Colors.black),
+                              style: TextStyle(
+                                  fontFamily: "Cinzel",
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                  color: Colors.black),
                             ),
                             const Text(
                               "Nurturing Tomorrow's Noblest",
                               textAlign: TextAlign.center,
-                              style:
-                                  TextStyle(fontSize: 12, color: Colors.black),
+                              style: TextStyle(
+                                  fontFamily: "CinzelDecorative",
+                                  fontSize: 12,
+                                  color: Colors.black),
                             ),
                             const SizedBox(height: 20),
-
                             ..._campuses.map((campus) {
                               bool hasValidMarkerPhoto = campus.floors.any(
-                                  (floor) => floor.markers.any((marker) =>
-                                      marker.markerPhotoUrl.isNotEmpty));
+                                  (floor) => floor.floorPhotoUrl.isNotEmpty);
 
                               return ListTile(
                                 title: Text(
-                                  campus.campusName
-                                      .toUpperCase(), 
+                                  campus.campusName.toUpperCase(),
                                   style: const TextStyle(
+                                    fontFamily: "CinzelDecorative",
+                                    fontWeight: FontWeight.bold,
                                     fontSize: 16,
-                                    fontWeight: FontWeight.w600,
                                   ),
                                 ),
                                 trailing: ElevatedButton(
@@ -202,35 +203,28 @@ class _VirtualTourScreenState extends State<VirtualTourScreen> {
                                       : null,
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: hasValidMarkerPhoto
-                                        ? Colors.blue
+                                        ? const Color.fromARGB(
+                                            255, 18, 165, 188)
                                         : Colors.grey,
-                                    foregroundColor:
-                                        Colors.white, 
+                                    foregroundColor: Colors.white,
                                     padding: const EdgeInsets.symmetric(
-                                        horizontal:
-                                            13), 
+                                        horizontal: 13),
                                     minimumSize: const Size(100, 30),
                                   ),
                                   child: Row(
-                                    mainAxisSize: MainAxisSize
-                                        .min, 
+                                    mainAxisSize: MainAxisSize.min,
                                     children: [
                                       Text(
                                         hasValidMarkerPhoto
                                             ? "See Campus"
                                             : "Not Available",
-                                        style: const TextStyle(
-                                            fontSize: 11), 
+                                        style: const TextStyle(fontSize: 11),
                                       ),
                                       if (hasValidMarkerPhoto)
-                                        const SizedBox(
-                                            width:
-                                                2), 
+                                        const SizedBox(width: 2),
                                       if (hasValidMarkerPhoto)
                                         const Icon(Icons.chevron_right,
-                                            size: 14,
-                                            color: Colors
-                                                .white), 
+                                            size: 14, color: Colors.white),
                                     ],
                                   ),
                                 ),

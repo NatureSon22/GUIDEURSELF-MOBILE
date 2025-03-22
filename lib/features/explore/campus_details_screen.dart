@@ -24,7 +24,6 @@ class _CampusDetailsScreenState extends State<CampusDetailsScreen> {
 
   Future<UniversityManagement> _fetchUniversityDetails() async {
     final university = await fetchUniversityDetails();
-
     return university;
   }
 
@@ -77,8 +76,7 @@ class _CampusDetailsScreenState extends State<CampusDetailsScreen> {
                     future: _universityFuture,
                     builder: (context, universitySnapshot) {
                       if (!universitySnapshot.hasData) {
-                        return const Center(
-                            child: Text(""));
+                        return const Center(child: Text(""));
                       }
 
                       final university = universitySnapshot.data!;
@@ -127,12 +125,19 @@ class _CampusDetailsScreenState extends State<CampusDetailsScreen> {
                           const Text(
                             'University Of Rizal System',
                             textAlign: TextAlign.center,
-                            style: TextStyle(fontSize: 16, color: Colors.black),
+                            style: TextStyle(
+                                fontFamily: "Cinzel",
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                                color: Colors.black),
                           ),
                           const Text(
                             "Nurturing Tomorrow's Noblest",
                             textAlign: TextAlign.center,
-                            style: TextStyle(fontSize: 12, color: Colors.black),
+                            style: TextStyle(
+                                fontFamily: "CinzelDecorative",
+                                fontSize: 12,
+                                color: Colors.black),
                           ),
                           const SizedBox(height: 20),
                           const Divider(
@@ -149,9 +154,12 @@ class _CampusDetailsScreenState extends State<CampusDetailsScreen> {
 
                   // Campus Name
                   Text(
-                    "${widget.campus.campusName} CAMPUS",
+                    "${widget.campus.campusName.toUpperCase()} CAMPUS",
                     style: const TextStyle(
-                        fontSize: 22, fontWeight: FontWeight.bold),
+                      fontSize: 22,
+                      fontFamily: "CinzelDecorative",
+                      fontWeight: FontWeight.bold,
+                    ),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 10),
@@ -281,13 +289,34 @@ class _CampusDetailsScreenState extends State<CampusDetailsScreen> {
   // Helper function for contact info rows
   Widget _infoRow(IconData icon, String text) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center, // Center the row
+      crossAxisAlignment: CrossAxisAlignment.start, // Align items to the top
       children: [
-        Icon(icon, size: 16),
-        const SizedBox(width: 8),
-        Text(
-          text,
-          style: const TextStyle(fontSize: 13),
+        const SizedBox(width: 8), // Add spacing between the icon and text
+        Flexible(
+          child: RichText(
+            textAlign: TextAlign.center, // Center the text
+            text: TextSpan(
+              children: [
+                WidgetSpan(
+                  child:
+                      Icon(icon, size: 16), // Add the icon as part of the text
+                ),
+                const WidgetSpan(
+                  child: SizedBox(
+                      width: 8), // Add spacing between the icon and text
+                ),
+                TextSpan(
+                  text: text,
+                  style: const TextStyle(
+                    fontSize: 13,
+                    color: Colors.black, // Set text color
+                    height: 1.5,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ],
     );

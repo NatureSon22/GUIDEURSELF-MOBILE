@@ -32,7 +32,7 @@ Color getCategoryColor(String category) {
     case "Utility Areas":
       return Colors.purple;
     case "Others (Miscellaneous)":
-      return Colors.grey;
+      return const Color.fromARGB(255, 78, 185, 247);
     default:
       return Colors.black;
   }

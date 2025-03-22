@@ -65,50 +65,87 @@ class _LogoVectorScreenState extends State<LogoVectorScreen> {
                           const Text(
                             'University Of Rizal System',
                             textAlign: TextAlign.center,
-                            style: TextStyle(fontSize: 16, color: Colors.black),
+                            style: TextStyle(
+                                fontFamily: "Cinzel",
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black),
                           ),
                           const Text(
                             "Nurturing Tomorrow's Noblest",
                             textAlign: TextAlign.center,
-                            style: TextStyle(fontSize: 12, color: Colors.black),
+                            style: TextStyle(
+                                fontFamily: "CinzelDecorative",
+                                fontSize: 12,
+                                color: Colors.black),
                           ),
                           const SizedBox(
                               height: 40), // Space between text and images
                           if (university.universityLogoUrl != null)
-                            Column(
-                              children: [
-                                const Text(
-                                  "OFFICIAL LOGO",
-                                  style: TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.bold),
+                            Container(
+                              padding: const EdgeInsets.all(12.0),
+                              width: 250, // Fixed width
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(
+                                    0.3), // Semi-transparent background
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color:
+                                      const Color.fromARGB(255, 235, 235, 235),
+                                  width: 1,
                                 ),
-                                const SizedBox(height: 10),
-                                Image.network(
-                                  university.universityLogoUrl!,
-                                  height: 250,
-                                  fit: BoxFit.contain,
-                                ),
-                              ],
+                              ),
+                              child: Column(
+                                children: [
+                                  const Text(
+                                    "OFFICIAL LOGO",
+                                    style: TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  const SizedBox(height: 10),
+                                  Image.network(
+                                    university.universityLogoUrl!,
+                                    height: 250,
+                                    fit: BoxFit.contain,
+                                  ),
+                                ],
+                              ),
                             ),
                           const SizedBox(
                               height: 30), // Space between logo and vector
                           if (university.universityVectorUrl != null)
-                            Column(
-                              children: [
-                                const Text(
-                                  "OFFICIAL VECTOR",
-                                  style: TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.bold),
+                            Container(
+                              padding: const EdgeInsets.all(12.0),
+                              width: 250, // Fixed width
+                              constraints: const BoxConstraints(
+                                minHeight: 250,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.3),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color:
+                                      const Color.fromARGB(255, 235, 235, 235),
+                                  width: 1,
                                 ),
-                                const SizedBox(height: 10),
-                                Image.network(
-                                  university.universityVectorUrl!,
-                                  height: 250,
-                                  fit: BoxFit.contain,
-                                ),
-                              ],
+                              ),
+                              child: Column(
+                                children: [
+                                  const Text(
+                                    "OFFICIAL VECTOR",
+                                    style: TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  const SizedBox(height: 10),
+                                  Image.network(
+                                    university.universityVectorUrl!,
+                                    height: 250,
+                                    fit: BoxFit.contain,
+                                  ),
+                                ],
+                              ),
                             ),
                         ],
                       ),

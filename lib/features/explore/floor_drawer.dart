@@ -25,32 +25,30 @@ class MenuDrawer extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Header Section
-          Padding(
-            padding: const EdgeInsets.only(
+          const Padding(
+            padding: EdgeInsets.only(
                 right: 24.0, left: 10.0, top: 24.0, bottom: 10.0),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                IconButton(
-                  icon: const Icon(Icons.menu),
-                  onPressed: onClose,
-                ),
-                const Column(
+                Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
                       'University of Rizal System',
                       style: TextStyle(
+                        fontFamily: "Cinzel",
                         color: Colors.black,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                     Text(
                       "Nurturing Tomorrow's Noblest",
                       style: TextStyle(
+                        fontFamily: "CinzelDecorative",
                         color: Colors.black,
-                        fontSize: 11,
+                        fontSize: 10,
                       ),
                     ),
                   ],
@@ -80,16 +78,22 @@ class MenuDrawer extends StatelessWidget {
 
           // Marker List - FIXED STRUCTURE
           Expanded(
-            // Ensure markers take remaining space
-            child: markers.isNotEmpty
+            child: markers
+                    .where((marker) => marker.markerPhotoUrl.isNotEmpty)
+                    .isNotEmpty
                 ? ListView.builder(
-                    padding: EdgeInsets.zero, // Remove extra space
-                    itemCount: markers.length,
+                    padding: EdgeInsets.zero,
+                    itemCount: markers
+                        .where((marker) => marker.markerPhotoUrl.isNotEmpty)
+                        .length,
                     itemBuilder: (context, index) {
-                      final marker = markers[index];
+                      final filteredMarkers = markers
+                          .where((marker) => marker.markerPhotoUrl.isNotEmpty)
+                          .toList();
+                      final marker = filteredMarkers[index];
+
                       return Padding(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 2), // Reduce spacing
+                        padding: const EdgeInsets.symmetric(vertical: 2),
                         child: ListTile(
                           title: Text(
                             marker.markerName,

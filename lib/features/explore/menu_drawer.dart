@@ -21,8 +21,7 @@ class MenuDrawer extends StatelessWidget {
                   color: Colors.white,
                   border: Border(
                     bottom: BorderSide(
-                        color: Color.fromARGB(255, 206, 206, 206),
-                        width: 1.0),
+                        color: Color.fromARGB(255, 206, 206, 206), width: 1.0),
                   ),
                 ),
                 margin: EdgeInsets.zero,
@@ -34,16 +33,18 @@ class MenuDrawer extends StatelessWidget {
                       Text(
                         'University of Rizal System',
                         style: TextStyle(
+                          fontFamily: "Cinzel",
                           color: Colors.black,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                       Text(
                         "Nurturing Tomorrow's Noblest",
                         style: TextStyle(
+                          fontFamily: "CinzelDecorative",
                           color: Colors.black,
-                          fontSize: 14,
+                          fontSize: 12,
                         ),
                       ),
                     ],
@@ -58,11 +59,16 @@ class MenuDrawer extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   _buildCenteredListTile(context, "History", "/history"),
-                  _buildCenteredListTile(context, "Logo & Vector", "/logo-vector"),
-                  _buildCenteredListTile(context, "Vision, Mission, and Core Values", "/vision-mission"),
-                  _buildCenteredListTile(context, "Key Officials", "/key-officials"),
-                  _buildCenteredListTile(context, "Campus Location", "/campus-location"),
-                  _buildCenteredListTile(context, "Virtual Campus Tour", "/loading-screen"),
+                  _buildCenteredListTile(
+                      context, "Logo & Vector", "/logo-vector"),
+                  _buildCenteredListTile(context,
+                      "Vision, Mission, and Core Values", "/vision-mission"),
+                  _buildCenteredListTile(
+                      context, "Key Officials", "/key-officials"),
+                  _buildCenteredListTile(
+                      context, "Campus Location", "/campus-location"),
+                  _buildCenteredListTile(
+                      context, "Virtual Campus Tour", "/loading-screen"),
                 ],
               ),
             ),
@@ -73,7 +79,8 @@ class MenuDrawer extends StatelessWidget {
   }
 
   /// Helper method to create a centered ListTile with GoRouter navigation
-  Widget _buildCenteredListTile(BuildContext context, String title, String path) {
+  Widget _buildCenteredListTile(
+      BuildContext context, String title, String path) {
     return ListTile(
       contentPadding: EdgeInsets.zero,
       title: Center(

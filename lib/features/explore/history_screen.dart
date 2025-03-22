@@ -109,23 +109,43 @@ class _HistoryScreenState extends State<HistoryScreen> {
                     const Text(
                       'University Of Rizal System',
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 16, color: Colors.black),
+                      style: TextStyle(
+                          fontFamily: "Cinzel",
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          color: Colors.black),
                     ),
                     const Text(
                       "Nurturing Tomorrow's Noblest",
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 12, color: Colors.black),
+                      style: TextStyle(
+                          fontFamily: "CinzelDecorative",
+                          fontSize: 12,
+                          color: Colors.black),
                     ),
                     const SizedBox(height: 20),
 
                     // HTML Content
-                    Html(
-                      data: cleanedHtml,
-                      style: {
-                        "body": Style(
-                          textAlign: TextAlign.center,
-                        ),
-                      },
+                    Container(
+                      padding: const EdgeInsets.all(12.0),
+                      decoration: BoxDecoration(
+                        color: Colors.white
+                            .withOpacity(0.3), // Semi-transparent background
+
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: const Color.fromARGB(255, 235, 235, 235),
+                          width: 1,
+                        ), // Optional: rounded corners
+                      ),
+                      child: Html(
+                        data: cleanedHtml,
+                        style: {
+                          "body": Style(
+                            textAlign: TextAlign.center,
+                          ),
+                        },
+                      ),
                     ),
                   ],
                 ),

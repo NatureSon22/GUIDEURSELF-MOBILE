@@ -22,7 +22,8 @@ class MarkerDetailsDrawer extends StatefulWidget {
 
 class _MarkerDetailsDrawerState extends State<MarkerDetailsDrawer> {
   bool _isExpanded = false;
-  final DraggableScrollableController _controller = DraggableScrollableController();
+  final DraggableScrollableController _controller =
+      DraggableScrollableController();
 
   void _toggleExpansion() {
     setState(() {
@@ -31,10 +32,10 @@ class _MarkerDetailsDrawerState extends State<MarkerDetailsDrawer> {
 
     if (_isExpanded) {
       _controller.animateTo(
-      _isExpanded ? 1.0 : 0.7,
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
-    );
+        _isExpanded ? 1.0 : 0.7,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
     }
   }
 
@@ -163,8 +164,7 @@ class _MarkerDetailsDrawerState extends State<MarkerDetailsDrawer> {
                           child: Icon(
                             _isExpanded
                                 ? FontAwesomeIcons.downLeftAndUpRightToCenter
-                                : FontAwesomeIcons
-                                    .upRightAndDownLeftFromCenter,
+                                : FontAwesomeIcons.upRightAndDownLeftFromCenter,
                             color: _isExpanded
                                 ? const Color.fromARGB(255, 18, 165, 188)
                                 : Colors.black,

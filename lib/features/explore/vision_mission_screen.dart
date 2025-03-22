@@ -77,8 +77,8 @@ class _VisionMissionScreenState extends State<VisionMissionScreen> {
                                   height: 60,
                                   fit: BoxFit.contain,
                                   errorBuilder: (context, error, stackTrace) {
-                                    return const Icon(Icons
-                                        .image_not_supported); 
+                                    return const Icon(
+                                        Icons.image_not_supported);
                                   },
                                 ),
                               const SizedBox(width: 4),
@@ -89,8 +89,8 @@ class _VisionMissionScreenState extends State<VisionMissionScreen> {
                                   height: 60,
                                   fit: BoxFit.contain,
                                   errorBuilder: (context, error, stackTrace) {
-                                    return const Icon(Icons
-                                        .image_not_supported); 
+                                    return const Icon(
+                                        Icons.image_not_supported);
                                   },
                                 ),
                             ],
@@ -99,12 +99,19 @@ class _VisionMissionScreenState extends State<VisionMissionScreen> {
                         const Text(
                           'University Of Rizal System',
                           textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 16, color: Colors.black),
+                          style: TextStyle(
+                              fontFamily: "Cinzel",
+                              fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                              color: Colors.black),
                         ),
                         const Text(
                           "Nurturing Tomorrow's Noblest",
                           textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 12, color: Colors.black),
+                          style: TextStyle(
+                              fontFamily: "CinzelDecorative",
+                              fontSize: 12,
+                              color: Colors.black),
                         ),
                         const SizedBox(height: 20),
                         if (university.universityVision != null)
@@ -129,28 +136,42 @@ class _VisionMissionScreenState extends State<VisionMissionScreen> {
   Widget _buildHtmlSection(String title, String htmlContent) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          if (title.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 8.0),
-              child: Text(
-                title,
-                style:
-                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
+      child: Container(
+        padding: const EdgeInsets.all(12.0),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.3), // Semi-transparent background
+
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: const Color.fromARGB(255, 235, 235, 235),
+            width: 1,
+          ), // Optional: rounded corners
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            if (title.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
               ),
+            Html(
+              data: _removeBrTagsAndStyleStrong(htmlContent),
+              style: {
+                "body": Style(
+                  textAlign: TextAlign.center,
+                ),
+              },
             ),
-          Html(
-            data: _removeBrTagsAndStyleStrong(htmlContent),
-            style: {
-              "body": Style(
-                textAlign: TextAlign.center,
-              ),
-            },
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
