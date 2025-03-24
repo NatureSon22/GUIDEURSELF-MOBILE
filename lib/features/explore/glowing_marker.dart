@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:guideurself/features/explore/category.dart';
 
 class GlowingMarker extends StatefulWidget {
   final bool isHighlighted;
   final VoidCallback onTap;
+  final String category;
 
   const GlowingMarker({
     Key? key,
     required this.isHighlighted,
     required this.onTap,
+    required this.category,
   }) : super(key: key);
 
   @override
@@ -38,6 +41,8 @@ class _GlowingMarkerState extends State<GlowingMarker>
 
   @override
   Widget build(BuildContext context) {
+    Color categoryColor = getCategoryColor(widget.category);
+
     return GestureDetector(
       onTap: widget.onTap,
       child: Stack(
@@ -53,9 +58,7 @@ class _GlowingMarkerState extends State<GlowingMarker>
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: widget.isHighlighted
-                          ? Colors.red.withOpacity(0.8)
-                          : Colors.blue.withOpacity(0.8),
+                      color: categoryColor.withOpacity(0.8),
                       blurRadius: _animation.value,
                       spreadRadius: _animation.value / 2,
                     ),
@@ -66,9 +69,7 @@ class _GlowingMarkerState extends State<GlowingMarker>
           ),
           Icon(
             Icons.circle, // Better visibility
-            color: widget.isHighlighted
-                ? Colors.red
-                : const Color.fromARGB(255, 23, 130, 192),
+            color: categoryColor,
             size: 18,
           ),
         ],

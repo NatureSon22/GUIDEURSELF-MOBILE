@@ -27,6 +27,7 @@ class _PanoramaViewScreenState extends State<PanoramaViewScreen> {
   Campus? _selectedCampus;
   String? _selectedMarkerPhotoUrl;
   bool _isLoading = true;
+  bool _isMarkerSelected = false;
   String? selectedFloorName = "Unknown Floor";
   String? _selectedFloor;
 
@@ -54,6 +55,18 @@ class _PanoramaViewScreenState extends State<PanoramaViewScreen> {
     if (widget.campus.floors.isNotEmpty) {
       _selectedFloor = widget.campus.floors.first.floorName;
     }
+  }
+
+  void _onMarkerSelected(String markerPhotoUrl) {
+    setState(() {
+      _isMarkerSelected = true;
+    });
+  }
+
+  void _onClose() {
+    setState(() {
+      _isMarkerSelected = false;
+    });
   }
 
   void _onFloorSelected(String floorName) {
@@ -215,16 +228,12 @@ class _PanoramaViewScreenState extends State<PanoramaViewScreen> {
         floorName: currentFloorName,
         markers: currentFloorMarkers,
         onClose: () => Navigator.of(context).pop(),
-        onMarkerSelected: (markerPhotoUrl) {
-          setState(() {
-            _selectedMarkerPhotoUrl = markerPhotoUrl;
-          });
-        },
+        onMarkerSelected: _onMarkerSelected, // Passing the function
       ),
       body: Stack(
         children: [
           Positioned.fill(
-            child: hasMarkerPhoto
+            child: _isMarkerSelected && hasMarkerPhoto
                 ? PanoramaViewer(
                     latitude: 0,
                     longitude: 0,
@@ -302,6 +311,33 @@ class _PanoramaViewScreenState extends State<PanoramaViewScreen> {
                                   fontFamily: "CinzelDecorative",
                                   fontSize: 13,
                                   color: Colors.black),
+                            ),
+                            const SizedBox(height: 20),
+                            GestureDetector(
+                              onTap: () {
+                                _scaffoldKey.currentState?.openEndDrawer();
+                              },
+                              child: Container(
+                                width: 150, // Set fixed width
+                                height: 40, // Set fixed height
+                                decoration: BoxDecoration(
+                                  color: const Color.fromARGB(
+                                      255, 18, 165, 188), // ✅ Background color
+                                  borderRadius: BorderRadius.circular(
+                                      7), // ✅ Rounded corners
+                                ),
+                                child: const Center(
+                                  child: Text(
+                                    "SELECT LOCATION",
+                                    style: TextStyle(
+                                        color: Colors.white, // ✅ Text color
+                                        fontSize: 12,
+                                        fontWeight: FontWeight
+                                            .bold // Adjust font size if needed
+                                        ),
+                                  ),
+                                ),
+                              ),
                             ),
                           ],
                         );
@@ -381,6 +417,7 @@ class _PanoramaViewScreenState extends State<PanoramaViewScreen> {
                               setState(() {
                                 _selectedCampus = newValue;
                                 _selectedMarkerPhotoUrl = newPhotoUrl;
+                                _isMarkerSelected = false;
                               });
                             }
                           },
@@ -469,7 +506,7 @@ class _PanoramaViewScreenState extends State<PanoramaViewScreen> {
             left: 16,
             child: SizedBox(
               height: 32,
-              child: hasMarkerPhoto
+              child: _isMarkerSelected && hasMarkerPhoto
                   ? ElevatedButton(
                       style: _buttonStyle(),
                       onPressed: () {},
@@ -484,7 +521,7 @@ class _PanoramaViewScreenState extends State<PanoramaViewScreen> {
 
           Positioned(
             bottom: 20,
-            right: 12,
+            right: 6,
             child: ElevatedButton(
               onPressed: () {
                 if (_selectedCampus != null) {
@@ -494,20 +531,22 @@ class _PanoramaViewScreenState extends State<PanoramaViewScreen> {
                     backgroundColor: Colors.transparent,
                     builder: (context) => FloorListDrawer(
                       floors: _selectedCampus!.floors,
-                      selectedFloor: _selectedFloor, // SANA OKAY PAKO :>
+                      selectedFloor: _selectedFloor,
                       onFloorSelected: _onFloorSelected,
+                      onMarkerSelected: _onMarkerSelected,
+                      onClose: _onClose,
                     ),
                   );
                 }
               },
               style: ElevatedButton.styleFrom(
                 shape: const CircleBorder(),
-                padding: const EdgeInsets.all(8),
+                padding: const EdgeInsets.all(10),
                 backgroundColor: Colors.white,
                 elevation: 0,
               ),
               child:
-                  const Icon(Icons.location_on, color: Colors.black, size: 16),
+                  const Icon(Icons.location_on, color: Colors.black, size: 18),
             ),
           ),
         ],

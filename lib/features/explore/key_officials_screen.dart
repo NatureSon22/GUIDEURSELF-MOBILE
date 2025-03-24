@@ -221,6 +221,7 @@ class _KeyOfficialsScreenState extends State<KeyOfficialsScreen> {
                                     textAlign: TextAlign.center,
                                     softWrap: true, // Ensures wrapping
                                     style: const TextStyle(
+                              fontFamily: "Cinzel",
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -233,6 +234,7 @@ class _KeyOfficialsScreenState extends State<KeyOfficialsScreen> {
                                     textAlign: TextAlign.center,
                                     softWrap: true, // Ensures wrapping
                                     style: const TextStyle(
+                              fontFamily: "CinzelDecorative",
                                       fontSize: 14,
                                       color: Colors.grey,
                                     ),
