@@ -60,6 +60,7 @@ class _PanoramaViewScreenState extends State<PanoramaViewScreen> {
   void _onMarkerSelected(String markerPhotoUrl) {
     setState(() {
       _isMarkerSelected = true;
+      _selectedMarkerPhotoUrl = markerPhotoUrl;
     });
   }
 
@@ -418,6 +419,7 @@ class _PanoramaViewScreenState extends State<PanoramaViewScreen> {
                                 _selectedCampus = newValue;
                                 _selectedMarkerPhotoUrl = newPhotoUrl;
                                 _isMarkerSelected = false;
+                                _selectedFloor = _selectedFloor;
                               });
                             }
                           },

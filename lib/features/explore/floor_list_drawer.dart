@@ -52,93 +52,136 @@ class _FloorListDrawerState extends State<FloorListDrawer> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),
-          child: SizedBox(
+          child: Container(
             width: 400, // Fixed width for the Dialog
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Stack(
-                children: [
-                  // Main Content
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Dynamic Icon and Marker Name
-                      Row(
-                        children: [
-                          if (marker.category.isNotEmpty)
-                            Container(
-                              width: 30,
-                              height: 30,
-                              decoration: BoxDecoration(
-                                color: getCategoryColor(marker.category)
-                                    .withOpacity(0.2),
-                                shape: BoxShape.circle,
-                              ),
-                              child: Center(
-                                child: Icon(
-                                  getCategoryIcon(marker.category),
-                                  color: getCategoryColor(marker.category),
-                                  size: 16,
-                                ),
-                              ),
-                            ),
-                          const SizedBox(
-                              width: 8), // Spacing between icon and text
-                          // Container for Marker Name
+            padding: const EdgeInsets.all(16.0),
+            child: Stack(
+              children: [
+                // Main Content
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Dynamic Icon and Marker Name
+                    Row(
+                      children: [
+                        // Container for Dynamic Icon
+                        if (marker.category.isNotEmpty)
                           Container(
-                            height: 30, // Same height as icon container
-                            padding: const EdgeInsets.symmetric(horizontal: 8),
+                            width: 30,
+                            height: 30,
                             decoration: BoxDecoration(
-                              color: const Color.fromARGB(85, 121, 233, 250),
-                              borderRadius: BorderRadius.circular(50),
+                              color: getCategoryColor(marker.category)
+                                  .withOpacity(0.2),
+                              shape: BoxShape.circle,
                             ),
                             child: Center(
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  const Icon(
-                                    Icons.near_me,
-                                    color: Color.fromARGB(255, 18, 165, 188),
-                                    size: 14,
-                                  ),
-                                  const SizedBox(width: 6),
-                                  Text(
-                                    marker.markerName,
-                                    style: const TextStyle(
-                                      fontSize: 13,
-                                      color: Color.fromARGB(255, 18, 165, 188),
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ],
+                              child: Icon(
+                                getCategoryIcon(marker.category),
+                                color: getCategoryColor(marker.category),
+                                size: 16,
                               ),
                             ),
                           ),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      // Marker Description
-                      Text(
-                        marker.markerDescription,
-                        style: const TextStyle(fontSize: 11),
-                      ),
-                    ],
-                  ),
-                  // Close Icon (Upper Right Corner)
-                  Positioned(
-                    top: -5,
-                    right: -5,
-                    child: IconButton(
-                      icon: const Icon(
-                        Icons.close,
-                        size: 16,
-                      ),
-                      onPressed: () => Navigator.pop(context),
+                        const SizedBox(width: 8), // Spacing
+
+                        // Container for Marker Name
+                        Container(
+                          height: 30,
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          decoration: BoxDecoration(
+                            color: const Color.fromARGB(85, 121, 233, 250),
+                            borderRadius: BorderRadius.circular(50),
+                          ),
+                          child: Center(
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(
+                                  Icons.near_me,
+                                  color: Color.fromARGB(255, 18, 165, 188),
+                                  size: 14,
+                                ),
+                                const SizedBox(width: 6),
+                                Text(
+                                  marker.markerName.length > 27
+                                      ? '${marker.markerName.substring(0, 24)}...' // Truncate and add "..."
+                                      : marker.markerName,
+                                  style: const TextStyle(
+                                    fontSize: 13,
+                                    color: Color.fromARGB(255, 18, 165, 188),
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                  softWrap: false, // Disable wrapping
+                                  overflow: TextOverflow
+                                      .ellipsis, // Ensure the text gets ellipsized
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                ],
-              ),
+
+                    const SizedBox(height: 10),
+
+                    // Marker Description
+                    Text(
+                      marker.markerDescription,
+                      style: const TextStyle(fontSize: 11),
+                    ),
+
+                    const SizedBox(height: 15), // Spacing
+
+                    // Centered Button
+                    if (marker.markerPhotoUrl.isNotEmpty)
+                      Align(
+                        alignment: Alignment.center, // ✅ Align to the right
+                        child: SizedBox(
+                          // ✅ Adjust width
+                          height: 30, // ✅ Adjust height
+                          child: GestureDetector(
+                            onTap: () {
+                              widget.onMarkerSelected(marker.markerPhotoUrl);
+                              _toggleExpanded();
+                              Navigator.pop(context);
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: const Color.fromARGB(
+                                    255, 18, 165, 188), // ✅ Background color
+                                borderRadius: BorderRadius.circular(
+                                    7), // ✅ Rounded corners
+                              ),
+                              child: const Center(
+                                child: Text(
+                                  "360° View",
+                                  style: TextStyle(
+                                    color: Colors.white, // ✅ Text color
+                                    fontSize: 11, // Adjust font size if needed
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+
+                // Close Icon (Upper Right Corner)
+                // Positioned(
+                //   top: -20,
+                //   right: -20,
+                //   child: IconButton(
+                //     icon: const Icon(
+                //       Icons.close,
+                //       size: 16,
+                //     ),
+                //     onPressed: () => Navigator.pop(context),
+                //   ),
+                // ),
+              ],
             ),
           ),
         );
@@ -258,8 +301,8 @@ class _FloorListDrawerState extends State<FloorListDrawer> {
                       size: 30,
                       color: Colors.redAccent,
                     ),
-                    SizedBox(height: 15),
-                    Text(
+                    const SizedBox(height: 15),
+                    const Text(
                       "Location Not Found",
                       style: TextStyle(
                         fontSize: 20,
@@ -267,8 +310,8 @@ class _FloorListDrawerState extends State<FloorListDrawer> {
                         color: Colors.black87,
                       ),
                     ),
-                    SizedBox(height: 10),
-                    Text(
+                    const SizedBox(height: 10),
+                    const Text(
                       "No such location found on this floor. Please try again.",
                       textAlign: TextAlign.center,
                       style: TextStyle(
