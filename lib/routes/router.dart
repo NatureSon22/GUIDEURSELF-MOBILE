@@ -14,6 +14,7 @@ import 'package:guideurself/features/home/home.dart';
 import 'package:guideurself/features/chat/chatpreview.dart';
 import 'package:guideurself/features/layer/authuser.dart';
 import 'package:guideurself/features/settings/privacylegal.dart';
+import 'package:guideurself/features/settings/privacylegalII.dart';
 import 'package:guideurself/features/settings/settings.dart';
 import 'package:guideurself/features/settings/virtualtourpreference.dart';
 import 'package:guideurself/features/settings/userfeedback.dart';
@@ -28,7 +29,9 @@ import 'package:guideurself/features/explore/vision_mission_screen.dart';
 import 'package:guideurself/features/explore/key_officials_screen.dart';
 import 'package:guideurself/features/explore/campus_location_screen.dart';
 import 'package:guideurself/features/explore/campus_location_screen_II.dart';
+import 'package:guideurself/features/explore/campus_location_screen_III.dart';
 import 'package:guideurself/features/explore/virtual_tour_screen.dart';
+import 'package:guideurself/features/explore/virtual_tour_screen_II.dart';
 import 'package:guideurself/features/explore/campus_details_screen_II.dart';
 import 'package:guideurself/features/explore/loading_screen.dart';
 
@@ -60,9 +63,19 @@ final List<Map<String, dynamic>> sections = [
     "screen": const CampusLocationScreenII()
   },
   {
+    "title": "Campus Location",
+    "path": "/campus-location-III",
+    "screen": const CampusLocationScreenIII()
+  },
+  {
     "title": "Virtual Campus Tour",
     "path": "/virtual-tour",
     "screen": const VirtualTourScreen()
+  },
+  {
+    "title": "Virtual Campus Tour",
+    "path": "/virtual-tour-II",
+    "screen": const VirtualTourScreenII()
   },
   {
     "title": "LoadingScreen",
@@ -87,6 +100,10 @@ GoRouter router(String initialRoute) {
       GoRoute(
         path: "/login",
         builder: (context, state) => const Login(),
+      ),
+      GoRoute(
+        path: "/privacy-legal-II",
+        builder: (context, state) => const PrivacyLegalII(),
       ),
       GoRoute(
         path: "/forgot-password",
