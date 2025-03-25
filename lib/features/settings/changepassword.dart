@@ -146,6 +146,7 @@ class _ChangepasswordState extends State<Changepassword> {
                   ),
                   const Gap(5),
                   TextFormField(
+                    enabled: false,
                     controller: oldPasswordController,
                     cursorColor: const Color(0xFF323232),
                     style: const TextStyle(fontSize: 14),

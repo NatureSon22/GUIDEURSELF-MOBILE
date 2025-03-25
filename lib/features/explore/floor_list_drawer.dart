@@ -48,7 +48,7 @@ class _FloorListDrawerState extends State<FloorListDrawer> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),
-          child: Container(
+          child: SizedBox(
             width: 400, // Fixed width for the Dialog
             child: Stack(
               children: [
@@ -80,11 +80,12 @@ class _FloorListDrawerState extends State<FloorListDrawer> {
                               ),
                             ),
                           ),
-                          SizedBox(width: 8), // Spacing between icon and text
+                          const SizedBox(
+                              width: 8), // Spacing between icon and text
                           // Container for Marker Name
                           Container(
                             height: 30, // Same height as icon container
-                            padding: EdgeInsets.symmetric(horizontal: 8),
+                            padding: const EdgeInsets.symmetric(horizontal: 8),
                             decoration: BoxDecoration(
                               color: const Color.fromARGB(
                                   85, 121, 233, 250), // Fixed background color
@@ -95,15 +96,15 @@ class _FloorListDrawerState extends State<FloorListDrawer> {
                                 mainAxisSize: MainAxisSize
                                     .min, // Ensures the row only takes necessary space
                                 children: [
-                                  Icon(
+                                  const Icon(
                                     Icons.near_me,
                                     color: Color.fromARGB(255, 18, 165, 188),
                                     size: 14,
                                   ),
-                                  SizedBox(width: 6),
+                                  const SizedBox(width: 6),
                                   Text(
                                     marker.markerName,
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       fontSize: 13,
                                       color: Color.fromARGB(255, 18, 165, 188),
                                       fontWeight: FontWeight.w500,
@@ -115,11 +116,11 @@ class _FloorListDrawerState extends State<FloorListDrawer> {
                           )
                         ],
                       ),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       // Marker Description
                       Text(
                         marker.markerDescription,
-                        style: TextStyle(fontSize: 11),
+                        style: const TextStyle(fontSize: 11),
                       ),
                     ],
                   ),
@@ -129,7 +130,7 @@ class _FloorListDrawerState extends State<FloorListDrawer> {
                   top: -5,
                   right: -5,
                   child: IconButton(
-                    icon: Icon(
+                    icon: const Icon(
                       Icons.close,
                       size: 16,
                     ),
