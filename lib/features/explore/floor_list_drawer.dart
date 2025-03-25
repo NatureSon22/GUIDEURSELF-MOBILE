@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart' as flutter_map;
 import 'package:latlong2/latlong.dart';
 import 'package:guideurself/models/campus_model.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:guideurself/features/explore/category.dart';
 import 'package:guideurself/features/explore/glowing_marker.dart';
 
@@ -10,12 +9,16 @@ class FloorListDrawer extends StatefulWidget {
   final List<Floor> floors;
   final String? selectedFloor;
   final Function(String) onFloorSelected;
+  final VoidCallback onClose;
+  final Function(String) onMarkerSelected;
 
   const FloorListDrawer({
     super.key,
     required this.floors,
     required this.selectedFloor,
     required this.onFloorSelected,
+    required this.onClose,
+    required this.onMarkerSelected,
   });
 
   @override
@@ -24,18 +27,19 @@ class FloorListDrawer extends StatefulWidget {
 }
 
 class _FloorListDrawerState extends State<FloorListDrawer> {
+  final TextEditingController _searchController = TextEditingController();
+  double? _markerLatitude;
+  double? _markerLongitude;
+  UniqueKey _mapKey = UniqueKey();
   String? _localSelectedFloor;
   String? _floorPhotoUrl;
   bool _isExpanded = false;
   List<flutter_map.Marker> _currentMarkers = [];
-  final TextEditingController _searchController = TextEditingController();
   bool _isGridLayout = false;
-  late DraggableScrollableController _scrollController;
 
   @override
   void initState() {
     super.initState();
-    _scrollController = DraggableScrollableController();
     _localSelectedFloor = widget.selectedFloor;
     _updateFloorPhoto(widget.selectedFloor);
   }
@@ -50,36 +54,35 @@ class _FloorListDrawerState extends State<FloorListDrawer> {
           ),
           child: SizedBox(
             width: 400, // Fixed width for the Dialog
-            child: Stack(
-              children: [
-                // Main Content
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Stack(
+                children: [
+                  // Main Content
+                  Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Dynamic Icon and Marker Name
                       Row(
                         children: [
-                          // Container for Dynamic Icon
-                          Container(
-                            width:
-                                30, // Fixed width and height to make it square
-                            height: 30,
-                            decoration: BoxDecoration(
-                              color: getCategoryColor(marker.category)
-                                  .withOpacity(0.2),
-                              shape: BoxShape.circle, // Circular shape
-                            ),
-                            child: Center(
-                              child: Icon(
-                                getCategoryIcon(marker.category),
-                                color: getCategoryColor(marker.category),
-                                size: 16, // Smaller icon size
+                          if (marker.category.isNotEmpty)
+                            Container(
+                              width: 30,
+                              height: 30,
+                              decoration: BoxDecoration(
+                                color: getCategoryColor(marker.category)
+                                    .withOpacity(0.2),
+                                shape: BoxShape.circle,
+                              ),
+                              child: Center(
+                                child: Icon(
+                                  getCategoryIcon(marker.category),
+                                  color: getCategoryColor(marker.category),
+                                  size: 16,
+                                ),
                               ),
                             ),
-                          ),
                           const SizedBox(
                               width: 8), // Spacing between icon and text
                           // Container for Marker Name
@@ -87,14 +90,12 @@ class _FloorListDrawerState extends State<FloorListDrawer> {
                             height: 30, // Same height as icon container
                             padding: const EdgeInsets.symmetric(horizontal: 8),
                             decoration: BoxDecoration(
-                              color: const Color.fromARGB(
-                                  85, 121, 233, 250), // Fixed background color
+                              color: const Color.fromARGB(85, 121, 233, 250),
                               borderRadius: BorderRadius.circular(50),
                             ),
                             child: Center(
                               child: Row(
-                                mainAxisSize: MainAxisSize
-                                    .min, // Ensures the row only takes necessary space
+                                mainAxisSize: MainAxisSize.min,
                                 children: [
                                   const Icon(
                                     Icons.near_me,
@@ -113,7 +114,7 @@ class _FloorListDrawerState extends State<FloorListDrawer> {
                                 ],
                               ),
                             ),
-                          )
+                          ),
                         ],
                       ),
                       const SizedBox(height: 10),
@@ -124,20 +125,20 @@ class _FloorListDrawerState extends State<FloorListDrawer> {
                       ),
                     ],
                   ),
-                ),
-                // Close Icon (Upper Right Corner)
-                Positioned(
-                  top: -5,
-                  right: -5,
-                  child: IconButton(
-                    icon: const Icon(
-                      Icons.close,
-                      size: 16,
+                  // Close Icon (Upper Right Corner)
+                  Positioned(
+                    top: -5,
+                    right: -5,
+                    child: IconButton(
+                      icon: const Icon(
+                        Icons.close,
+                        size: 16,
+                      ),
+                      onPressed: () => Navigator.pop(context),
                     ),
-                    onPressed: () => Navigator.pop(context),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         );
@@ -158,10 +159,7 @@ class _FloorListDrawerState extends State<FloorListDrawer> {
   }
 
   List<flutter_map.Marker> _getMarkersForFloor(Floor floor) {
-    return floor.markers
-        .where(
-            (marker) => marker.markerDescription.isNotEmpty) // Filter markers
-        .map((marker) {
+    return floor.markers.map((marker) {
       bool isHighlighted = _searchController.text.isNotEmpty &&
           marker.markerName == _searchController.text;
 
@@ -172,6 +170,7 @@ class _FloorListDrawerState extends State<FloorListDrawer> {
         child: GlowingMarker(
           isHighlighted: isHighlighted,
           onTap: () => _showMarkerDetails(marker),
+          category: marker.category, // Ensure this is not null or empty
         ),
       );
     }).toList();
@@ -200,13 +199,90 @@ class _FloorListDrawerState extends State<FloorListDrawer> {
     }
   }
 
-  void _searchMarker() {
+  void _searchMarker(String markerName) {
     setState(() {
-      _currentMarkers = _getMarkersForFloor(widget.floors.firstWhere(
-        (floor) => floor.floorName == _localSelectedFloor,
+      // Find the selected floor
+      final selectedFloor = widget.floors.firstWhere(
+        (floor) => floor.floorName == widget.selectedFloor,
         orElse: () => Floor(
-            id: '', floorName: '', floorPhotoUrl: '', markers: [], order: 0),
-      ));
+          id: '',
+          floorName: '',
+          floorPhotoUrl: '',
+          markers: [],
+          order: 0,
+        ),
+      );
+
+      // Find the marker by its name
+      final marker = selectedFloor.markers.firstWhere(
+        (marker) => marker.markerName == markerName,
+        orElse: () => Marker(
+          id: '',
+          markerName: '',
+          markerDescription: '',
+          markerPhotoUrl: '',
+          latitude: 14.484750, // Set to null if marker is not found
+          longitude: 121.189000, // Set to null if marker is not found
+          category: '',
+          dateAdded: DateTime.now(),
+        ),
+      );
+
+      // Update the state with the marker's coordinates
+      _markerLatitude = marker.latitude;
+      _markerLongitude = marker.longitude;
+
+      // Force the map to rebuild by updating the key
+      _mapKey = UniqueKey();
+
+      // Show feedback if the marker is not found
+      if (marker.latitude == 14.484750 || marker.longitude == 121.189000) {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return Dialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20.0),
+              ),
+              child: Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20.0),
+                  color: Colors.white,
+                ),
+                child: const Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.location_off,
+                      size: 30,
+                      color: Colors.redAccent,
+                    ),
+                    SizedBox(height: 15),
+                    Text(
+                      "Location Not Found",
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    Text(
+                      "No such location found on this floor. Please try again.",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.black54,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      }
     });
   }
 
@@ -223,7 +299,9 @@ class _FloorListDrawerState extends State<FloorListDrawer> {
           _localSelectedFloor = floor.floorName;
           _updateFloorPhoto(floor.floorName);
         });
-        widget.onFloorSelected(floor.floorName);
+        widget.onFloorSelected(
+            floor.floorName); // Call the floor selection function
+        widget.onClose();
       },
       // Removed invalid 'style' parameter
       child: IntrinsicWidth(
@@ -308,13 +386,23 @@ class _FloorListDrawerState extends State<FloorListDrawer> {
                             suffixIcon: IconButton(
                               icon: const Icon(Icons.clear, size: 20),
                               onPressed: () {
+                                // Clear the text field
                                 _searchController.clear();
-                                _searchMarker();
                               },
                             ),
                           ),
                           onSubmitted: (value) {
-                            _searchMarker();
+                            // Call _searchMarker only if the search query is not empty
+                            if (value.trim().isNotEmpty) {
+                              _searchMarker(value.trim());
+                            } else {
+                              // Handle empty search (e.g., show a message or reset the map)
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content:
+                                        Text('Please enter a search term.')),
+                              );
+                            }
                           },
                         ),
                       ),
@@ -428,15 +516,21 @@ class _FloorListDrawerState extends State<FloorListDrawer> {
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(10),
                                     child: flutter_map.FlutterMap(
-                                      options: const flutter_map.MapOptions(
+                                      key: _mapKey,
+                                      options: flutter_map.MapOptions(
                                         backgroundColor: Colors.white,
-                                        initialCenter:
-                                            LatLng(14.484750, 121.189000),
+                                        initialCenter: _markerLatitude !=
+                                                    null &&
+                                                _markerLongitude != null
+                                            ? LatLng(_markerLatitude!,
+                                                _markerLongitude!) // Use the marker's location
+                                            : const LatLng(14.484750,
+                                                121.189000), // Fallback to the default center
                                         initialZoom: 17,
                                         minZoom: 16,
                                         maxZoom: 19, // Match max zoom with web
-                                        interactionOptions:
-                                            flutter_map.InteractionOptions(
+                                        interactionOptions: const flutter_map
+                                            .InteractionOptions(
                                           flags: flutter_map
                                                   .InteractiveFlag.pinchZoom |
                                               flutter_map.InteractiveFlag.drag |
@@ -495,13 +589,19 @@ class _FloorListDrawerState extends State<FloorListDrawer> {
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(10),
                         child: flutter_map.FlutterMap(
-                          options: const flutter_map.MapOptions(
+                          key: _mapKey,
+                          options: flutter_map.MapOptions(
                             backgroundColor: Colors.white,
-                            initialCenter: LatLng(14.484750, 121.189000),
+                            initialCenter: _markerLatitude != null &&
+                                    _markerLongitude != null
+                                ? LatLng(_markerLatitude!,
+                                    _markerLongitude!) // Use the marker's location
+                                : const LatLng(14.484750, 121.189000),
                             initialZoom: 17,
                             minZoom: 16,
                             maxZoom: 19, // Match max zoom with web
-                            interactionOptions: flutter_map.InteractionOptions(
+                            interactionOptions:
+                                const flutter_map.InteractionOptions(
                               flags: flutter_map.InteractiveFlag.pinchZoom |
                                   flutter_map.InteractiveFlag.drag |
                                   flutter_map.InteractiveFlag.flingAnimation |

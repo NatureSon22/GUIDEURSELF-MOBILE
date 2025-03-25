@@ -111,7 +111,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
                                 color: Colors.black),
                           ),
                           const Text(
-                            "Nurturing Tomorrow's Noblest",
+                            "Virtual Campus Tour",
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 fontFamily: "CinzelDecorative",
