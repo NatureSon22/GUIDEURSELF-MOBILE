@@ -32,6 +32,8 @@ void main() {
     final storage = StorageService();
     final hasVisitedSplash = storage.getData(key: "hasVisitedSplash") == true;
 
+    print(hasVisitedSplash);
+
     runApp(
       MultiProvider(
         providers: [
