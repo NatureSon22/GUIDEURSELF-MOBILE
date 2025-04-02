@@ -39,7 +39,7 @@ class _KeyOfficialsScreenState extends State<KeyOfficialsScreen> {
         children: [
           // Background Image
           Opacity(
-            opacity: 0.3,
+            opacity: 1,
             child: Container(
               decoration: const BoxDecoration(
                 image: DecorationImage(

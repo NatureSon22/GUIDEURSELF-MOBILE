@@ -39,7 +39,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
         children: [
           // Background Image
           Opacity(
-            opacity: 0.3,
+            opacity: 1,
             child: Container(
               decoration: const BoxDecoration(
                 image: DecorationImage(

@@ -5,7 +5,7 @@ class MenuDrawer extends StatelessWidget {
   final String floorName;
   final List<Marker> markers;
   final VoidCallback onClose;
-  final Function(String) onMarkerSelected;
+  final Function(String?) onMarkerSelected; // Changed to accept nullable String
 
   MenuDrawer({
     Key? key,
@@ -17,6 +17,9 @@ class MenuDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final validMarkers = markers.where((marker) => marker.markerPhotoUrl.isNotEmpty).toList();
+    final hasMarkers = validMarkers.isNotEmpty;
+
     return Drawer(
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.zero, // Sharp edges
@@ -59,39 +62,32 @@ class MenuDrawer extends StatelessWidget {
           const Divider(
             color: Color.fromARGB(255, 207, 207, 207),
             thickness: 0.5,
-            height: 5.0, // Reduce height further to move list up
+            height: 5.0,
           ),
 
           // Floor Name
           Padding(
-            padding: const EdgeInsets.symmetric(
-                horizontal: 16, vertical: 8), // Adjust padding
-            child: Text(
-              floorName,
-              style: const TextStyle(
-                color: Color.fromARGB(255, 133, 133, 133),
-                fontSize: 10, // Slightly increase for better visibility
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: hasMarkers
+              ? Text(
+                  floorName,
+                  style: const TextStyle(
+                    color: Color.fromARGB(255, 133, 133, 133),
+                    fontSize: 10,
+                    fontWeight: FontWeight.w500,
+                  ),
+                )
+              : null,  // Returns null when hasMarkers is false
+        ),
 
-          // Marker List - FIXED STRUCTURE
+          // Marker List
           Expanded(
-            child: markers
-                    .where((marker) => marker.markerPhotoUrl.isNotEmpty)
-                    .isNotEmpty
+            child: hasMarkers
                 ? ListView.builder(
                     padding: EdgeInsets.zero,
-                    itemCount: markers
-                        .where((marker) => marker.markerPhotoUrl.isNotEmpty)
-                        .length,
+                    itemCount: validMarkers.length,
                     itemBuilder: (context, index) {
-                      final filteredMarkers = markers
-                          .where((marker) => marker.markerPhotoUrl.isNotEmpty)
-                          .toList();
-                      final marker = filteredMarkers[index];
-
+                      final marker = validMarkers[index];
                       return Padding(
                         padding: const EdgeInsets.symmetric(vertical: 2),
                         child: ListTile(

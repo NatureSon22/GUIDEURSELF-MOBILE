@@ -27,10 +27,22 @@ class _GlowingMarkerState extends State<GlowingMarker>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 1),
-    )..repeat(reverse: true);
+      duration: const Duration(seconds: 2),
+    );
 
-    _animation = Tween<double>(begin: 5, end: 15).animate(_controller);
+    _animation = Tween<double>(begin: 23, end: 33).animate(CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeOut, // Smooth one-way expansion
+    ));
+
+    _startPulse();
+  }
+
+  void _startPulse() {
+    _controller.forward().then((_) {
+      _controller.reset(); // Reset instead of reversing
+      _startPulse(); // Loop infinitely
+    });
   }
 
   @override
@@ -48,6 +60,7 @@ class _GlowingMarkerState extends State<GlowingMarker>
       child: Stack(
         alignment: Alignment.center,
         children: [
+          // One-way expanding pulse effect
           AnimatedBuilder(
             animation: _animation,
             builder: (context, child) {
@@ -56,21 +69,26 @@ class _GlowingMarkerState extends State<GlowingMarker>
                 height: _animation.value,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: categoryColor.withOpacity(0.8),
-                      blurRadius: _animation.value,
-                      spreadRadius: _animation.value / 2,
-                    ),
-                  ],
+                  color: categoryColor.withOpacity(0.4),
                 ),
               );
             },
           ),
-          Icon(
-            Icons.circle, // Better visibility
-            color: categoryColor,
-            size: 18,
+          // Background for the icon
+          Container(
+            width: 22, // Fixed size background
+            height: 22,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: categoryColor, // Solid color background
+            ),
+            child: Center(
+              child: Icon(
+                getCategoryIcon(widget.category),
+                color: Colors.white,
+                size: 14,
+              ),
+            ),
           ),
         ],
       ),

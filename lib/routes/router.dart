@@ -7,6 +7,7 @@ import 'package:guideurself/features/messageschat/messagechatlist.dart';
 import 'package:guideurself/features/messageschat/messageschat.dart';
 import 'package:guideurself/features/settings/editprofile.dart';
 import 'package:guideurself/features/settings/about.dart';
+import 'package:guideurself/features/settings/aboutII.dart';
 import 'package:guideurself/features/settings/changepassword.dart';
 import 'package:guideurself/features/settings/chatbotpreference.dart';
 import 'package:guideurself/features/explore/explore.dart';
@@ -207,6 +208,10 @@ GoRouter router(String initialRoute) {
       GoRoute(
         path: '/about',
         pageBuilder: (context, state) => _buildSlidePage(state, const About()),
+      ),
+      GoRoute(
+        path: '/about-II',
+        pageBuilder: (context, state) => _buildSlidePage(state, const AboutII()),
       ),
     ],
   );

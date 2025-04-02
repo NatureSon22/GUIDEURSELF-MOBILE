@@ -84,7 +84,7 @@ class _VirtualTourScreenIIState extends State<VirtualTourScreenII> {
       body: Stack(
         children: [
           Opacity(
-            opacity: 0.3,
+            opacity: 1,
             child: Container(
               decoration: const BoxDecoration(
                 image: DecorationImage(
@@ -204,9 +204,10 @@ class _VirtualTourScreenIIState extends State<VirtualTourScreenII> {
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: hasValidMarkerPhoto
                                         ? const Color.fromARGB(
-                                            255, 18, 165, 188)
+                                            85, 121, 233, 250)
                                         : Colors.grey,
-                                    foregroundColor: Colors.white,
+                                    foregroundColor:
+                                        Color.fromARGB(255, 18, 165, 188),
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 13),
                                     minimumSize: const Size(100, 30),
@@ -224,7 +225,9 @@ class _VirtualTourScreenIIState extends State<VirtualTourScreenII> {
                                         const SizedBox(width: 2),
                                       if (hasValidMarkerPhoto)
                                         const Icon(Icons.chevron_right,
-                                            size: 14, color: Colors.white),
+                                            size: 14,
+                                            color: Color.fromARGB(
+                                                255, 18, 165, 188)),
                                     ],
                                   ),
                                 ),

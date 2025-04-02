@@ -168,19 +168,6 @@ class _FloorListDrawerState extends State<FloorListDrawer> {
                       ),
                   ],
                 ),
-
-                // Close Icon (Upper Right Corner)
-                // Positioned(
-                //   top: -20,
-                //   right: -20,
-                //   child: IconButton(
-                //     icon: const Icon(
-                //       Icons.close,
-                //       size: 16,
-                //     ),
-                //     onPressed: () => Navigator.pop(context),
-                //   ),
-                // ),
               ],
             ),
           ),
@@ -342,9 +329,15 @@ class _FloorListDrawerState extends State<FloorListDrawer> {
           _localSelectedFloor = floor.floorName;
           _updateFloorPhoto(floor.floorName);
         });
-        widget.onFloorSelected(
-            floor.floorName); // Call the floor selection function
-        widget.onClose();
+
+        widget.onFloorSelected(floor.floorName);
+
+        if (floor.markers.any((m) => m.markerPhotoUrl.isNotEmpty)) {
+          widget.onClose();
+        } else {
+          widget.onMarkerSelected("");
+          widget.onClose();
+        }
       },
       // Removed invalid 'style' parameter
       child: IntrinsicWidth(
@@ -415,14 +408,13 @@ class _FloorListDrawerState extends State<FloorListDrawer> {
                       child: Container(
                         height: 40,
                         decoration: BoxDecoration(
-                          color: Colors.grey[200],
+                          color: Colors.white,
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: TextField(
                           controller: _searchController,
                           decoration: InputDecoration(
                             hintText: 'Search...',
-                            border: InputBorder.none,
                             contentPadding: const EdgeInsets.symmetric(
                                 vertical: 10, horizontal: 10),
                             prefixIcon: const Icon(Icons.search, size: 20),
@@ -455,7 +447,7 @@ class _FloorListDrawerState extends State<FloorListDrawer> {
                       height: 40,
                       width: 40,
                       decoration: BoxDecoration(
-                        color: Colors.grey[200],
+                        color: Colors.white,
                         borderRadius: BorderRadius.circular(50),
                         border: Border.all(
                           color: _isGridLayout
@@ -480,7 +472,7 @@ class _FloorListDrawerState extends State<FloorListDrawer> {
                       height: 40,
                       width: 40,
                       decoration: BoxDecoration(
-                        color: Colors.grey[200],
+                        color: Colors.white,
                         borderRadius: BorderRadius.circular(50),
                         border: Border.all(
                           color: Colors.black,
@@ -643,6 +635,13 @@ class _FloorListDrawerState extends State<FloorListDrawer> {
                             initialZoom: 17,
                             minZoom: 16,
                             maxZoom: 19, // Match max zoom with web
+                            cameraConstraint:
+                                flutter_map.CameraConstraint.contain(
+                              bounds: flutter_map.LatLngBounds(
+                                const LatLng(14.480740, 121.184750),
+                                const LatLng(14.488870, 121.192500),
+                              ),
+                            ),
                             interactionOptions:
                                 const flutter_map.InteractionOptions(
                               flags: flutter_map.InteractiveFlag.pinchZoom |
