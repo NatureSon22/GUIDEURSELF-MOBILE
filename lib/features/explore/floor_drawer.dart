@@ -28,30 +28,32 @@ class MenuDrawer extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Header Section
-          const Padding(
-            padding: EdgeInsets.only(
+          Padding(
+            padding: const EdgeInsets.only(
                 right: 24.0, left: 10.0, top: 24.0, bottom: 10.0),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Column(
+                IconButton(
+                  icon: const Icon(Icons.menu),
+                  onPressed: onClose,
+                ),
+                const Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
                       'University of Rizal System',
                       style: TextStyle(
-                        fontFamily: "Cinzel",
                         color: Colors.black,
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                     Text(
                       "Nurturing Tomorrow's Noblest",
                       style: TextStyle(
-                        fontFamily: "CinzelDecorative",
                         color: Colors.black,
-                        fontSize: 10,
+                        fontSize: 11,
                       ),
                     ),
                   ],
@@ -89,7 +91,8 @@ class MenuDrawer extends StatelessWidget {
                     itemBuilder: (context, index) {
                       final marker = validMarkers[index];
                       return Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 2), // Reduce spacing
                         child: ListTile(
                           title: Text(
                             marker.markerName,

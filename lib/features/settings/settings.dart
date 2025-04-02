@@ -3,6 +3,11 @@ import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:guideurself/core/themes/style.dart';
 import 'package:guideurself/providers/account.dart';
+import 'package:guideurself/providers/bottomnav.dart';
+import 'package:guideurself/providers/conversation.dart';
+import 'package:guideurself/providers/loading.dart';
+import 'package:guideurself/providers/messagechat.dart';
+import 'package:guideurself/providers/transcribing.dart';
 import 'package:guideurself/services/auth.dart';
 import 'package:provider/provider.dart';
 
@@ -56,6 +61,17 @@ class Settings extends StatelessWidget {
 
   Future<void> handleLogout() async {
     await logout();
+  }
+
+  void clearAllProviders(BuildContext context) {
+    Provider.of<AccountProvider>(context, listen: false).resetAccount();
+    Provider.of<LoadingProvider>(context, listen: false)
+        .resetIsGeneratingResponse();
+    Provider.of<BottomNavProvider>(context, listen: false).resetIndex();
+    Provider.of<ConversationProvider>(context, listen: false)
+        .resetConversation();
+    Provider.of<MessageChatProvider>(context, listen: false).resetMessage();
+    Provider.of<Transcribing>(context, listen: false).resetIsTranscribing();
   }
 
   @override
@@ -138,7 +154,7 @@ class Settings extends StatelessWidget {
                                 width: double.infinity,
                                 child: ElevatedButton(
                                   onPressed: () {
-                                    context.go('/edit-profile');
+                                    context.push('/edit-profile');
                                   },
                                   style: ElevatedButton.styleFrom(
                                     padding: const EdgeInsets.all(0),
@@ -198,10 +214,11 @@ class Settings extends StatelessWidget {
                           }
 
                           if (context.mounted) {
-                            context.go("/auth-layer");
+                            clearAllProviders(context);
+                            context.push("/auth-layer");
                           }
                         } else {
-                          context.go(feature['goto'] as String);
+                          context.push(feature['goto'] as String);
                         }
                       },
                       trailing: Icon(

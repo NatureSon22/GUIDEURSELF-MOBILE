@@ -43,7 +43,7 @@ class HeaderDrawer extends StatelessWidget {
           ),
           GestureDetector(
             onTap: () {
-              context.go("/messages-chat");
+              context.push("/messages-chat");
             },
             child: const Icon(Icons.person, color: Color(0xFF323232)),
           ),

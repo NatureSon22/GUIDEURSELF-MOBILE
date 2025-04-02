@@ -2,10 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:guideurself/core/themes/style.dart';
+import 'package:guideurself/features/settings/chatbothistorylist.dart';
 import 'package:guideurself/services/setttings.dart';
 
-class ChatbotPreference extends StatelessWidget {
+class ChatbotPreference extends StatefulWidget {
   const ChatbotPreference({super.key});
+
+  @override
+  State<ChatbotPreference> createState() => _ChatbotPreferenceState();
+}
+
+class _ChatbotPreferenceState extends State<ChatbotPreference> {
+  bool hasDeleted = false;
 
   Future<void> _showCustomDialog(BuildContext rootContext) async {
     return showDialog<void>(
@@ -18,6 +26,9 @@ class ChatbotPreference extends StatelessWidget {
               setDialogState(() => isDeleting = true);
               try {
                 await deleteAllConversation();
+                setState(() {
+                  hasDeleted = true;
+                });
                 if (rootContext.mounted) {
                   Navigator.pop(rootContext);
 
@@ -41,6 +52,12 @@ class ChatbotPreference extends StatelessWidget {
                     ),
                   );
                 }
+
+                Future.delayed(const Duration(seconds: 1), () {
+                  setState(() {
+                    hasDeleted = false;
+                  });
+                });
               } catch (e) {
                 if (rootContext.mounted) {
                   Navigator.pop(rootContext);
@@ -185,31 +202,43 @@ class ChatbotPreference extends StatelessWidget {
         centerTitle: true,
       ),
       body: Container(
+        height: double.infinity,
         width: double.infinity,
         padding: const EdgeInsets.symmetric(horizontal: 35, vertical: 20),
-        child: OutlinedButton(
-          onPressed: () => _showCustomDialog(context),
-          style: OutlinedButton.styleFrom(
-              overlayColor: const Color.fromRGBO(239, 68, 68, 1),
-              backgroundColor: const Color.fromRGBO(239, 68, 68, 0.1),
-              side: const BorderSide(
-                color: Color.fromRGBO(239, 68, 68, 1),
-                width: 1,
-              )),
-          child: const Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.info, color: Color.fromRGBO(239, 68, 68, 1), size: 20),
-              SizedBox(width: 10),
-              Text(
-                "Clear Chat History",
-                style: TextStyle(
-                  color: Color.fromRGBO(239, 68, 68, 1),
-                  fontSize: 13,
-                ),
+        child: Column(
+          children: [
+            OutlinedButton(
+              onPressed: () => _showCustomDialog(context),
+              style: OutlinedButton.styleFrom(
+                  overlayColor: const Color.fromRGBO(239, 68, 68, 1),
+                  backgroundColor: const Color.fromRGBO(239, 68, 68, 0.1),
+                  side: const BorderSide(
+                    color: Color.fromRGBO(239, 68, 68, 1),
+                    width: 1,
+                  )),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.info,
+                      color: Color.fromRGBO(239, 68, 68, 1), size: 20),
+                  SizedBox(width: 10),
+                  Text(
+                    "Clear Chat History",
+                    style: TextStyle(
+                      color: Color.fromRGBO(239, 68, 68, 1),
+                      fontSize: 13,
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+            const Gap(30),
+            Expanded(
+              child: Chatbothistorylist(
+                hasDeleted: hasDeleted,
+              ),
+            )
+          ],
         ),
       ),
     );

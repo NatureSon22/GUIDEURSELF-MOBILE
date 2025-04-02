@@ -85,7 +85,7 @@ class ChatPreview extends StatelessWidget {
                         width: double.infinity,
                         child: ElevatedButton(
                           onPressed: () {
-                            context.go("/chatbot/");
+                            context.push("/chatbot/");
                           },
                           style: Theme.of(context).elevatedButtonTheme.style,
                           child: const Text(

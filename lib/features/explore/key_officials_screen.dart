@@ -31,7 +31,7 @@ class _KeyOfficialsScreenState extends State<KeyOfficialsScreen> {
         backgroundColor: Colors.white,
         scrolledUnderElevation: 0,
         leading: IconButton(
-          onPressed: () => context.go("/explore"),
+          onPressed: () => context.push("/explore"),
           icon: const Icon(Icons.arrow_back_ios_sharp),
         ),
       ),

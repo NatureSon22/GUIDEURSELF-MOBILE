@@ -107,16 +107,13 @@ class _MessageBubbleState extends State<MessageBubble> {
     final accountProvider = context.read<AccountProvider>();
     final account = accountProvider.account;
     final isGuest = account.isEmpty;
-
-    // Check if the content contains an "I don't know" message about university information
+    final String contentLower = widget.content.toLowerCase();
     final bool showChatButton = widget.isMachine &&
-        (widget.content
-                .toLowerCase()
-                .contains("i'm sorry, but i don't have that information") ||
-            widget.content.toLowerCase().contains("don't have that info") ||
-            (widget.content.toLowerCase().contains("contact") &&
-                widget.content.toLowerCase().contains("university") &&
-                widget.content.toLowerCase().contains("website")));
+        (contentLower.contains("couldn't find a direct answer") ||
+            contentLower.contains("for university-related questions") ||
+            contentLower.contains("please check official resources") ||
+            contentLower.contains("refine your query")) &&
+        !isGuest;
 
     return Align(
       alignment:
@@ -167,7 +164,7 @@ class _MessageBubbleState extends State<MessageBubble> {
                           // Heading styles
                           h1: styleText(
                             context: context,
-                            fontSizeOption: 13.5,
+                            fontSizeOption: 13.0,
                             color: const Color(0xFF323232),
                           ),
                           h2: styleText(
@@ -176,6 +173,11 @@ class _MessageBubbleState extends State<MessageBubble> {
                             color: const Color(0xFF323232),
                           ),
                           h3: styleText(
+                            context: context,
+                            fontSizeOption: 12.0,
+                            color: const Color(0xFF323232),
+                          ),
+                          h4: styleText(
                             context: context,
                             fontSizeOption: 12.0,
                             color: const Color(0xFF323232),
@@ -223,7 +225,7 @@ class _MessageBubbleState extends State<MessageBubble> {
                         width: double.infinity,
                         child: ElevatedButton(
                           onPressed: () {
-                            context.go("/messages-chat");
+                            context.push("/messages-chat");
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF12A5BC),

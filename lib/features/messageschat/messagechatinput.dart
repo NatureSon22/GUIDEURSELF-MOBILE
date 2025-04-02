@@ -66,21 +66,21 @@ class MessageChatInput extends HookWidget {
       ),
       child: Row(
         children: [
-          OutlinedButton(
-            onPressed: () {
-              debugPrint("Attach file button pressed");
-            },
-            style: OutlinedButton.styleFrom(
-              shape: const CircleBorder(),
-              side: BorderSide(
-                color: const Color(0xFF323232).withOpacity(0.1),
-                width: 1,
-              ),
-              padding: const EdgeInsets.all(8),
-              backgroundColor: Colors.white,
-            ),
-            child: const Icon(Icons.attach_file, size: 20),
-          ),
+          // OutlinedButton(
+          //   onPressed: () {
+          //     debugPrint("Attach file button pressed");
+          //   },
+          //   style: OutlinedButton.styleFrom(
+          //     shape: const CircleBorder(),
+          //     side: BorderSide(
+          //       color: const Color(0xFF323232).withOpacity(0.1),
+          //       width: 1,
+          //     ),
+          //     padding: const EdgeInsets.all(8),
+          //     backgroundColor: Colors.white,
+          //   ),
+          //   child: const Icon(Icons.attach_file, size: 20),
+          // ),
           const Gap(4),
           Expanded(
             child: TextField(

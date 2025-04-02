@@ -60,7 +60,7 @@ class _VirtualTourScreenIIState extends State<VirtualTourScreenII> {
         ),
         leading: IconButton(
           onPressed: () {
-            context.go("/");
+            context.push("/");
           },
           icon: const Icon(FontAwesomeIcons.doorOpen,
               color: Color.fromARGB(255, 248, 105, 95), size: 17),
@@ -75,7 +75,7 @@ class _VirtualTourScreenIIState extends State<VirtualTourScreenII> {
         actions: [
           IconButton(
             onPressed: () {
-              context.go("/campus-location-II");
+              context.push("/campus-location-II");
             },
             icon: const Icon(FontAwesomeIcons.map, size: 17),
           ),

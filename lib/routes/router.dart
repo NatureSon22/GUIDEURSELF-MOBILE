@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:guideurself/features/auth/forgotpassword.dart';
 import 'package:guideurself/features/auth/login.dart';
 import 'package:guideurself/features/chat/chatbot.dart';
+import 'package:guideurself/features/home/logo_vector_screen.dart';
 import 'package:guideurself/features/messageschat/messagechatlist.dart';
 import 'package:guideurself/features/messageschat/messageschat.dart';
 import 'package:guideurself/features/settings/editprofile.dart';
@@ -25,7 +26,6 @@ import 'package:guideurself/screens/splash.dart';
 import 'package:guideurself/widgets/bottomnavlayout.dart';
 
 import 'package:guideurself/features/explore/history_screen.dart';
-import 'package:guideurself/features/explore/logo_vector_screen.dart';
 import 'package:guideurself/features/explore/vision_mission_screen.dart';
 import 'package:guideurself/features/explore/key_officials_screen.dart';
 import 'package:guideurself/features/explore/campus_location_screen.dart';
@@ -223,15 +223,29 @@ CustomTransitionPage _buildSlidePage(GoRouterState state, Widget child) {
     key: state.pageKey,
     child: child,
     transitionsBuilder: (context, animation, secondaryAnimation, child) {
-      final slideAnimation = Tween<Offset>(
-        begin: const Offset(1, 0),
-        end: Offset.zero,
-      ).animate(animation);
+      // Apply slide animation only when navigating forward
+      final isForward = secondaryAnimation.status == AnimationStatus.dismissed;
 
-      return SlideTransition(
-        position: slideAnimation,
-        child: child,
-      );
+      if (isForward) {
+        final slideAnimation = Tween<Offset>(
+          begin: const Offset(1, 0), // Start from the right
+          end: Offset.zero, // Slide to center
+        ).animate(CurvedAnimation(
+          parent: animation,
+          curve: Curves.easeInOut,
+        ));
+
+        return SlideTransition(
+          position: slideAnimation,
+          child: child,
+        );
+      } else {
+        // Default behavior for backward navigation
+        return FadeTransition(
+          opacity: animation,
+          child: child,
+        );
+      }
     },
   );
 }

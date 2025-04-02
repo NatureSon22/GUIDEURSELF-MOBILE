@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:guideurself/core/themes/style.dart';
 import 'package:guideurself/features/messageschat/listmessages.dart';
 import 'package:guideurself/features/messageschat/messagechatinput.dart';
+import 'package:guideurself/providers/account.dart';
 import 'package:guideurself/providers/messagechat.dart';
 import 'package:guideurself/services/messagechats.dart';
 import 'package:guideurself/services/socket.dart';
@@ -15,8 +16,10 @@ class MessageChatList extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final socketService = useRef(SocketService());
+    final accountProvider = context.read<AccountProvider>();
     final messageChatProvider = context.read<MessageChatProvider>();
     final receiver = messageChatProvider.message;
+    final sender = accountProvider.account;
     final messages = useState<List<dynamic>>([]);
     final isLoading = useState(true);
     final isError = useState(false);
@@ -52,8 +55,10 @@ class MessageChatList extends HookWidget {
 
       final receiverId = receiver['_id']?.toString();
       if (receiverId == null || receiverId.isEmpty) return null;
+      debugPrint("Receiver ID: $receiverId");
+      debugPrint("Sender ID: ${sender['_id']}");
 
-      socketService.value.joinRoom(receiverId);
+      socketService.value.joinRoom(sender['_id'], receiverId);
       fetchMessages();
 
       void onNewMessage(dynamic newMessage) {

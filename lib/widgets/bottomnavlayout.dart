@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:go_router/go_router.dart';
+import 'package:guideurself/providers/bottomnav.dart';
 import 'package:guideurself/services/storage.dart';
+import 'package:provider/provider.dart';
 
 class BottomNavLayout extends StatelessWidget {
   final Widget child;
@@ -10,14 +12,24 @@ class BottomNavLayout extends StatelessWidget {
 
   int getSelectedIndex(BuildContext context) {
     final location = GoRouterState.of(context).path;
-    if (location == '/explore') return 1;
-    if (location == '/chat') return 2;
-    if (location == '/settings') return 3;
-    return 0;
+    switch (location) {
+      case '/explore':
+        return 1;
+      case '/chat':
+      case '/chatbot':
+        return 2;
+      case '/settings':
+        return 3;
+      default:
+        return 0;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final bottomNavProvider = context.watch<BottomNavProvider>();
+    final providerIndex = context.watch<BottomNavProvider>().index;
+
     return Scaffold(
       body: child,
       bottomNavigationBar: Container(
@@ -29,19 +41,24 @@ class BottomNavLayout extends StatelessWidget {
         ),
         child: GNav(
           gap: 5,
-          selectedIndex: getSelectedIndex(context),
+          selectedIndex: providerIndex,
           onTabChange: (index) async {
-            final hasVisited = storage.getData(key: "visited-chat");
+            final hasVisited =
+                await storage.getData(key: "visited-chat") ?? false;
 
-            final routes = hasVisited == true
+            final routes = hasVisited
                 ? ['/', '/explore', '/chatbot', '/settings']
                 : ['/', '/explore', '/chat', '/settings'];
 
             if (index == 2) {
-              storage.saveData(key: "visited-chat", value: true);
+              await storage.saveData(key: "visited-chat", value: true);
             }
 
-            context.go(routes[index]);
+            if (context.mounted) {
+              context.push(routes[index]);
+            }
+
+            bottomNavProvider.setIndex(index: index == 2 ? 0 : index);
           },
           tabs: [
             _buildNavItem(Icons.home_rounded, 'Home'),

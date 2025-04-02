@@ -68,7 +68,7 @@ class _CampusLocationScreenState extends State<CampusLocationScreen> {
                         child: GestureDetector(
                           onTap: () {
                             // Navigate to CampusDetailsScreen with the selected campus
-                            context.go("/campus-details", extra: campus);
+                            context.push("/campus-details", extra: campus);
                           },
                           child: const Icon(
                             Icons.location_pin,
@@ -189,7 +189,7 @@ class _CampusLocationScreenState extends State<CampusLocationScreen> {
                             icon: const Icon(
                                 Icons.location_pin), // Use any icon you want
                             onPressed: () {
-                              context.go("/virtual-tour");
+                              context.push("/virtual-tour");
                             },
                           ),
                         ],
@@ -216,7 +216,7 @@ class _CampusLocationScreenState extends State<CampusLocationScreen> {
                                   child: InkWell(
                                     onTap: () {
                                       // Navigate to CampusDetailsScreen with the selected campus
-                                      context.go("/campus-details",
+                                      context.push("/campus-details",
                                           extra: campus);
                                     },
                                     borderRadius: BorderRadius.circular(
