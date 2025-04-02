@@ -94,7 +94,7 @@ class MenuDrawer extends StatelessWidget {
         ),
       ),
       onTap: () {
-        context.go(path); // Navigate using GoRouter
+        context.push(path); // Navigate using GoRouter
       },
     );
   }

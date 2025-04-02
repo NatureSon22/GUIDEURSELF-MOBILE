@@ -1,64 +1,73 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:guideurself/providers/conversation.dart';
 import 'package:guideurself/services/conversation.dart';
-import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:go_router/go_router.dart';
 
-class HistoryList extends StatefulWidget {
-  const HistoryList({super.key});
+class Chatbothistorylist extends StatefulWidget {
+  final bool hasDeleted;
+  const Chatbothistorylist({super.key, required this.hasDeleted});
 
   @override
-  State<HistoryList> createState() => _HistoryListState();
+  State<Chatbothistorylist> createState() => _ChatbothistorylistState();
 }
 
-class _HistoryListState extends State<HistoryList> {
+class _ChatbothistorylistState extends State<Chatbothistorylist> {
   late Future<List<Map<String, dynamic>>> _futureMessages;
 
   @override
   void initState() {
     super.initState();
-    _futureMessages = getAllConversations(limit: 5);
+    _futureMessages = getAllConversations();
+  }
+
+  @override
+  void didUpdateWidget(covariant Chatbothistorylist oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.hasDeleted != oldWidget.hasDeleted && widget.hasDeleted) {
+      _fetchConversations();
+    }
+  }
+
+  void _fetchConversations() {
+    setState(() {
+      _futureMessages = getAllConversations();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      child: FutureBuilder<List<Map<String, dynamic>>>(
-        future: _futureMessages,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return _buildLoadingWidget();
-          }
+    return FutureBuilder<List<Map<String, dynamic>>>(
+      future: _futureMessages,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return _buildLoadingWidget();
+        }
 
-          if (snapshot.hasError) {
-            return _buildErrorWidget();
-          }
+        if (snapshot.hasError) {
+          return _buildErrorWidget();
+        }
 
-          final messages = snapshot.data ?? [];
+        final messages = snapshot.data ?? [];
 
-          if (messages.isEmpty) {
-            return Container(
-              decoration: BoxDecoration(
-                color: const Color(0xFF323232).withOpacity(0.03),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Center(
-                child: Text(
-                  "Your chat is empty",
-                  style: TextStyle(
-                    fontSize: 12.0,
-                    color: const Color(0xFF323232).withOpacity(0.7),
-                  ),
+        if (messages.isEmpty) {
+          return Container(
+            decoration: BoxDecoration(
+              color: const Color(0xFF323232).withOpacity(0.02),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Center(
+              child: Text(
+                "Your chat is empty",
+                style: TextStyle(
+                  fontSize: 12.0,
+                  color: const Color(0xFF323232).withOpacity(0.5),
                 ),
               ),
-            );
-          }
+            ),
+          );
+        }
 
-          return _buildMessageList(messages);
-        },
-      ),
+        return _buildMessageList(messages);
+      },
     );
   }
 
@@ -66,10 +75,10 @@ class _HistoryListState extends State<HistoryList> {
     return ListView.builder(
       padding: const EdgeInsets.all(0),
       physics: const AlwaysScrollableScrollPhysics(),
-      itemCount: 3,
+      itemCount: 5,
       itemBuilder: (context, index) {
         return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+          padding: const EdgeInsets.symmetric(vertical: 6.0),
           child: Shimmer.fromColors(
             baseColor: Colors.grey[300]!,
             highlightColor: Colors.grey[100]!,
@@ -128,8 +137,6 @@ class _HistoryListState extends State<HistoryList> {
   }
 
   Widget _buildMessageList(List<Map<String, dynamic>> messages) {
-    final conversationProvider = context.read<ConversationProvider>();
-
     return ListView.builder(
       padding: const EdgeInsets.all(0),
       physics: const AlwaysScrollableScrollPhysics(),
@@ -141,7 +148,7 @@ class _HistoryListState extends State<HistoryList> {
             : message['conversation_name'];
 
         return Container(
-          margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+          margin: const EdgeInsets.symmetric(vertical: 6),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(15),
@@ -152,28 +159,16 @@ class _HistoryListState extends State<HistoryList> {
           child: ListTile(
             leading: Icon(
               Icons.chat_bubble,
-              color: const Color(0xFF323232).withOpacity(0.8),
+              color: const Color(0xFF323232).withOpacity(0.5),
               size: 18,
             ),
             title: Text(
               title,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 11.5,
-                color: Color(0xFF323232),
+                color: const Color(0xFF323232).withOpacity(0.5),
               ),
             ),
-            trailing: Transform.rotate(
-              angle: pi,
-              child: Icon(
-                Icons.arrow_back_ios_new_rounded,
-                color: const Color(0xFF323232).withOpacity(0.2),
-                size: 18,
-              ),
-            ),
-            onTap: () {
-              conversationProvider.setConversation(conversation: message);
-              context.push("/chatbot");
-            },
           ),
         );
       },

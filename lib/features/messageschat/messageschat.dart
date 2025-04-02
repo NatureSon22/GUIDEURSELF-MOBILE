@@ -118,7 +118,7 @@ class _MessageschatState extends State<Messageschat> {
                   child: InkWell(
                     onTap: () {
                       messageChatProvider.setMessage(message: receiver);
-                      context.go("/messages-chatlist");
+                      context.push("/messages-chatlist");
                     },
                     splashColor: const Color(0xFF323232).withOpacity(0.04),
                     highlightColor: const Color(0xFF323232).withOpacity(0.03),

@@ -37,7 +37,7 @@ class _CampusDetailsScreenState extends State<CampusDetailsScreen> {
         scrolledUnderElevation: 0,
         leading: IconButton(
           onPressed: () {
-            context.go("/campus-location");
+            context.push("/campus-location");
           },
           icon: const Icon(
             Icons.arrow_back_ios_sharp,

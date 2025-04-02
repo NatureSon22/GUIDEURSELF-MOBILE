@@ -218,15 +218,29 @@ CustomTransitionPage _buildSlidePage(GoRouterState state, Widget child) {
     key: state.pageKey,
     child: child,
     transitionsBuilder: (context, animation, secondaryAnimation, child) {
-      final slideAnimation = Tween<Offset>(
-        begin: const Offset(1, 0),
-        end: Offset.zero,
-      ).animate(animation);
+      // Apply slide animation only when navigating forward
+      final isForward = secondaryAnimation.status == AnimationStatus.dismissed;
 
-      return SlideTransition(
-        position: slideAnimation,
-        child: child,
-      );
+      if (isForward) {
+        final slideAnimation = Tween<Offset>(
+          begin: const Offset(1, 0), // Start from the right
+          end: Offset.zero, // Slide to center
+        ).animate(CurvedAnimation(
+          parent: animation,
+          curve: Curves.easeInOut,
+        ));
+
+        return SlideTransition(
+          position: slideAnimation,
+          child: child,
+        );
+      } else {
+        // Default behavior for backward navigation
+        return FadeTransition(
+          opacity: animation,
+          child: child,
+        );
+      }
     },
   );
 }

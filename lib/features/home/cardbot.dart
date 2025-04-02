@@ -69,7 +69,7 @@ class CardBot extends StatelessWidget {
                   child: ElevatedButton(
                     onPressed: () {
                       final hasVisited = storage.getData(key: "visited-chat");
-                      context.go(hasVisited == true ? "/chatbot" : "/chat");
+                      context.push(hasVisited == true ? "/chatbot" : "/chat");
                     },
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 10),

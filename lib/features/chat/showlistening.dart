@@ -18,7 +18,7 @@ class _ShowlisteningState extends State<Showlistening> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 200,
+      width: 250,
       height: 150,
       child: Center(
         child: Image.asset(

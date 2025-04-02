@@ -37,14 +37,16 @@ class SocketService {
     socket.onError((data) {
       debugPrint('Socket error: $data');
     });
-
-    socket.connect();
   }
 
-  void joinRoom(String userId) {
+  void joinRoom(String userId, String otherUserId) {
+    if (userId == otherUserId) return; // Prevent joining the same user
+
+    String newRoomId = ([userId, otherUserId]..sort()).join("_");
+
     if (_isConnected) {
-      socket.emit("join", userId);
-      debugPrint("Joined room: $userId");
+      socket.emit("join", {"userId": userId, "otherUserId": otherUserId});
+      debugPrint("Joined room: $newRoomId");
     } else {
       debugPrint("Cannot join room, socket not connected.");
     }
@@ -87,7 +89,7 @@ class SocketService {
   }
 
   void dispose() {
-    socket.dispose();
+    socket.disconnect(); // Disconnect the socket
     _isConnected = false;
     debugPrint("Socket disconnected and disposed.");
   }

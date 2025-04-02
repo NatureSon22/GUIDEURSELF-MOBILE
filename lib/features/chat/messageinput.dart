@@ -189,6 +189,11 @@ class _MessageInputState extends State<MessageInput> {
 
   @override
   Widget build(BuildContext context) {
+    final accountProvider = context.read<AccountProvider>();
+    final account = accountProvider.account;
+    final isGuest = account.isEmpty;
+    int query = storage.getData(key: "query") ?? 0;
+
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 13),
       decoration: BoxDecoration(
@@ -202,7 +207,13 @@ class _MessageInputState extends State<MessageInput> {
       child: Row(
         children: [
           OutlinedButton(
-            onPressed: () => recordInput(context, widget.handleSendQuestion),
+            onPressed: () {
+              if (query == 5 && isGuest) {
+                outOfQueries();
+                return;
+              }
+              recordInput(context, widget.handleSendQuestion);
+            },
             style: OutlinedButton.styleFrom(
               shape: const CircleBorder(),
               side: BorderSide(

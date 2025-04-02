@@ -68,7 +68,7 @@ class _CampusLocationScreenIIIState extends State<CampusLocationScreenIII> {
                         child: GestureDetector(
                           onTap: () {
                             // Navigate to CampusDetailsScreen with the selected campus
-                            context.go("/campus-details", extra: campus);
+                            context.push("/campus-details", extra: campus);
                           },
                           child: const Icon(
                             Icons.location_pin,
@@ -189,7 +189,7 @@ class _CampusLocationScreenIIIState extends State<CampusLocationScreenIII> {
                             icon: const Icon(
                                 Icons.location_pin), // Use any icon you want
                             onPressed: () {
-                              context.go("/virtual-tour");
+                              context.push("/virtual-tour");
                             },
                           ),
                         ],

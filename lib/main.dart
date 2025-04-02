@@ -4,6 +4,7 @@ import 'package:guideurself/core/config/dioconfig.dart';
 import 'package:guideurself/core/themes/dark_theme.dart';
 import 'package:guideurself/core/themes/light_theme.dart';
 import 'package:guideurself/providers/account.dart';
+import 'package:guideurself/providers/bottomnav.dart';
 import 'package:guideurself/providers/conversation.dart';
 import 'package:guideurself/providers/loading.dart';
 import 'package:guideurself/providers/messagechat.dart';
@@ -32,8 +33,6 @@ void main() {
     final storage = StorageService();
     final hasVisitedSplash = storage.getData(key: "hasVisitedSplash") == true;
 
-    print(hasVisitedSplash);
-
     runApp(
       MultiProvider(
         providers: [
@@ -42,6 +41,7 @@ void main() {
           ChangeNotifierProvider(create: (context) => LoadingProvider()),
           ChangeNotifierProvider(create: (context) => Transcribing()),
           ChangeNotifierProvider(create: (context) => MessageChatProvider()),
+          ChangeNotifierProvider(create: (context) => BottomNavProvider()),
         ],
         child: QueryClientProvider(
           queryClient: queryClient,

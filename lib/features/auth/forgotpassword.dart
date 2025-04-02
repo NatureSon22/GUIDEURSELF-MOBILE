@@ -67,12 +67,12 @@ class _ForgotPasswordState extends State<ForgotPassword> {
 
       await handleResetPassword();
 
-      await Future.delayed(const Duration(seconds: 3));
-
-      if (mounted) {
-        Navigator.pop(context);
-        context.go("/login");
-      }
+      Future.delayed(const Duration(seconds: 2), () {
+        if (mounted) {
+          Navigator.pop(context);
+          context.go("/login");
+        }
+      });
     }
   }
 
@@ -97,7 +97,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
         height: MediaQuery.of(context).size.height,
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.only(left: 40, right: 40, top: 85),
+            padding: const EdgeInsets.only(left: 40, right: 40, top: 90),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
@@ -111,12 +111,12 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                     ),
                     const SizedBox(height: 5),
                     Text(
-                      "No worries! Enter your email address, and we'll send you a link to reset your password and get you back on track.",
+                      "No worries! Just enter your email, and we'll send you a new password to get you back on track.",
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
                   ],
                 ),
-                const SizedBox(height: 50),
+                const SizedBox(height: 35),
                 ForgotPasswordFields(
                   formKey: formKey,
                   emailController: emailController,
@@ -128,12 +128,12 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                     });
                   },
                 ),
-                const SizedBox(height: 50),
+                const SizedBox(height: 30),
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: handleResendPassword,
-                    child: const Text("Resend Password"),
+                    child: const Text("Reset Password"),
                   ),
                 ),
               ],

@@ -11,8 +11,6 @@ import 'package:provider/provider.dart';
 import 'package:record/record.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
-import 'package:gap/gap.dart';
-import 'package:go_router/go_router.dart';
 
 class RecordInputModal extends StatefulWidget {
   final Function handleSendQuestion;
@@ -24,62 +22,21 @@ class RecordInputModal extends StatefulWidget {
 
 class _RecordInputModalState extends State<RecordInputModal> {
   final AudioRecorder _record = AudioRecorder();
-  bool _isRecording = false;
+  bool _isRecording = true;
   String? _filePath;
-  final String _transcription = "Press the mic and start speaking...";
+  String _transcription = "Listening... Start speaking when ready";
   final storage = StorageService();
+
+  @override
+  void initState() {
+    super.initState();
+    _startRecording();
+  }
 
   @override
   void dispose() {
     _record.dispose();
     super.dispose();
-  }
-
-  void outOfQueries() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => AlertDialog(
-        insetPadding: const EdgeInsets.symmetric(horizontal: 35),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-        content: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              padding: const EdgeInsets.only(top: 5),
-              width: MediaQuery.of(context).size.width * 0.9,
-              child: const Text(
-                "Oops! You've reached your limit for this feature. Log in for more access.",
-                textAlign: TextAlign.center,
-                softWrap: true,
-                style: TextStyle(
-                    fontWeight: FontWeight.w500,
-                    fontSize: 11.5,
-                    height: 1.5,
-                    color: Color(0xFF323232)),
-              ),
-            ),
-            const Gap(20),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  context.go("/login");
-                },
-                style: ElevatedButton.styleFrom(
-                  textStyle: const TextStyle(fontSize: 14),
-                ),
-                child: const Text('Login'),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 
   Future<void> handleSendQuestion({required String question}) async {
@@ -92,11 +49,6 @@ class _RecordInputModalState extends State<RecordInputModal> {
     final isGuest = account.isEmpty;
     String? conversationId = conversation['conversation_id'];
     int query = storage.getData(key: "query") ?? 0;
-
-    if (isGuest == true && query == 5) {
-      outOfQueries();
-      return;
-    }
 
     final String tempMessageId =
         DateTime.now().millisecondsSinceEpoch.toString();
@@ -175,7 +127,7 @@ class _RecordInputModalState extends State<RecordInputModal> {
 
   Future<void> _startRecording() async {
     try {
-      if (_isRecording) return;
+      // if (_isRecording) return;
 
       final hasPermission = await _record.hasPermission();
       if (!hasPermission) {
@@ -212,8 +164,6 @@ class _RecordInputModalState extends State<RecordInputModal> {
         const RecordConfig(encoder: AudioEncoder.wav),
         path: filePath,
       );
-
-      setState(() => _isRecording = true);
     } catch (e) {
       debugPrint("Recording error: $e");
     }
@@ -221,10 +171,13 @@ class _RecordInputModalState extends State<RecordInputModal> {
 
   Future<void> _stopRecording() async {
     try {
-      if (!_isRecording) return;
+      // if (!_isRecording) return;
 
       await _record.stop();
-      setState(() => _isRecording = false);
+      setState(() {
+        _isRecording = false;
+        _transcription = "Transcribing your speech, please hold on";
+      });
 
       if (_filePath != null && await File(_filePath!).exists()) {
         _transcribeAudio();
@@ -277,7 +230,7 @@ class _RecordInputModalState extends State<RecordInputModal> {
                 "Transcription failed! Try again.",
                 style: styleText(
                   context: context,
-                  fontSizeOption: 12.0,
+                  fontSizeOption: 11.5,
                   color: Colors.white,
                 ),
               ),
@@ -309,17 +262,32 @@ class _RecordInputModalState extends State<RecordInputModal> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Showlistening(),
-          const SizedBox(height: 20),
+          Stack(
+            children: [
+              const Showlistening(),
+              Positioned(
+                bottom: 18,
+                child: Text(
+                  _transcription,
+                  style: styleText(
+                    context: context,
+                    fontSizeOption: 12.5,
+                    color: const Color(0xFF323232).withOpacity(0.8),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 15),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               shape: const CircleBorder(),
               padding: const EdgeInsets.all(20),
               backgroundColor: _isRecording
                   ? const Color.fromRGBO(239, 68, 68, 1)
-                  : const Color(0xFF12A5BC),
+                  : Colors.grey.shade400,
             ),
-            onPressed: _isRecording ? _stopRecording : _startRecording,
+            onPressed: _isRecording ? _stopRecording : () {},
             child: Icon(
               _isRecording ? Icons.stop : Icons.mic_outlined,
               size: 40,

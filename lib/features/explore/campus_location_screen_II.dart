@@ -68,7 +68,7 @@ class _CampusLocationScreenIIState extends State<CampusLocationScreenII> {
                         child: GestureDetector(
                           onTap: () {
                             // Navigate to CampusDetailsScreen with the selected campus
-                            context.go("/campus-details", extra: campus);
+                            context.push("/campus-details", extra: campus);
                           },
                           child: const Icon(
                             Icons.location_pin,
@@ -84,7 +84,7 @@ class _CampusLocationScreenIIState extends State<CampusLocationScreenII> {
 
               // ✅ Back Button Positioned on Top
               Positioned(
-                top: 30, // Adjust as needed
+                top: 30, 
                 left: 3, // Adjust for padding
                 child: IconButton(
                   onPressed: () {
@@ -187,9 +187,9 @@ class _CampusLocationScreenIIState extends State<CampusLocationScreenII> {
                           // Icon Button
                           IconButton(
                             icon: const Icon(
-                                Icons.location_pin), // Use any icon you want
+                                Icons.location_pin), 
                             onPressed: () {
-                              context.go("/virtual-tour");
+                              context.push("/virtual-tour");
                             },
                           ),
                         ],

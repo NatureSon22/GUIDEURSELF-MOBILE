@@ -245,7 +245,7 @@ class Chatbot extends HookWidget {
 
             await Future.delayed(const Duration(milliseconds: 100));
             if (context.mounted) {
-              context.go(hasVisited == true ? "/" : "/chat");
+              context.push(hasVisited == true ? "/" : "/chat");
               context.read<ConversationProvider>().resetConversation();
             }
           },

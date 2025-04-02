@@ -108,7 +108,7 @@ class _ExploreState extends State<Explore> {
                             ElevatedButton(
                               onPressed: () {
                                 // Navigate to the virtual tour screen
-                                context.go("/loading-screen");
+                                context.push("/loading-screen");
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor:
@@ -199,7 +199,7 @@ class _ExploreState extends State<Explore> {
                             ),
                             child: ElevatedButton(
                               onPressed: () {
-                                context.go(section["route"]!);
+                                context.push(section["route"]!);
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.transparent,
