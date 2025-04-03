@@ -10,7 +10,8 @@ class CampusLocationScreenIII extends StatefulWidget {
 
   @override
   // ignore: library_private_types_in_public_api
-  _CampusLocationScreenIIIState createState() => _CampusLocationScreenIIIState();
+  _CampusLocationScreenIIIState createState() =>
+      _CampusLocationScreenIIIState();
 }
 
 class _CampusLocationScreenIIIState extends State<CampusLocationScreenIII> {
@@ -30,7 +31,11 @@ class _CampusLocationScreenIIIState extends State<CampusLocationScreenIII> {
         future: _campusFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return Center(
+                child: CircularProgressIndicator(
+              color: const Color(0xFF12A5BC),
+              backgroundColor: const Color(0xFF323232).withOpacity(0.1),
+            ));
           } else if (snapshot.hasError) {
             return Center(child: Text("Error: ${snapshot.error}"));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {

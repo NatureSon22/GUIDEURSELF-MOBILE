@@ -266,8 +266,12 @@ class _PanoramaViewScreenState extends State<PanoramaViewScreen> {
                       builder: (context, snapshot) {
                         if (snapshot.connectionState ==
                             ConnectionState.waiting) {
-                          return const Center(
-                              child: CircularProgressIndicator());
+                          return Center(
+                              child: CircularProgressIndicator(
+                            color: const Color(0xFF12A5BC),
+                            backgroundColor:
+                                const Color(0xFF323232).withOpacity(0.1),
+                          ));
                         } else if (snapshot.hasError ||
                             snapshot.data?.universityLogoUrl == null) {
                           return const Center(child: Text("Failed to load"));

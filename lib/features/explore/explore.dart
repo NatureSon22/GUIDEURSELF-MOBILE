@@ -69,7 +69,7 @@ class _ExploreState extends State<Explore> {
                 ),
               ),
             ),
-        
+
             // Main Content
             Padding(
               padding: const EdgeInsets.all(0),
@@ -78,8 +78,8 @@ class _ExploreState extends State<Explore> {
                 children: [
                   // Intro Text & Button
                   Padding(
-                    padding:
-                        const EdgeInsets.only(left: 25.0, right: 25.0, top: 25.0),
+                    padding: const EdgeInsets.only(
+                        left: 25.0, right: 25.0, top: 25.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -111,8 +111,8 @@ class _ExploreState extends State<Explore> {
                                 context.push("/loading-screen");
                               },
                               style: ElevatedButton.styleFrom(
-                                backgroundColor:
-                                    Colors.transparent, // Transparent background
+                                backgroundColor: Colors
+                                    .transparent, // Transparent background
                                 shadowColor: Colors.transparent, // No shadow
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 16.0, vertical: 10.0),
@@ -133,7 +133,8 @@ class _ExploreState extends State<Explore> {
                                     size: 16,
                                   ),
                                   SizedBox(
-                                      width: 8), // Spacing between icon and text
+                                      width:
+                                          8), // Spacing between icon and text
                                   GradientText(
                                     'Enter Virtual Tour',
                                     style: TextStyle(
@@ -155,9 +156,9 @@ class _ExploreState extends State<Explore> {
                       ],
                     ),
                   ),
-        
+
                   const SizedBox(height: 15.0),
-        
+
                   const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 25.0),
                     child: Column(
@@ -178,9 +179,9 @@ class _ExploreState extends State<Explore> {
                       ],
                     ),
                   ),
-        
+
                   const SizedBox(height: 10.0),
-        
+
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(
@@ -225,9 +226,9 @@ class _ExploreState extends State<Explore> {
                       }).toList(),
                     ),
                   ),
-        
+
                   const SizedBox(height: 20.0),
-        
+
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 25.0),
                     child: Container(
@@ -235,8 +236,8 @@ class _ExploreState extends State<Explore> {
                       height: 300,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(20),
-                        border:
-                            Border.all(color: const Color(0xFF12A5BC), width: 2),
+                        border: Border.all(
+                            color: const Color(0xFF12A5BC), width: 2),
                       ),
                       child: Container(
                         decoration: BoxDecoration(
@@ -248,13 +249,18 @@ class _ExploreState extends State<Explore> {
                           builder: (context, snapshot) {
                             if (snapshot.connectionState ==
                                 ConnectionState.waiting) {
-                              return const Center(
-                                  child: CircularProgressIndicator());
+                              return Center(
+                                  child: CircularProgressIndicator(
+                                color: const Color(0xFF12A5BC),
+                                backgroundColor:
+                                    const Color(0xFF323232).withOpacity(0.1),
+                              ));
                             } else if (snapshot.hasError ||
                                 snapshot.data?.universityLogoUrl == null) {
-                              return const Center(child: Text("Failed to load"));
+                              return const Center(
+                                  child: Text("Failed to load"));
                             }
-        
+
                             final university = snapshot.data!;
                             return Column(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -282,7 +288,8 @@ class _ExploreState extends State<Explore> {
                                   'University Of Rizal System',
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
-                                      fontSize: 16, color: Colors.black,
+                                      fontSize: 16,
+                                      color: Colors.black,
                                       fontFamily: "Cinzel",
                                       fontWeight: FontWeight.bold),
                                 ),
@@ -291,7 +298,8 @@ class _ExploreState extends State<Explore> {
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                       fontFamily: "CinzelDecorative",
-                                      fontSize: 12, color: Colors.black),
+                                      fontSize: 12,
+                                      color: Colors.black),
                                 ),
                               ],
                             );

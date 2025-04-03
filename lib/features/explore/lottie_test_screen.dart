@@ -17,7 +17,10 @@ class GifTestScreen extends StatelessWidget {
           fit: BoxFit.cover,
           frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
             if (frame == null) {
-              return const CircularProgressIndicator(); // Show a loader while the GIF is loading
+              return CircularProgressIndicator(
+                color: const Color(0xFF12A5BC),
+                backgroundColor: const Color(0xFF323232).withOpacity(0.1),
+              ); // Show a loader while the GIF is loading
             }
             return child;
           },
