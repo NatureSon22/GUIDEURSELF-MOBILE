@@ -60,7 +60,7 @@ class _VirtualTourScreenIIState extends State<VirtualTourScreenII> {
         ),
         leading: IconButton(
           onPressed: () {
-            context.push("/");
+            context.go("/");
           },
           icon: const Icon(FontAwesomeIcons.doorOpen,
               color: Color.fromARGB(255, 248, 105, 95), size: 17),

@@ -140,14 +140,14 @@ class Login extends HookWidget {
                   children: [
                     TextButton(
                       onPressed: () {
-                        context.go("/privacy-legal-II");
+                        context.push("/privacy-legal-II");
                       },
                       child: const Text("Terms of Service"),
                     ),
                     const SizedBox(width: 5),
                     TextButton(
                       onPressed: () {
-                        context.go("/privacy-legal-II");
+                        context.push("/privacy-legal-II");
                       },
                       child: const Text("Privacy Policy"),
                     )

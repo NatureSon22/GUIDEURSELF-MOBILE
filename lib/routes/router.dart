@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:guideurself/features/auth/forgotpassword.dart';
 import 'package:guideurself/features/auth/login.dart';
 import 'package:guideurself/features/chat/chatbot.dart';
-import 'package:guideurself/features/home/logo_vector_screen.dart';
+import 'package:guideurself/features/explore/logo_vector_screen.dart';
 import 'package:guideurself/features/messageschat/messagechatlist.dart';
 import 'package:guideurself/features/messageschat/messageschat.dart';
 import 'package:guideurself/features/settings/editprofile.dart';
@@ -26,6 +26,7 @@ import 'package:guideurself/screens/splash.dart';
 import 'package:guideurself/widgets/bottomnavlayout.dart';
 
 import 'package:guideurself/features/explore/history_screen.dart';
+import 'package:guideurself/features/explore/history_screen_II.dart';
 import 'package:guideurself/features/explore/vision_mission_screen.dart';
 import 'package:guideurself/features/explore/key_officials_screen.dart';
 import 'package:guideurself/features/explore/campus_location_screen.dart';
@@ -38,6 +39,7 @@ import 'package:guideurself/features/explore/loading_screen.dart';
 
 final List<Map<String, dynamic>> sections = [
   {"title": "History", "path": "/history", "screen": const HistoryScreen()},
+  {"title": "History", "path": "/history-II", "screen": const HistoryScreenII()},
   {
     "title": "Logo & Vector",
     "path": "/logo-vector",

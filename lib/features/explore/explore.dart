@@ -30,7 +30,7 @@ class _ExploreState extends State<Explore> {
       {"title": "Vision, Mission & Core Values", "route": "/vision-mission"},
       {"title": "Key Officials", "route": "/key-officials"},
       {"title": "Campus Location", "route": "/campus-location"},
-      {"title": "Virtual Campus Tour", "route": "/loading-screen"},
+      {"title": "Virtual Campus Tour", "route": "/virtual-tour"},
     ];
 
     return Scaffold(
@@ -108,7 +108,7 @@ class _ExploreState extends State<Explore> {
                             ElevatedButton(
                               onPressed: () {
                                 // Navigate to the virtual tour screen
-                                context.push("/loading-screen");
+                                context.push("/virtual-tour");
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor:

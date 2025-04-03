@@ -27,7 +27,7 @@ class _LogoVectorScreenState extends State<LogoVectorScreen> {
           scrolledUnderElevation: 0,
           leading: IconButton(
             onPressed: () {
-              context.push("/explore");
+              context.go("/explore");
             },
             icon: const Icon(Icons.arrow_back_ios_sharp),
           ),
