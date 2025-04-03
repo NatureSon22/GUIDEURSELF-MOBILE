@@ -68,7 +68,7 @@ class MenuDrawer extends StatelessWidget {
                   _buildCenteredListTile(
                       context, "Campus Location", "/campus-location"),
                   _buildCenteredListTile(
-                      context, "Virtual Campus Tour", "/loading-screen"),
+                      context, "Virtual Campus Tour", "/virtual-tour"),
                 ],
               ),
             ),

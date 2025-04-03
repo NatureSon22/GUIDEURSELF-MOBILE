@@ -40,7 +40,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
       body: Stack(
         children: [
           Opacity(
-            opacity: 0.3,
+            opacity: 1,
             child: Container(
               decoration: const BoxDecoration(
                 image: DecorationImage(

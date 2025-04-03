@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 IconData getCategoryIcon(String category) {
   switch (category) {
@@ -15,7 +16,7 @@ IconData getCategoryIcon(String category) {
     case "Others (Miscellaneous)":
       return Icons.widgets; // Square plus icon
     default:
-      return Icons.help_outline; // Default unknown icon
+      return FontAwesomeIcons.info; // Default unknown icon
   }
 }
 
@@ -30,11 +31,11 @@ Color getCategoryColor(String category) {
     case "Campus Attraction":
       return Colors.green;
     case "Utility Areas":
-      return Colors.purple;
+      return const Color.fromARGB(255, 255, 91, 200);
     case "Others (Miscellaneous)":
       return const Color.fromARGB(255, 78, 185, 247);
     default:
-      return Colors.black;
+      return const Color.fromARGB(255, 221, 224, 0);
   }
 }
 

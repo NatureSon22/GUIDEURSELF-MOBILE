@@ -5,14 +5,14 @@ import '../../services/university_management_service.dart';
 import '../../models/university_management.dart';
 import 'package:go_router/go_router.dart';
 
-class HistoryScreen extends StatefulWidget {
-  const HistoryScreen({super.key});
+class HistoryScreenII extends StatefulWidget {
+  const HistoryScreenII({super.key});
 
   @override
-  _HistoryScreenState createState() => _HistoryScreenState();
+  _HistoryScreenIIState createState() => _HistoryScreenIIState();
 }
 
-class _HistoryScreenState extends State<HistoryScreen> {
+class _HistoryScreenIIState extends State<HistoryScreenII> {
   late Future<UniversityManagement> _universityFuture;
 
   @override
@@ -30,7 +30,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
         scrolledUnderElevation: 0,
         leading: IconButton(
           onPressed: () {
-            context.go("/explore");
+            context.go("/");
           },
           icon: const Icon(Icons.arrow_back_ios_sharp),
         ),
@@ -55,11 +55,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
             future: _universityFuture,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(
-                    child: CircularProgressIndicator(
-                  color: const Color(0xFF12A5BC),
-                  backgroundColor: const Color(0xFF323232).withOpacity(0.1),
-                ));
+                return const Center(child: CircularProgressIndicator());
               } else if (snapshot.hasError) {
                 return Center(child: Text("Error: ${snapshot.error}"));
               } else if (!snapshot.hasData ||

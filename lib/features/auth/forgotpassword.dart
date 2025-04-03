@@ -70,7 +70,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
       Future.delayed(const Duration(seconds: 2), () {
         if (mounted) {
           Navigator.pop(context);
-          context.go("/login");
+          context.push("/login");
         }
       });
     }

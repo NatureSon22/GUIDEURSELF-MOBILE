@@ -52,15 +52,27 @@ class _PanoramaViewScreenState extends State<PanoramaViewScreen> {
     super.initState();
     futureUniversityDetails = fetchUniversityDetails();
     _fetchCampuses();
+
+    // Always select the first floor, even if it has no markers
     if (widget.campus.floors.isNotEmpty) {
-      _selectedFloor = widget.campus.floors.first.floorName;
+      _selectedFloor =
+          widget.campus.floors.first.floorName; // Force first floor
     }
   }
 
-  void _onMarkerSelected(String markerPhotoUrl) {
+  void _onMarkerSelected(String? markerPhotoUrl) {
     setState(() {
-      _isMarkerSelected = true;
-      _selectedMarkerPhotoUrl = markerPhotoUrl;
+      if (markerPhotoUrl != null) {
+        // Case when a valid marker is selected
+        _isMarkerSelected = true;
+        _selectedMarkerPhotoUrl = markerPhotoUrl;
+      } else {
+        // Case when no valid markers are available
+        _isMarkerSelected = false;
+        // Optionally reset the selected marker photo
+        _selectedMarkerPhotoUrl = null;
+        // Keep showing the current floor without changing
+      }
     });
   }
 
@@ -73,7 +85,7 @@ class _PanoramaViewScreenState extends State<PanoramaViewScreen> {
   void _onFloorSelected(String floorName) {
     setState(() {
       _selectedFloor = floorName;
-      selectedFloorName = floorName; // Keep both variables in sync
+      selectedFloorName = floorName;
 
       final selectedFloor = _selectedCampus!.floors.firstWhere(
         (f) => f.floorName == floorName,
@@ -90,7 +102,7 @@ class _PanoramaViewScreenState extends State<PanoramaViewScreen> {
             longitude: 0.0,
             markerDescription: 'No description available',
             category: 'Others',
-            markerPhotoUrl: '',
+            markerPhotoUrl: '', // Empty URL means no panorama will load
             dateAdded: DateTime.now(),
           ),
         );
@@ -131,22 +143,24 @@ class _PanoramaViewScreenState extends State<PanoramaViewScreen> {
               ),
       );
 
-      String? initialPhotoUrl;
+      // Select the first floor, regardless of whether it has a marker
+      Floor firstFloor = initialCampus.floors.first;
 
-      for (var floor in initialCampus.floors) {
-        for (var marker in floor.markers) {
-          if (marker.markerPhotoUrl.isNotEmpty) {
-            initialPhotoUrl = marker.markerPhotoUrl;
-            break;
-          }
+      // Get the first available marker photo URL (if any)
+      String? initialPhotoUrl;
+      for (var marker in firstFloor.markers) {
+        if (marker.markerPhotoUrl.isNotEmpty) {
+          initialPhotoUrl = marker.markerPhotoUrl;
+          break;
         }
-        if (initialPhotoUrl != null) break;
       }
 
       setState(() {
         _campuses = campuses;
         _selectedCampus = initialCampus;
         _selectedMarkerPhotoUrl = initialPhotoUrl;
+        _selectedFloor = firstFloor.floorName;
+        selectedFloorName = firstFloor.floorName; // Ensure consistency
         _isLoading = false;
       });
     } catch (e) {
@@ -198,28 +212,26 @@ class _PanoramaViewScreenState extends State<PanoramaViewScreen> {
     final currentMarker = _getMarkerByPhotoUrl(currentMarkerPhotoUrl);
     bool hasMarkerPhoto = currentMarkerPhotoUrl.trim().isNotEmpty;
 
-    if (_selectedCampus != null && hasMarkerPhoto) {
+    if (_selectedCampus != null && currentMarkerPhotoUrl.isNotEmpty) {
+      bool found = false;
+
       for (var floor in _selectedCampus!.floors) {
         for (var marker in floor.markers) {
           if (marker.markerPhotoUrl == currentMarkerPhotoUrl) {
             selectedFloorName = floor.floorName;
+            currentFloorName = floor.floorName; // Use consistent naming
             currentFloorMarkers = floor.markers;
+            found = true;
             break;
           }
         }
-        if (selectedFloorName != "No Photo Available") break; // Stop if found
+        if (found) break;
       }
-    }
 
-    if (_selectedCampus != null) {
-      for (var floor in _selectedCampus!.floors) {
-        for (var marker in floor.markers) {
-          if (marker.markerPhotoUrl == currentMarkerPhotoUrl) {
-            currentFloorName = floor.floorName;
-            currentFloorMarkers = floor.markers;
-            break;
-          }
-        }
+      if (!found) {
+        selectedFloorName = "No Photo Available";
+        currentFloorName = "No Photo Available";
+        currentFloorMarkers = [];
       }
     }
 
@@ -408,22 +420,30 @@ class _PanoramaViewScreenState extends State<PanoramaViewScreen> {
                           onChanged: (Campus? newValue) {
                             if (newValue != null) {
                               String? newPhotoUrl;
+                              String?
+                                  firstFloorName; // Store the first floor name
 
-                              for (var floor in newValue.floors) {
-                                for (var marker in floor.markers) {
+                              if (newValue.floors.isNotEmpty) {
+                                firstFloorName = newValue.floors.first
+                                    .floorName; // Get the first floor
+
+                                for (var marker
+                                    in newValue.floors.first.markers) {
                                   if (marker.markerPhotoUrl.isNotEmpty) {
                                     newPhotoUrl = marker.markerPhotoUrl;
                                     break;
                                   }
                                 }
-                                if (newPhotoUrl != null) break;
                               }
 
                               setState(() {
                                 _selectedCampus = newValue;
                                 _selectedMarkerPhotoUrl = newPhotoUrl;
+                                _selectedFloor =
+                                    firstFloorName; // Set to first floor of new campus
+                                selectedFloorName =
+                                    firstFloorName; // Ensure consistency
                                 _isMarkerSelected = false;
-                                _selectedFloor = _selectedFloor;
                               });
                             }
                           },
@@ -474,7 +494,7 @@ class _PanoramaViewScreenState extends State<PanoramaViewScreen> {
                       }
                     },
                     icon: const Icon(
-                      FontAwesomeIcons.exclamation,
+                      FontAwesomeIcons.info,
                       color: Colors.black,
                       size: 16,
                     ),

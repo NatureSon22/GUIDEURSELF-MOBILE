@@ -50,7 +50,7 @@ class _CampusDetailsScreenState extends State<CampusDetailsScreen> {
         children: [
           // Background with Opacity
           Opacity(
-            opacity: 0.3,
+            opacity: 1,
             child: Container(
               decoration: const BoxDecoration(
                 image: DecorationImage(
