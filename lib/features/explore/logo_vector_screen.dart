@@ -49,7 +49,11 @@ class _LogoVectorScreenState extends State<LogoVectorScreen> {
             future: _universityFuture,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
+                return Center(
+                    child: CircularProgressIndicator(
+                  color: const Color(0xFF12A5BC),
+                  backgroundColor: const Color(0xFF323232).withOpacity(0.1),
+                ));
               } else if (snapshot.hasError) {
                 return Center(child: Text("Error: ${snapshot.error}"));
               } else if (!snapshot.hasData) {

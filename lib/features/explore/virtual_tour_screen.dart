@@ -96,7 +96,11 @@ class _VirtualTourScreenState extends State<VirtualTourScreen> {
             ),
           ),
           _isLoading
-              ? const Center(child: CircularProgressIndicator())
+              ? Center(
+                  child: CircularProgressIndicator(
+                  color: const Color(0xFF12A5BC),
+                  backgroundColor: const Color(0xFF323232).withOpacity(0.1),
+                ))
               : _error.isNotEmpty
                   ? Center(child: Text(_error))
                   : FutureBuilder<UniversityManagement>(
@@ -104,8 +108,12 @@ class _VirtualTourScreenState extends State<VirtualTourScreen> {
                       builder: (context, universitySnapshot) {
                         if (universitySnapshot.connectionState ==
                             ConnectionState.waiting) {
-                          return const Center(
-                              child: CircularProgressIndicator());
+                          return Center(
+                              child: CircularProgressIndicator(
+                            color: const Color(0xFF12A5BC),
+                            backgroundColor:
+                                const Color(0xFF323232).withOpacity(0.1),
+                          ));
                         } else if (universitySnapshot.hasError) {
                           return Center(
                             child: Text("Error: ${universitySnapshot.error}"),
@@ -232,7 +240,7 @@ class _VirtualTourScreenState extends State<VirtualTourScreen> {
                                   ),
                                 ),
                               );
-                            }).toList(),
+                            }),
                           ],
                         );
                       },

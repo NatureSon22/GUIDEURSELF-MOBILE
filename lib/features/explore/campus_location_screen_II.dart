@@ -30,7 +30,11 @@ class _CampusLocationScreenIIState extends State<CampusLocationScreenII> {
         future: _campusFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return Center(
+                child: CircularProgressIndicator(
+              color: const Color(0xFF12A5BC),
+              backgroundColor: const Color(0xFF323232).withOpacity(0.1),
+            ));
           } else if (snapshot.hasError) {
             return Center(child: Text("Error: ${snapshot.error}"));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
@@ -84,7 +88,7 @@ class _CampusLocationScreenIIState extends State<CampusLocationScreenII> {
 
               // ✅ Back Button Positioned on Top
               Positioned(
-                top: 30, 
+                top: 30,
                 left: 3, // Adjust for padding
                 child: IconButton(
                   onPressed: () {
@@ -186,8 +190,7 @@ class _CampusLocationScreenIIState extends State<CampusLocationScreenII> {
                           const SizedBox(width: 10), // Add some spacing
                           // Icon Button
                           IconButton(
-                            icon: const Icon(
-                                Icons.location_pin), 
+                            icon: const Icon(Icons.location_pin),
                             onPressed: () {
                               context.push("/virtual-tour");
                             },

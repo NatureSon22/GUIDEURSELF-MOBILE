@@ -56,7 +56,11 @@ class _KeyOfficialsScreenState extends State<KeyOfficialsScreen> {
             builder: (context, universitySnapshot) {
               if (universitySnapshot.connectionState ==
                   ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
+                return Center(
+                    child: CircularProgressIndicator(
+                  color: const Color(0xFF12A5BC),
+                  backgroundColor: const Color(0xFF323232).withOpacity(0.1),
+                ));
               } else if (universitySnapshot.hasError) {
                 return Center(
                   child: Padding(
@@ -82,7 +86,11 @@ class _KeyOfficialsScreenState extends State<KeyOfficialsScreen> {
                 future: _keyOfficialsFuture,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
+                    return Center(
+                        child: CircularProgressIndicator(
+                      color: const Color(0xFF12A5BC),
+                      backgroundColor: const Color(0xFF323232).withOpacity(0.1),
+                    ));
                   } else if (snapshot.hasError) {
                     return Center(
                       child: Padding(
@@ -221,7 +229,7 @@ class _KeyOfficialsScreenState extends State<KeyOfficialsScreen> {
                                     textAlign: TextAlign.center,
                                     softWrap: true, // Ensures wrapping
                                     style: const TextStyle(
-                              fontFamily: "Cinzel",
+                                      fontFamily: "Cinzel",
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -234,7 +242,7 @@ class _KeyOfficialsScreenState extends State<KeyOfficialsScreen> {
                                     textAlign: TextAlign.center,
                                     softWrap: true, // Ensures wrapping
                                     style: const TextStyle(
-                              fontFamily: "CinzelDecorative",
+                                      fontFamily: "CinzelDecorative",
                                       fontSize: 14,
                                       color: Colors.grey,
                                     ),
