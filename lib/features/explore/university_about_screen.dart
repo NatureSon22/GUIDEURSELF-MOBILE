@@ -5,14 +5,14 @@ import '../../services/university_management_service.dart';
 import '../../models/university_management.dart';
 import 'package:go_router/go_router.dart';
 
-class HistoryScreenII extends StatefulWidget {
-  const HistoryScreenII({super.key});
+class UniversityAboutScreen extends StatefulWidget {
+  const UniversityAboutScreen({super.key});
 
   @override
-  _HistoryScreenIIState createState() => _HistoryScreenIIState();
+  _UniversityAboutScreenState createState() => _UniversityAboutScreenState();
 }
 
-class _HistoryScreenIIState extends State<HistoryScreenII> {
+class _UniversityAboutScreenState extends State<UniversityAboutScreen> {
   late Future<UniversityManagement> _universityFuture;
 
   @override
@@ -59,12 +59,12 @@ class _HistoryScreenIIState extends State<HistoryScreenII> {
               } else if (snapshot.hasError) {
                 return Center(child: Text("Error: ${snapshot.error}"));
               } else if (!snapshot.hasData ||
-                  snapshot.data!.universityHistory == null) {
-                return const Center(child: Text("No history available."));
+                  snapshot.data!.universityAbout == null) {
+                return const Center(child: Text("No about available."));
               }
 
               String cleanedHtml = _removeBrTagsAndStyleStrong(
-                  snapshot.data!.universityHistory!);
+                  snapshot.data!.universityAbout!);
 
               // Scrollable Content
               return SingleChildScrollView(

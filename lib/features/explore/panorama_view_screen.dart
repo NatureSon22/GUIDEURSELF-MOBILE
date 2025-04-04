@@ -26,7 +26,6 @@ class _PanoramaViewScreenState extends State<PanoramaViewScreen> {
   List<Campus> _campuses = [];
   Campus? _selectedCampus;
   String? _selectedMarkerPhotoUrl;
-  bool _isLoading = true;
   bool _isMarkerSelected = false;
   String? selectedFloorName = "Unknown Floor";
   String? _selectedFloor;
@@ -114,7 +113,6 @@ class _PanoramaViewScreenState extends State<PanoramaViewScreen> {
   }
 
   Future<void> _fetchCampuses() async {
-    try {
       List<Campus> campuses = await _campusService.fetchAllCampuses();
 
       // Filter only campuses with markers that have a photo
@@ -161,13 +159,7 @@ class _PanoramaViewScreenState extends State<PanoramaViewScreen> {
         _selectedMarkerPhotoUrl = initialPhotoUrl;
         _selectedFloor = firstFloor.floorName;
         selectedFloorName = firstFloor.floorName; // Ensure consistency
-        _isLoading = false;
       });
-    } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
-    }
   }
 
   ButtonStyle _buttonStyle() {

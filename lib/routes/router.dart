@@ -8,7 +8,6 @@ import 'package:guideurself/features/messageschat/messagechatlist.dart';
 import 'package:guideurself/features/messageschat/messageschat.dart';
 import 'package:guideurself/features/settings/editprofile.dart';
 import 'package:guideurself/features/settings/about.dart';
-import 'package:guideurself/features/settings/aboutII.dart';
 import 'package:guideurself/features/settings/changepassword.dart';
 import 'package:guideurself/features/settings/chatbotpreference.dart';
 import 'package:guideurself/features/explore/explore.dart';
@@ -26,20 +25,19 @@ import 'package:guideurself/screens/splash.dart';
 import 'package:guideurself/widgets/bottomnavlayout.dart';
 
 import 'package:guideurself/features/explore/history_screen.dart';
-import 'package:guideurself/features/explore/history_screen_II.dart';
+import 'package:guideurself/features/explore/university_about_screen.dart';
 import 'package:guideurself/features/explore/vision_mission_screen.dart';
 import 'package:guideurself/features/explore/key_officials_screen.dart';
 import 'package:guideurself/features/explore/campus_location_screen.dart';
 import 'package:guideurself/features/explore/campus_location_screen_II.dart';
-import 'package:guideurself/features/explore/campus_location_screen_III.dart';
-import 'package:guideurself/features/explore/virtual_tour_screen.dart';
-import 'package:guideurself/features/explore/virtual_tour_screen_II.dart';
+import 'package:guideurself/features/explore/virtual_tour_container.dart';
+import 'package:guideurself/features/explore/virtual_tour_container_II.dart';
 import 'package:guideurself/features/explore/campus_details_screen_II.dart';
 import 'package:guideurself/features/explore/loading_screen.dart';
 
 final List<Map<String, dynamic>> sections = [
   {"title": "History", "path": "/history", "screen": const HistoryScreen()},
-  {"title": "History", "path": "/history-II", "screen": const HistoryScreenII()},
+  {"title": "About", "path": "/university-about", "screen": const UniversityAboutScreen()},
   {
     "title": "Logo & Vector",
     "path": "/logo-vector",
@@ -66,19 +64,14 @@ final List<Map<String, dynamic>> sections = [
     "screen": const CampusLocationScreenII()
   },
   {
-    "title": "Campus Location",
-    "path": "/campus-location-III",
-    "screen": const CampusLocationScreenIII()
-  },
-  {
     "title": "Virtual Campus Tour",
     "path": "/virtual-tour",
-    "screen": const VirtualTourScreen()
+    "screen": const VirtualTourContainer()
   },
   {
     "title": "Virtual Campus Tour",
     "path": "/virtual-tour-II",
-    "screen": const VirtualTourScreenII()
+    "screen": const VirtualTourContainerII()
   },
   {
     "title": "LoadingScreen",
@@ -210,10 +203,6 @@ GoRouter router(String initialRoute) {
       GoRoute(
         path: '/about',
         pageBuilder: (context, state) => _buildSlidePage(state, const About()),
-      ),
-      GoRoute(
-        path: '/about-II',
-        pageBuilder: (context, state) => _buildSlidePage(state, const AboutII()),
       ),
     ],
   );

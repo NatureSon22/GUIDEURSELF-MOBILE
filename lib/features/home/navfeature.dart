@@ -17,7 +17,7 @@ class NavFeature extends StatelessWidget {
           Flexible(
             child: GestureDetector(
               onTap: () {
-                context.push("/history-II");
+                context.push("/university-about");
               },
               child: Container(
                 padding:

@@ -1,3 +1,5 @@
+// ignore: file_names
+import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:guideurself/models/campus_model.dart';
@@ -96,8 +98,10 @@ class _CampusDetailsScreenState extends State<CampusDetailsScreen> {
                                     height: 60,
                                     fit: BoxFit.contain,
                                     errorBuilder: (context, error, stackTrace) {
-                                      print(
+                                      if (kDebugMode) {
+                                        print(
                                           "Failed to load vector image: ${university.universityVectorUrl}");
+                                      }
                                       return const Icon(
                                           Icons.image_not_supported);
                                     },
@@ -112,8 +116,10 @@ class _CampusDetailsScreenState extends State<CampusDetailsScreen> {
                                     height: 60,
                                     fit: BoxFit.contain,
                                     errorBuilder: (context, error, stackTrace) {
-                                      print(
+                                      if (kDebugMode) {
+                                        print(
                                           "Failed to load logo image: ${university.universityLogoUrl}");
+                                      }
                                       return const Icon(
                                           Icons.image_not_supported);
                                     },

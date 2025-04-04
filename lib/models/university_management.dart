@@ -2,6 +2,7 @@ class UniversityManagement {
   final String? universityLogoUrl;
   final String? universityVectorUrl;
   final String? universityHistory;
+  final String? universityAbout;
   final String? universityVision;
   final String? universityMission;
   final String? universityCoreValues;
@@ -10,6 +11,7 @@ class UniversityManagement {
     this.universityLogoUrl,
     this.universityVectorUrl,
     this.universityHistory,
+    this.universityAbout,
     this.universityVision,
     this.universityMission,
     this.universityCoreValues,
@@ -21,6 +23,7 @@ class UniversityManagement {
       universityLogoUrl: json['university_logo_url'],
       universityVectorUrl: json['university_vector_url'],
       universityHistory: json['university_history'],
+      universityAbout: json['university_about'],
       universityVision: json['university_vision'],
       universityMission: json['university_mission'],
       universityCoreValues: json['university_core_values'],
