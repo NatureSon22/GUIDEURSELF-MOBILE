@@ -4,7 +4,7 @@ class CategoryInfoModal extends StatelessWidget {
   final IconData icon;
   final String category;
   final String description;
-  final Color iconColor; 
+  final Color iconColor;
 
   const CategoryInfoModal({
     Key? key,
@@ -25,12 +25,26 @@ class CategoryInfoModal extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 50, color: iconColor),
+            Container(
+              width: 90, // Width of the container
+              height:
+                  90, // Height of the container (same as width to make it a circle)
+              decoration: const BoxDecoration(
+                color: Color.fromARGB(255, 235, 235, 235), // Set the background color to gray
+                shape: BoxShape.circle, // Make the container circular
+              ),
+              child: Icon(
+                icon, // Pass the icon here
+                size: 50, // Icon size
+                color: iconColor, // Icon color
+              ),
+            ),
             const SizedBox(height: 10),
             Text(
               category,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 18,
+                color: iconColor,
                 fontWeight: FontWeight.bold,
               ),
               textAlign: TextAlign.center,

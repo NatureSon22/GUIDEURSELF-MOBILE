@@ -76,7 +76,7 @@ class _CampusLocationScreenState extends State<CampusLocationScreen> {
                           },
                           child: const Icon(
                             Icons.location_pin,
-                            color: Colors.red,
+                            color: Color.fromARGB(255, 69, 160, 245),
                             size: 40,
                           ),
                         ),
@@ -131,8 +131,8 @@ class _CampusLocationScreenState extends State<CampusLocationScreen> {
         }
 
         return DraggableScrollableSheet(
-          initialChildSize: 0.12, // Start at 10% of screen
-          minChildSize: 0.12, // Minimum height
+          initialChildSize: 0.10, // Start at 10% of screen
+          minChildSize: 0.10, // Minimum height
           maxChildSize: 0.27, // Expand to 25% of screen
           builder: (context, scrollController) {
             return Container(
@@ -170,15 +170,13 @@ class _CampusLocationScreenState extends State<CampusLocationScreen> {
                               decoration: InputDecoration(
                                 hintText: "Find Campus",
                                 prefixIcon: const Icon(Icons.search),
-                                suffixIcon: searchController.text.isNotEmpty
-                                    ? IconButton(
+                                suffixIcon: IconButton(
                                         icon: const Icon(Icons.clear),
                                         onPressed: () {
                                           searchController.clear();
                                           filterCampuses('');
                                         },
-                                      )
-                                    : const Icon(Icons.search),
+                                      ),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10),
                                 ),

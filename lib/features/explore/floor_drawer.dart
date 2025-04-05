@@ -5,19 +5,25 @@ class MenuDrawer extends StatelessWidget {
   final String floorName;
   final List<Marker> markers;
   final VoidCallback onClose;
-  final Function(String?) onMarkerSelected; // Changed to accept nullable String
+  final VoidCallback onSet;
+  final Function(String?) onMarkerSelected; // This is for marker selection
+  final VoidCallback onSetFirstTime;
 
-  MenuDrawer({
+  const MenuDrawer({
     Key? key,
     required this.floorName,
     required this.markers,
     required this.onClose,
+    required this.onSet,
     required this.onMarkerSelected,
+    required this.onSetFirstTime,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final validMarkers = markers.where((marker) => marker.markerPhotoUrl.isNotEmpty).toList();
+    // Filter out markers with empty photo URLs
+    final validMarkers =
+        markers.where((marker) => marker.markerPhotoUrl.isNotEmpty).toList();
     final hasMarkers = validMarkers.isNotEmpty;
 
     return Drawer(
@@ -28,17 +34,12 @@ class MenuDrawer extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Header Section
-          Padding(
-            padding: const EdgeInsets.only(
-                right: 24.0, left: 10.0, top: 24.0, bottom: 10.0),
+          const Padding(
+            padding: EdgeInsets.only(right: 10, left: 10, top: 30, bottom: 20),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                IconButton(
-                  icon: const Icon(Icons.menu),
-                  onPressed: onClose,
-                ),
-                const Column(
+                Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
@@ -69,18 +70,18 @@ class MenuDrawer extends StatelessWidget {
 
           // Floor Name
           Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: hasMarkers
-              ? Text(
-                  floorName,
-                  style: const TextStyle(
-                    color: Color.fromARGB(255, 133, 133, 133),
-                    fontSize: 10,
-                    fontWeight: FontWeight.w500,
-                  ),
-                )
-              : null,  // Returns null when hasMarkers is false
-        ),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: hasMarkers
+                ? Text(
+                    floorName,
+                    style: const TextStyle(
+                      color: Color.fromARGB(255, 133, 133, 133),
+                      fontSize: 10,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  )
+                : null, // Returns null when hasMarkers is false
+          ),
 
           // Marker List
           Expanded(
@@ -103,8 +104,11 @@ class MenuDrawer extends StatelessWidget {
                             textAlign: TextAlign.center,
                           ),
                           onTap: () {
-                            onMarkerSelected(marker.markerPhotoUrl);
-                            Navigator.of(context).pop();
+                            onSet();
+                            onSetFirstTime(); // Call the function to set first time false
+                            onMarkerSelected(marker
+                                .markerPhotoUrl); // Handle marker selection
+                            Navigator.of(context).pop(); // Close the drawer
                           },
                         ),
                       );

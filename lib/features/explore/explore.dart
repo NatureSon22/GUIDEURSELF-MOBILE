@@ -35,7 +35,12 @@ class _ExploreState extends State<Explore> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Explore'),
+        backgroundColor: Colors.white,
+        scrolledUnderElevation: 0,
+        title: const Text(
+          'Explore',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+        ),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
@@ -53,25 +58,25 @@ class _ExploreState extends State<Explore> {
         ],
       ),
       endDrawer: const MenuDrawer(),
-      body: SingleChildScrollView(
-        child: Stack(
-          children: [
-            // Background Image
-            Opacity(
-              opacity: 1,
-              child: Container(
-                decoration: const BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage('lib/assets/images/background-img.png'),
-                    fit: BoxFit.cover,
-                    alignment: Alignment(0.2, -1),
-                  ),
+      body: Stack(
+        children: [
+          // Background Image
+          Opacity(
+            opacity: 1,
+            child: Container(
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('lib/assets/images/background-img.png'),
+                  fit: BoxFit.cover,
+                  alignment: Alignment(0.2, -1),
                 ),
               ),
             ),
+          ),
 
-            // Main Content
-            Padding(
+          // Main Content - Now scrollable
+          SingleChildScrollView(
+            child: Padding(
               padding: const EdgeInsets.all(0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -241,6 +246,7 @@ class _ExploreState extends State<Explore> {
                       ),
                       child: Container(
                         decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
                           color: const Color.fromARGB(255, 94, 139, 197)
                               .withOpacity(0.15),
                         ),
@@ -249,12 +255,8 @@ class _ExploreState extends State<Explore> {
                           builder: (context, snapshot) {
                             if (snapshot.connectionState ==
                                 ConnectionState.waiting) {
-                              return Center(
-                                  child: CircularProgressIndicator(
-                                color: const Color(0xFF12A5BC),
-                                backgroundColor:
-                                    const Color(0xFF323232).withOpacity(0.1),
-                              ));
+                              return const Center(
+                                  child: CircularProgressIndicator());
                             } else if (snapshot.hasError ||
                                 snapshot.data?.universityLogoUrl == null) {
                               return const Center(
@@ -308,11 +310,13 @@ class _ExploreState extends State<Explore> {
                       ),
                     ),
                   ),
+                  // Add some bottom padding to account for the scroll
+                  const SizedBox(height: 20.0),
                 ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

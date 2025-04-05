@@ -215,7 +215,7 @@ class _VirtualTourScreenState extends State<VirtualTourScreen> {
                                             85, 121, 233, 250)
                                         : Colors.grey,
                                     foregroundColor:
-                                        Color.fromARGB(255, 52, 113, 122),
+                                        Color.fromARGB(255, 18, 165, 188),
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 13),
                                     minimumSize: const Size(100, 30),

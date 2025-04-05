@@ -10,6 +10,7 @@ class FloorListDrawer extends StatefulWidget {
   final String? selectedFloor;
   final Function(String) onFloorSelected;
   final VoidCallback onClose;
+  final VoidCallback onSet;
   final Function(String) onMarkerSelected;
 
   const FloorListDrawer({
@@ -18,6 +19,7 @@ class FloorListDrawer extends StatefulWidget {
     required this.selectedFloor,
     required this.onFloorSelected,
     required this.onClose,
+    required this.onSet,
     required this.onMarkerSelected,
   });
 
@@ -33,7 +35,7 @@ class _FloorListDrawerState extends State<FloorListDrawer> {
   UniqueKey _mapKey = UniqueKey();
   String? _localSelectedFloor;
   String? _floorPhotoUrl;
-  bool _isExpanded = false;
+  bool _isExpanded = true;
   List<flutter_map.Marker> _currentMarkers = [];
   bool _isGridLayout = false;
 
@@ -129,6 +131,7 @@ class _FloorListDrawerState extends State<FloorListDrawer> {
                     Text(
                       marker.markerDescription,
                       style: const TextStyle(fontSize: 11),
+                      textAlign: TextAlign.justify,
                     ),
 
                     const SizedBox(height: 15), // Spacing
@@ -216,7 +219,7 @@ class _FloorListDrawerState extends State<FloorListDrawer> {
 
     if (_isExpanded) {
       _controller.animateTo(
-        0, // Use minChildSize and maxChildSize dynamically
+        0.13, // Use minChildSize and maxChildSize dynamically
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
       );
@@ -280,15 +283,15 @@ class _FloorListDrawerState extends State<FloorListDrawer> {
                   borderRadius: BorderRadius.circular(20.0),
                   color: Colors.white,
                 ),
-                child: const Column(
+                child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(
-                      Icons.location_off,
-                      size: 30,
-                      color: Colors.redAccent,
+                    Image.asset(
+                      'lib/assets/webp/head_vterror.gif',
+                      width: 150,
+                      height: 150,
+                      fit: BoxFit.contain,
                     ),
-                    const SizedBox(height: 15),
                     const Text(
                       "Location Not Found",
                       style: TextStyle(
@@ -334,9 +337,10 @@ class _FloorListDrawerState extends State<FloorListDrawer> {
 
         if (floor.markers.any((m) => m.markerPhotoUrl.isNotEmpty)) {
           widget.onClose();
+          widget.onSet();
         } else {
-          widget.onMarkerSelected("");
           widget.onClose();
+          widget.onSet();
         }
       },
       // Removed invalid 'style' parameter
@@ -373,12 +377,12 @@ class _FloorListDrawerState extends State<FloorListDrawer> {
 
     return DraggableScrollableSheet(
       controller: _controller,
-      initialChildSize: 1,
-      minChildSize: 0,
+      initialChildSize: 0.13,
+      minChildSize: 0.13,
       maxChildSize: 1,
       builder: (context, scrollController) {
         return Container(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.only(bottom: 20, left: 20, right: 20),
           decoration: const BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.only(
@@ -391,14 +395,13 @@ class _FloorListDrawerState extends State<FloorListDrawer> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Center(
-                  child: Container(
-                    width: 50,
-                    height: 5,
-                    decoration: BoxDecoration(
-                      color: const Color.fromARGB(255, 253, 253, 253),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
+                Container(
+                  width: 50,
+                  height: 5,
+                  margin: const EdgeInsets.only(top: 15),
+                  decoration: BoxDecoration(
+                    color: Colors.grey,
+                    borderRadius: BorderRadius.circular(10),
                   ),
                 ),
                 const SizedBox(height: 15),
@@ -426,6 +429,13 @@ class _FloorListDrawerState extends State<FloorListDrawer> {
                               },
                             ),
                           ),
+                          onTap: () {
+                            _controller.animateTo(
+                              1.0,
+                              duration: const Duration(milliseconds: 300),
+                              curve: Curves.easeInOut,
+                            );
+                          },
                           onSubmitted: (value) {
                             // Call _searchMarker only if the search query is not empty
                             if (value.trim().isNotEmpty) {
@@ -475,15 +485,21 @@ class _FloorListDrawerState extends State<FloorListDrawer> {
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(50),
                         border: Border.all(
-                          color: Colors.black,
+                          color: _isExpanded
+                              ? Colors.black
+                              : const Color.fromARGB(255, 18, 165, 188),
                           width: 1,
                         ),
                       ),
                       child: IconButton(
-                        icon: const Icon(
-                          Icons.arrow_downward,
+                        icon: Icon(
+                          _isExpanded
+                              ?  Icons.arrow_upward
+                              : Icons.arrow_downward,
                           size: 20,
-                          color: Colors.black,
+                          color: _isExpanded
+                              ? Colors.black
+                              : const Color.fromARGB(255, 18, 165, 188),
                         ),
                         onPressed: _toggleExpanded,
                       ),

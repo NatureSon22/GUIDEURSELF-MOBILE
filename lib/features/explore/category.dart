@@ -23,11 +23,11 @@ IconData getCategoryIcon(String category) {
 Color getCategoryColor(String category) {
   switch (category) {
     case "Academic Spaces":
-      return Colors.blue;
+      return const Color.fromARGB(255, 243, 240, 33);
     case "Administrative Offices":
       return Colors.red;
     case "Student Services":
-      return Colors.orange;
+      return Colors.blue;
     case "Campus Attraction":
       return Colors.green;
     case "Utility Areas":
@@ -35,7 +35,7 @@ Color getCategoryColor(String category) {
     case "Others (Miscellaneous)":
       return const Color.fromARGB(255, 78, 185, 247);
     default:
-      return const Color.fromARGB(255, 221, 224, 0);
+      return const Color.fromARGB(255, 38, 129, 248);
   }
 }
 

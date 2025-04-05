@@ -37,16 +37,6 @@ class _CampusDetailsScreenState extends State<CampusDetailsScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
         scrolledUnderElevation: 0,
-        leading: IconButton(
-          onPressed: () {
-            context.push("/campus-location");
-          },
-          icon: const Icon(
-            Icons.arrow_back_ios_sharp,
-            color: Colors.black,
-            size: 24,
-          ),
-        ),
       ),
       body: Stack(
         children: [

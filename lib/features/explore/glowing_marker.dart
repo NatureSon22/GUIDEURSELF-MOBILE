@@ -27,10 +27,10 @@ class _GlowingMarkerState extends State<GlowingMarker>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 2),
+      duration: const Duration(seconds: 1),
     );
 
-    _animation = Tween<double>(begin: 23, end: 33).animate(CurvedAnimation(
+    _animation = Tween<double>(begin: 27, end: 40).animate(CurvedAnimation(
       parent: _controller,
       curve: Curves.easeOut, // Smooth one-way expansion
     ));
@@ -76,8 +76,8 @@ class _GlowingMarkerState extends State<GlowingMarker>
           ),
           // Background for the icon
           Container(
-            width: 22, // Fixed size background
-            height: 22,
+            width: 26, // Fixed size background
+            height: 26,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: categoryColor, // Solid color background
@@ -86,7 +86,7 @@ class _GlowingMarkerState extends State<GlowingMarker>
               child: Icon(
                 getCategoryIcon(widget.category),
                 color: Colors.white,
-                size: 14,
+                size: 18,
               ),
             ),
           ),
