@@ -1,20 +1,20 @@
 import 'package:dio/dio.dart';
 import '../../models/general_settings.dart';
+import 'package:guideurself/core/config/dioconfig.dart';
 
 class GeneralSettingsService {
-  final Dio _dio = Dio();
-  final String _baseUrl = "https://guideurself-web.onrender.com/api/generalsettings";
-
+  // Fetch general settings
   Future<GeneralSettings> fetchGeneralSettings() async {
     try {
-      final response = await _dio.get(_baseUrl);
-      if (response.statusCode == 200) {
+      final response = await dio.get("/general/675cdd2056f690410f1473b7");
+
+      if (response.statusCode == 200 && response.data != null) {
         return GeneralSettings.fromJson(response.data);
       } else {
-        throw Exception("Failed to load general settings");
+        throw Exception("Failed to load general settings.");
       }
-    } catch (e) {
-      throw Exception("Error fetching general settings: $e");
+    } on DioException catch (_) {
+      throw Exception('Failed to fetch general settings.');
     }
   }
 }

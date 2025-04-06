@@ -151,32 +151,9 @@ class _PanoramaViewScreenState extends State<PanoramaViewScreen> {
             ),
     );
 
-    // Select the first floor, regardless of whether it has a marker
-    Floor firstFloor = initialCampus.floors.firstWhere(
-      (floor) => floor.markers.isNotEmpty,
-      orElse: () => initialCampus.floors.first,
-    );
-
-    // Get the first available marker photo URL (if any)
-    String? initialPhotoUrl;
-    for (var marker in firstFloor.markers) {
-      if (marker.markerPhotoUrl.isNotEmpty) {
-        initialPhotoUrl = marker.markerPhotoUrl;
-        break;
-      }
-    }
-
-    final firstFloorWithMarkers = initialCampus.floors.firstWhere(
-      (floor) => floor.markers.isNotEmpty,
-      orElse: () => initialCampus.floors.first,
-    );
-
     setState(() {
       _campuses = campuses;
       _selectedCampus = initialCampus;
-      _selectedMarkerPhotoUrl = initialPhotoUrl;
-      _selectedFloor = firstFloorWithMarkers.floorName;
-      selectedFloorName = firstFloorWithMarkers.floorName;
     });
   }
 
@@ -336,7 +313,7 @@ class _PanoramaViewScreenState extends State<PanoramaViewScreen> {
                                         ),
                                         SizedBox(height: 10),
                                         Text(
-                                          "To kick things off, select a location to start our\nadventure!",
+                                          "To kick things off, select a floor to start our\nadventure!",
                                           textAlign: TextAlign.center,
                                           style: TextStyle(
                                             fontSize: 13,
@@ -371,8 +348,7 @@ class _PanoramaViewScreenState extends State<PanoramaViewScreen> {
                               isFirstTime
                                   ? GestureDetector(
                                       onTap: () {
-                                        _scaffoldKey.currentState
-                                            ?.openEndDrawer();
+                                        _onSelectFloor();
                                       },
                                       child: Container(
                                         width: 130, // Set fixed width
@@ -385,7 +361,7 @@ class _PanoramaViewScreenState extends State<PanoramaViewScreen> {
                                         ),
                                         child: const Center(
                                           child: Text(
-                                            "Select Location",
+                                            "Select Floor",
                                             style: TextStyle(
                                               color: Color.fromARGB(255, 18,
                                                   165, 188), // ✅ Text color
@@ -569,11 +545,11 @@ class _PanoramaViewScreenState extends State<PanoramaViewScreen> {
               alignment: Alignment.bottomCenter,
               child: AnimatedSlide(
                 offset: _isSetFloorSelected ? Offset(0, 0) : Offset(0, 1),
-                duration: const Duration(milliseconds: 400),
+                duration: const Duration(milliseconds: 1000),
                 curve: Curves.easeOut,
                 child: AnimatedOpacity(
                   opacity: _isSetFloorSelected ? 1.0 : 0.0,
-                  duration: const Duration(milliseconds: 400),
+                  duration: const Duration(milliseconds: 1000),
                   curve: Curves.easeOut,
                   child: _isSetFloorSelected
                       ? FloorListDrawer(

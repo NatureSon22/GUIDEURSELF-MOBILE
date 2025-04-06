@@ -116,7 +116,7 @@ class MenuDrawer extends StatelessWidget {
                   )
                 : const Center(
                     child: Text(
-                      "No markers available",
+                      "Select another floor",
                       style: TextStyle(fontSize: 14),
                     ),
                   ),

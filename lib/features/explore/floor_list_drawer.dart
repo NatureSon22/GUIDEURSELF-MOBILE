@@ -377,7 +377,7 @@ class _FloorListDrawerState extends State<FloorListDrawer> {
 
     return DraggableScrollableSheet(
       controller: _controller,
-      initialChildSize: 0.13,
+      initialChildSize: 0.18,
       minChildSize: 0.13,
       maxChildSize: 1,
       builder: (context, scrollController) {
@@ -385,6 +385,12 @@ class _FloorListDrawerState extends State<FloorListDrawer> {
           padding: const EdgeInsets.only(bottom: 20, left: 20, right: 20),
           decoration: const BoxDecoration(
             color: Colors.white,
+            border: Border(
+              top: BorderSide(
+                color: Colors.grey, 
+                width: 1.0,
+              ),
+            ),
             borderRadius: BorderRadius.only(
               topLeft: Radius.circular(20),
               topRight: Radius.circular(20),
@@ -494,7 +500,7 @@ class _FloorListDrawerState extends State<FloorListDrawer> {
                       child: IconButton(
                         icon: Icon(
                           _isExpanded
-                              ?  Icons.arrow_upward
+                              ? Icons.arrow_upward
                               : Icons.arrow_downward,
                           size: 20,
                           color: _isExpanded

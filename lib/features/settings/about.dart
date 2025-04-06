@@ -1,11 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_html/flutter_html.dart';
+import 'package:html/parser.dart' as html_parser;
 import 'package:guideurself/core/themes/style.dart';
 import 'package:guideurself/widgets/textgradient.dart';
+import '../../services/general_settings_service.dart';
+import '../../models/general_settings.dart';
 
-class About extends StatelessWidget {
+class About extends StatefulWidget {
   const About({super.key});
+
+  @override
+  _AboutState createState() => _AboutState();
+}
+
+class _AboutState extends State<About> {
+  late Future<GeneralSettings> _generalFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _generalFuture = GeneralSettingsService().fetchGeneralSettings();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +49,7 @@ class About extends StatelessWidget {
         centerTitle: true,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -54,60 +71,52 @@ class About extends StatelessWidget {
               ),
             ),
             const Gap(15),
-            Text(
-              "GuideURSelf is a mobile-based service desk solution designed specifically for the University of Rizal System (URS). Aiming to streamline information dissemination and enhance campus experiences, GuideURSelf integrates advanced chatbot technology and immersive virtual tours to offer users efficient, self-service support. By combining AI-driven responses and interactive navigation, GuideURSelf enables students, faculty, and visitors to access essential campus information and guidance on-the-go, saving time and reducing the need for manual inquiries.",
-              textAlign: TextAlign.justify,
-              style: styleText(
-                context: context,
-                fontSizeOption: 12.0,
-              ),
-            ),
-            const Gap(15),
-            Container(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                "Key Features:",
-                style: styleText(
-                  context: context,
-                  fontSizeOption: 12.0,
-                ),
-              ),
-            ),
-            const Gap(5),
-            Text(
-              "Automated Chatbot: GuideURSelf’s chatbot provides real-time, reliable answers to common questions related to URS processes, making it easier for users to access needed information without waiting.",
-              textAlign: TextAlign.justify,
-              style: styleText(
-                context: context,
-                fontSizeOption: 12.0,
-              ),
-            ),
-            const Gap(3),
-            Text(
-              "Virtual Campus Tours: With virtual tours covering all ten URS campuses, users can explore facilities and locations, improving orientation and navigation.",
-              textAlign: TextAlign.justify,
-              style: styleText(
-                context: context,
-                fontSizeOption: 12.0,
-              ),
-            ),
-            const Gap(3),
-            Text(
-              "User-Focused Design: Designed with students, faculty, and guests in mind, GuideURSelf prioritizes ease of use and accessibility to support diverse needs within the university community.",
-              textAlign: TextAlign.justify,
-              style: styleText(
-                context: context,
-                fontSizeOption: 12.0,
-              ),
-            ),
-            const Gap(15),
-            Text(
-              "GuideURSelf is committed to enhancing URS community interactions by offering a digital platform that is efficient, reliable, and accessible to all users, ensuring a seamless experience in managing campus-related inquiries and navigation.",
-              textAlign: TextAlign.justify,
-              style: styleText(
-                context: context,
-                fontSizeOption: 12.0,
-              ),
+
+            // FutureBuilder for fetching data
+            FutureBuilder<GeneralSettings>(
+              future: _generalFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text("Error: ${snapshot.error}"));
+                } else if (!snapshot.hasData ||
+                    snapshot.data!.generalAbout == null) {
+                  return const Center(child: Text("No about available."));
+                }
+
+                String cleanedHtml =
+                    _removeBrTagsAndStyleStrong(snapshot.data!.generalAbout!);
+
+                // Scrollable Content
+                return SingleChildScrollView(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(12.0),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.3),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: const Color.fromARGB(255, 235, 235, 235),
+                            width: 1,
+                          ),
+                        ),
+                        child: Html(
+                          data: cleanedHtml,
+                          style: {
+                            "body": Style(
+                              textAlign: TextAlign.justify,
+                            ),
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
             ),
             const Gap(30),
             SizedBox(
@@ -156,5 +165,12 @@ class About extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  /// Cleans up HTML content: removes `<br>` tags and styles `<strong>` elements
+  String _removeBrTagsAndStyleStrong(String htmlContent) {
+    var document = html_parser.parse(htmlContent);
+    document.querySelectorAll('br').forEach((br) => br.remove());
+    return document.body?.innerHtml ?? htmlContent;
   }
 }
