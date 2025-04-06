@@ -160,13 +160,13 @@ class _PanoramaViewScreenState extends State<PanoramaViewScreen> {
   ButtonStyle _buttonStyle() {
     return ButtonStyle(
       padding: WidgetStateProperty.all(
-        const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
       ),
       backgroundColor: WidgetStateProperty.all(
         Colors.white.withOpacity(0.3),
       ),
       shape: WidgetStateProperty.all(
-        RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+        RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
       elevation: WidgetStateProperty.all(0),
       visualDensity: VisualDensity.comfortable,
@@ -290,10 +290,15 @@ class _PanoramaViewScreenState extends State<PanoramaViewScreen> {
                               Container(
                                 width: 280,
                                 height: 250,
-                                decoration: const BoxDecoration(
-                                  image: DecorationImage(
+                                decoration: BoxDecoration(
+                                  image: isFirstTime
+                                  ? const DecorationImage(
                                     image: AssetImage(
-                                        'lib/assets/webp/full_float.gif'),
+                                        'lib/assets/webp/full_bow.gif'),
+                                    fit: BoxFit.cover,
+                                  ) : const DecorationImage(
+                                    image: AssetImage(
+                                        'lib/assets/webp/full_headtilt_think.gif'),
                                     fit: BoxFit.cover,
                                   ),
                                 ),
@@ -487,10 +492,10 @@ class _PanoramaViewScreenState extends State<PanoramaViewScreen> {
             if (currentMarker?.category != null &&
                 currentMarker!.category.isNotEmpty)
               Positioned(
-                top: 130,
+                top: 120,
                 left: 16,
                 child: SizedBox(
-                  height: 35,
+                  height: 27,
                   child: hasMarkerPhoto && _isMarkerSelected
                       ? ElevatedButton(
                           onPressed: () {
@@ -520,7 +525,7 @@ class _PanoramaViewScreenState extends State<PanoramaViewScreen> {
               top: 90,
               left: 16,
               child: SizedBox(
-                height: 32,
+                height: 27,
                 child: hasMarkerPhoto && _isMarkerSelected
                     ? ElevatedButton(
                         style: _buttonStyle(),
@@ -547,10 +552,6 @@ class _PanoramaViewScreenState extends State<PanoramaViewScreen> {
                 offset: _isSetFloorSelected ? Offset(0, 0) : Offset(0, 1),
                 duration: const Duration(milliseconds: 1000),
                 curve: Curves.easeOut,
-                child: AnimatedOpacity(
-                  opacity: _isSetFloorSelected ? 1.0 : 0.0,
-                  duration: const Duration(milliseconds: 1000),
-                  curve: Curves.easeOut,
                   child: _isSetFloorSelected
                       ? FloorListDrawer(
                           floors: _selectedCampus!.floors,
@@ -561,7 +562,6 @@ class _PanoramaViewScreenState extends State<PanoramaViewScreen> {
                           onSet: setFirstTimeFalse,
                         )
                       : const SizedBox.shrink(),
-                ),
               ),
             ),
           ],

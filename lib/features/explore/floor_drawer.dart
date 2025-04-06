@@ -116,7 +116,7 @@ class MenuDrawer extends StatelessWidget {
                   )
                 : const Center(
                     child: Text(
-                      "Select another floor",
+                      "Select a floor",
                       style: TextStyle(fontSize: 14),
                     ),
                   ),

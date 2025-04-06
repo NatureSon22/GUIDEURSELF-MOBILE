@@ -35,9 +35,9 @@ class _FloorListDrawerState extends State<FloorListDrawer> {
   UniqueKey _mapKey = UniqueKey();
   String? _localSelectedFloor;
   String? _floorPhotoUrl;
-  bool _isExpanded = true;
+  bool _isExpanded = false;
   List<flutter_map.Marker> _currentMarkers = [];
-  bool _isGridLayout = false;
+  bool _isGridLayout = true;
 
   @override
   void initState() {
@@ -194,7 +194,8 @@ class _FloorListDrawerState extends State<FloorListDrawer> {
   List<flutter_map.Marker> _getMarkersForFloor(Floor floor) {
     return floor.markers.map((marker) {
       bool isHighlighted = _searchController.text.isNotEmpty &&
-          marker.markerName == _searchController.text;
+          marker.markerName.toLowerCase() ==
+              _searchController.text.toLowerCase();
 
       return flutter_map.Marker(
         point: LatLng(marker.latitude, marker.longitude),
@@ -203,7 +204,7 @@ class _FloorListDrawerState extends State<FloorListDrawer> {
         child: GlowingMarker(
           isHighlighted: isHighlighted,
           onTap: () => _showMarkerDetails(marker),
-          category: marker.category, // Ensure this is not null or empty
+          category: marker.category,
         ),
       );
     }).toList();
@@ -248,14 +249,14 @@ class _FloorListDrawerState extends State<FloorListDrawer> {
 
       // Find the marker by its name
       final marker = selectedFloor.markers.firstWhere(
-        (marker) => marker.markerName == markerName,
+        (marker) => marker.markerName.toLowerCase() == markerName.toLowerCase(),
         orElse: () => Marker(
           id: '',
           markerName: '',
           markerDescription: '',
           markerPhotoUrl: '',
-          latitude: 14.484750, // Set to null if marker is not found
-          longitude: 121.189000, // Set to null if marker is not found
+          latitude: 14.484750,
+          longitude: 121.189000,
           category: '',
           dateAdded: DateTime.now(),
         ),
@@ -377,7 +378,7 @@ class _FloorListDrawerState extends State<FloorListDrawer> {
 
     return DraggableScrollableSheet(
       controller: _controller,
-      initialChildSize: 0.18,
+      initialChildSize: 1,
       minChildSize: 0.13,
       maxChildSize: 1,
       builder: (context, scrollController) {
@@ -387,7 +388,7 @@ class _FloorListDrawerState extends State<FloorListDrawer> {
             color: Colors.white,
             border: Border(
               top: BorderSide(
-                color: Colors.grey, 
+                color: Colors.grey,
                 width: 1.0,
               ),
             ),
@@ -418,6 +419,10 @@ class _FloorListDrawerState extends State<FloorListDrawer> {
                         height: 40,
                         decoration: BoxDecoration(
                           color: Colors.white,
+                          border: Border.all(
+                            color: Colors.grey,
+                            width: 1.0,
+                          ),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: TextField(
@@ -434,6 +439,9 @@ class _FloorListDrawerState extends State<FloorListDrawer> {
                                 _searchController.clear();
                               },
                             ),
+                            border: InputBorder.none,
+                            enabledBorder: InputBorder.none,
+                            focusedBorder: InputBorder.none,
                           ),
                           onTap: () {
                             _controller.animateTo(

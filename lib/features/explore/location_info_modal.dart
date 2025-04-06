@@ -30,7 +30,7 @@ class LocationInfoModal extends StatelessWidget {
               child: SingleChildScrollView(
                 child: Text(
                   description,
-                  style: const TextStyle(fontSize: 14, color: Colors.black54),
+                  style: const TextStyle(fontSize: 14, color: Colors.black),
                   textAlign: TextAlign.center,
                 ),
               ),
