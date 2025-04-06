@@ -7,6 +7,7 @@ import 'package:guideurself/features/chat/messageinput.dart';
 import 'package:guideurself/features/chat/messagelist.dart';
 import 'package:guideurself/features/chat/questions.dart';
 import 'package:guideurself/providers/account.dart';
+import 'package:guideurself/providers/bottomnav.dart';
 import 'package:guideurself/providers/conversation.dart';
 import 'package:guideurself/providers/loading.dart';
 import 'package:guideurself/services/conversation.dart';
@@ -32,6 +33,7 @@ class Chatbot extends HookWidget {
     final isLoading = useState<bool>(false);
     final isCreatingConversation = useState<bool>(false);
     final accountProvider = context.read<AccountProvider>();
+    final bottomNavProvider = context.watch<BottomNavProvider>();
     final account = accountProvider.account;
     final isGuest = account.isEmpty;
     final StorageService storage = StorageService();
@@ -246,6 +248,9 @@ class Chatbot extends HookWidget {
             await Future.delayed(const Duration(milliseconds: 100));
             if (context.mounted) {
               context.go(hasVisited == true ? "/" : "/chat");
+
+              bottomNavProvider.setIndex(index: hasVisited == true ? 0 : 2);
+
               context.read<ConversationProvider>().resetConversation();
             }
           },

@@ -1,26 +1,43 @@
 List<Map<String, String>> frequentlyAsked = [
   {
-    "label": "General",
+    "label": "General Information",
     "question": "What is GuideURSelf?",
   },
   {
-    "label": "Admission",
-    "question": "How to apply for admission to the university?",
+    "label": "Admission Requirements",
+    "question": "What are the requirements for admission?",
   },
   {
-    "label": "Enrollment",
-    "question": "What are the steps for course enrollment?",
+    "label": "Enrollment Process",
+    "question": "How do I enroll at the university?",
   },
   {
-    "label": "Academics",
-    "question": "How do I choose my academic major?",
+    "label": "University Mission & Values",
+    "question": "What is the university's mission, vision, and core values?",
   },
   {
-    "label": "History",
+    "label": "University History",
     "question": "What is the history of the university?",
   },
   {
-    "label": "Policies",
-    "question": "What are the policies of the university?",
+    "label": "University Campuses",
+    "question": "What are the campuses of the university?",
+  },
+  {
+    "label": "Programs & Degrees",
+    "question": "What academic programs and degrees does the university offer?",
+  },
+  {
+    "label": "Scholarships & Financial Aid",
+    "question":
+        "What scholarships or financial aid options are available for students?",
+  },
+  {
+    "label": "Accreditation",
+    "question": "Is the university accredited, and by which agencies?",
+  },
+  {
+    "label": "Contact Information",
+    "question": "How can I contact the university's departments or staff?",
   }
 ];
