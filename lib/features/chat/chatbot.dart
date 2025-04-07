@@ -46,6 +46,8 @@ class Chatbot extends HookWidget {
 
     // Extract conversationId for easier reference
     final conversationId = conversation['conversation_id'];
+    final extras =
+        GoRouterState.of(context).extra as Map<String, dynamic>? ?? {};
 
     useEffect(() {
       // Only reset messages when explicitly starting a new conversation
@@ -169,7 +171,6 @@ class Chatbot extends HookWidget {
         return const Center(child: Text("No messages yet"));
       }
 
-      // Default welcome screen for new conversations
       return Container(
         alignment: Alignment.center,
         height: double.infinity,
@@ -232,85 +233,91 @@ class Chatbot extends HookWidget {
           !isGeneratingResponse;
     }
 
-    return Scaffold(
-      key: scaffoldKey,
-      appBar: AppBar(
-        elevation: 1,
-        shadowColor: const Color(0xFF323232).withOpacity(0.2),
-        surfaceTintColor: Colors.white,
-        scrolledUnderElevation: 0,
-        leading: IconButton(
-          onPressed: () async {
-            final hasVisited = storage.getData(key: "visited-chat");
-
-            FocusScope.of(context).unfocus();
-
-            await Future.delayed(const Duration(milliseconds: 100));
-            if (context.mounted) {
-              context.go(hasVisited == true ? "/" : "/chat");
-
-              bottomNavProvider.setIndex(index: hasVisited == true ? 0 : 2);
-
-              context.read<ConversationProvider>().resetConversation();
-            }
-          },
-          icon: const Icon(Icons.arrow_back_ios_sharp),
-        ),
-        actions: !isGuest
-            ? [
-                IconButton(
-                  onPressed: () {
-                    scaffoldKey.currentState?.openEndDrawer();
-                  },
-                  icon: const Icon(
-                    Icons.menu,
-                    size: 27,
-                  ),
-                ),
-              ]
-            : [],
-        title: Text("Giga", style: Theme.of(context).textTheme.headlineSmall),
-        centerTitle: true,
-      ),
-      onDrawerChanged: (_) {
-        FocusManager.instance.primaryFocus?.unfocus();
+    return PopScope(
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) {
+          bottomNavProvider.setIndex(index: extras['prev'] ?? 0);
+        }
       },
-      endDrawer:
-          !isGuest ? MessageDrawer(handleCloseDrawer: handleCloseDrawer) : null,
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Main content area
-            Expanded(
-              child: buildMainContent(),
-            ),
+      child: Scaffold(
+        key: scaffoldKey,
+        appBar: AppBar(
+          elevation: 1,
+          shadowColor: const Color(0xFF323232).withOpacity(0.2),
+          surfaceTintColor: Colors.white,
+          scrolledUnderElevation: 0,
+          leading: IconButton(
+            onPressed: () async {
+              final hasVisited = storage.getData(key: "visited-chat");
+              bottomNavProvider.setIndex(index: extras['prev'] ?? 0);
+              FocusScope.of(context).unfocus();
 
-            if (isGeneratingResponse)
-              Padding(
-                padding: const EdgeInsets.only(left: 20, right: 20),
-                child: Row(
-                  children: [
-                    SizedBox(
-                      width: 80,
-                      height: 80,
-                      child: Image.asset(
-                        'lib/assets/webp/head_type.gif',
-                        fit: BoxFit.cover,
-                      ),
+              await Future.delayed(const Duration(milliseconds: 100));
+              if (context.mounted) {
+                bottomNavProvider.setIndex(index: extras['prev'] ?? 0);
+                context.go(hasVisited == true ? "/" : "/chat");
+                context.read<ConversationProvider>().resetConversation();
+              }
+            },
+            icon: const Icon(Icons.arrow_back_ios_sharp),
+          ),
+          actions: !isGuest
+              ? [
+                  IconButton(
+                    onPressed: () {
+                      scaffoldKey.currentState?.openEndDrawer();
+                    },
+                    icon: const Icon(
+                      Icons.menu,
+                      size: 27,
                     ),
-                  ],
-                ),
+                  ),
+                ]
+              : [],
+          title: Text("Giga", style: Theme.of(context).textTheme.headlineSmall),
+          centerTitle: true,
+        ),
+        onDrawerChanged: (_) {
+          FocusManager.instance.primaryFocus?.unfocus();
+        },
+        endDrawer: !isGuest
+            ? MessageDrawer(handleCloseDrawer: handleCloseDrawer)
+            : null,
+        body: SafeArea(
+          child: Column(
+            children: [
+              // Main content area
+              Expanded(
+                child: buildMainContent(),
               ),
 
-            shouldShowQuestions()
-                ? Questions(handleSelectQuestion: handleSelectQuestion)
-                : const SizedBox.shrink(),
+              if (isGeneratingResponse)
+                Padding(
+                  padding: const EdgeInsets.only(left: 20, right: 20),
+                  child: Row(
+                    children: [
+                      SizedBox(
+                        width: 80,
+                        height: 80,
+                        child: Image.asset(
+                          'lib/assets/webp/head_type.gif',
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
 
-            MessageInput(
-              question: question.value,
-              handleSendQuestion: sendQuestion,
-            ),
-          ],
+              shouldShowQuestions()
+                  ? Questions(handleSelectQuestion: handleSelectQuestion)
+                  : const SizedBox.shrink(),
+
+              MessageInput(
+                question: question.value,
+                handleSendQuestion: sendQuestion,
+              ),
+            ],
+          ),
         ),
       ),
     );

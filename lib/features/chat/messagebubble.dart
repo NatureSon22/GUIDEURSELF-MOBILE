@@ -157,7 +157,9 @@ class _MessageBubbleState extends State<MessageBubble> {
                   LayoutBuilder(
                     builder: (context, constraints) {
                       return MarkdownBody(
-                        data: widget.content,
+                        data: widget.isMachine
+                            ? widget.content.replaceAll('MOBILE:', '')
+                            : widget.content.replaceAll('MOBILE:', ''),
                         shrinkWrap: true,
                         fitContent: true,
                         styleSheet: MarkdownStyleSheet(
