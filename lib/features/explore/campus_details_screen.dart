@@ -215,7 +215,7 @@ class _CampusDetailsScreenState extends State<CampusDetailsScreen> {
                       ),
                     ),
                     child: const Text(
-                      "View",
+                      "View Photo",
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 12,
