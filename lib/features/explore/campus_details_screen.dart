@@ -242,7 +242,9 @@ class _CampusDetailsScreenState extends State<CampusDetailsScreen> {
                         const Text(
                           "ABOUT",
                           style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold),
+                              fontFamily: "CinzelDecorative",
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(height: 5),
                         Text(
@@ -273,7 +275,9 @@ class _CampusDetailsScreenState extends State<CampusDetailsScreen> {
                         const Text(
                           "ACADEMIC PROGRAMS",
                           style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold),
+                              fontFamily: "CinzelDecorative",
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(height: 5),
                         ...widget.campus.campusPrograms.map((program) =>

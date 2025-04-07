@@ -46,9 +46,17 @@ class _ExploreState extends State<Explore> {
         appBar: AppBar(
           backgroundColor: Colors.white,
           scrolledUnderElevation: 0,
-          title: const Text(
-            'Explore',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+          automaticallyImplyLeading: false, // prevent default back button
+          leadingWidth: 120, // adjust depending on your text length
+          leading: const Padding(
+            padding: EdgeInsets.only(left: 16.0),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                'Explore',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+              ),
+            ),
           ),
           actions: [
             Padding(
@@ -67,21 +75,21 @@ class _ExploreState extends State<Explore> {
           ],
         ),
         endDrawer: const MenuDrawer(),
-    body: Stack(
-      children: [
-        // Background Image
-        Opacity(
-          opacity: 1,
-          child: Container(
-            decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('lib/assets/images/background-img.png'),
-                fit: BoxFit.cover,
-                alignment: Alignment(0.2, -1),
+        body: Stack(
+          children: [
+            // Background Image
+            Opacity(
+              opacity: 1,
+              child: Container(
+                decoration: const BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage('lib/assets/images/background-img.png'),
+                    fit: BoxFit.cover,
+                    alignment: Alignment(0.2, -1),
+                  ),
+                ),
               ),
             ),
-          ),
-        ),
 
             // Main Content - Now scrollable
             SingleChildScrollView(

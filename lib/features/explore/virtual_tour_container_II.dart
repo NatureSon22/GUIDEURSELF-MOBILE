@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:guideurself/features/explore/loading_screen.dart';
-import 'package:guideurself/features/explore/virtual_tour_screen.dart';
+import 'package:guideurself/features/explore/virtual_tour_screen_II.dart';
 
 class SessionTracker {
   static bool hasShownLoadingThisSession = false;
@@ -39,7 +39,7 @@ class _VirtualTourContainerIIState extends State<VirtualTourContainerII> {
       body: Stack(
         children: [
           if (_isLoading) const LoadingScreen(),
-          if (!_isLoading) const VirtualTourScreen(),
+          if (!_isLoading) const VirtualTourScreenII(),
         ],
       ),
     );
