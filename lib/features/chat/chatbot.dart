@@ -48,7 +48,6 @@ class Chatbot extends HookWidget {
     final conversationId = conversation['conversation_id'];
     final extras =
         GoRouterState.of(context).extra as Map<String, dynamic>? ?? {};
-
     useEffect(() {
       // Only reset messages when explicitly starting a new conversation
       // but not when we're in the process of creating one
@@ -236,6 +235,7 @@ class Chatbot extends HookWidget {
     return PopScope(
       onPopInvokedWithResult: (didPop, result) {
         if (didPop) {
+          debugPrint("Pop invoked with result: ${extras['prev']}");
           bottomNavProvider.setIndex(index: extras['prev'] ?? 0);
         }
       },
