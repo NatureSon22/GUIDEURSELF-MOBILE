@@ -90,7 +90,7 @@ class _CampusDetailsScreenState extends State<CampusDetailsScreen> {
                                     errorBuilder: (context, error, stackTrace) {
                                       if (kDebugMode) {
                                         print(
-                                          "Failed to load vector image: ${university.universityVectorUrl}");
+                                            "Failed to load vector image: ${university.universityVectorUrl}");
                                       }
                                       return const Icon(
                                           Icons.image_not_supported);
@@ -108,7 +108,7 @@ class _CampusDetailsScreenState extends State<CampusDetailsScreen> {
                                     errorBuilder: (context, error, stackTrace) {
                                       if (kDebugMode) {
                                         print(
-                                          "Failed to load logo image: ${university.universityLogoUrl}");
+                                            "Failed to load logo image: ${university.universityLogoUrl}");
                                       }
                                       return const Icon(
                                           Icons.image_not_supported);
@@ -157,15 +157,69 @@ class _CampusDetailsScreenState extends State<CampusDetailsScreen> {
                     ),
                     textAlign: TextAlign.center,
                   ),
+
                   const SizedBox(height: 10),
 
                   // Contact Information
                   _infoRow(Icons.phone, widget.campus.campusPhoneNumber),
-                  const SizedBox(height: 5),
                   _infoRow(Icons.email, widget.campus.campusEmail),
-                  const SizedBox(height: 5),
                   _infoRow(Icons.location_on, widget.campus.campusAddress),
                   const SizedBox(height: 5),
+
+                  ElevatedButton(
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return Dialog(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(20),
+                                  child: Image.network(
+                                    widget.campus.campusCoverPhotoUrl,
+                                    fit: BoxFit.cover,
+                                    width: double.infinity,
+                                    height: 200,
+                                    errorBuilder:
+                                        (context, error, stackTrace) =>
+                                            const Padding(
+                                      padding: EdgeInsets.all(20),
+                                      child: Text('Failed to load image'),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromARGB(85, 121, 233, 250),
+                      shadowColor: Colors.transparent,
+                      foregroundColor: const Color.fromARGB(255, 18, 165, 188),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
+                      minimumSize: const Size(0, 30),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                    ),
+                    child: const Text(
+                      "View",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color: Color.fromARGB(255, 18, 165, 188),
+                      ),
+                    ),
+                  ),
 
                   // About Section in a Container
                   Container(

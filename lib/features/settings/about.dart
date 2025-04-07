@@ -135,7 +135,7 @@ class _AboutState extends State<About> {
                         Color(0xFF12A5BC),
                         Color(0xFF0E46A3),
                       ],
-                    ),
+                    ), 
                   ),
                   const Gap(3),
                   Text(

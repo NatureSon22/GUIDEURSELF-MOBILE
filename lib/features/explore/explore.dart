@@ -37,9 +37,17 @@ class _ExploreState extends State<Explore> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         scrolledUnderElevation: 0,
-        title: const Text(
-          'Explore',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+        automaticallyImplyLeading: false, // prevent default back button
+        leadingWidth: 120, // adjust depending on your text length
+        leading: const Padding(
+          padding: EdgeInsets.only(left: 16.0),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              'Explore',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+            ),
+          ),
         ),
         actions: [
           Padding(
