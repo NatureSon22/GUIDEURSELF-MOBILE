@@ -5,11 +5,16 @@ import 'package:guideurself/providers/bottomnav.dart';
 import 'package:guideurself/services/storage.dart';
 import 'package:provider/provider.dart';
 
-class BottomNavLayout extends StatelessWidget {
+class BottomNavLayout extends StatefulWidget {
   final Widget child;
   const BottomNavLayout({super.key, required this.child});
   static final StorageService storage = StorageService();
 
+  @override
+  State<BottomNavLayout> createState() => _BottomNavLayoutState();
+}
+
+class _BottomNavLayoutState extends State<BottomNavLayout> {
   int getSelectedIndex(BuildContext context) {
     final location = GoRouterState.of(context).path;
     switch (location) {
@@ -31,7 +36,7 @@ class BottomNavLayout extends StatelessWidget {
     final providerIndex = context.watch<BottomNavProvider>().index;
 
     return Scaffold(
-      body: child,
+      body: widget.child,
       bottomNavigationBar: Container(
         padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 13),
         decoration: BoxDecoration(
@@ -44,18 +49,25 @@ class BottomNavLayout extends StatelessWidget {
           selectedIndex: providerIndex,
           onTabChange: (index) async {
             final hasVisited =
-                await storage.getData(key: "visited-chat") ?? false;
+                await BottomNavLayout.storage.getData(key: "visited-chat") ??
+                    false;
 
             final routes = hasVisited
                 ? ['/', '/explore', '/chatbot', '/settings']
                 : ['/', '/explore', '/chat', '/settings'];
 
             if (index == 2) {
-              await storage.saveData(key: "visited-chat", value: true);
+              await BottomNavLayout.storage
+                  .saveData(key: "visited-chat", value: true);
             }
 
             if (context.mounted) {
-              context.push(routes[index]);
+              final current = GoRouterState.of(context).name;
+
+              if (routes[index] != current) {
+                context.push(routes[index], extra: {'prev': providerIndex});
+                debugPrint("prev index: $providerIndex");
+              }
             }
 
             bottomNavProvider.setIndex(index: index == 2 ? 0 : index);

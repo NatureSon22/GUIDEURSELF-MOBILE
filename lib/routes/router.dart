@@ -37,7 +37,11 @@ import 'package:guideurself/features/explore/loading_screen.dart';
 
 final List<Map<String, dynamic>> sections = [
   {"title": "History", "path": "/history", "screen": const HistoryScreen()},
-  {"title": "About", "path": "/university-about", "screen": const UniversityAboutScreen()},
+  {
+    "title": "About",
+    "path": "/university-about",
+    "screen": const UniversityAboutScreen()
+  },
   {
     "title": "Logo & Vector",
     "path": "/logo-vector",

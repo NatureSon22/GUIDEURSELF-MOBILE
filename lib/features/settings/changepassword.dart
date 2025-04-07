@@ -25,7 +25,6 @@ class _ChangepasswordState extends State<Changepassword> {
   final _formKey = GlobalKey<FormState>();
 
   @override
-  @override
   void initState() {
     super.initState();
 
@@ -51,7 +50,9 @@ class _ChangepasswordState extends State<Changepassword> {
       final updatedAccount = await updatePassword(
           password: newPasswordController.text, accountId: account['_id']);
 
-      accountProvider.setAccount(account: updatedAccount);
+      debugPrint(updatedAccount.toString());
+      
+      accountProvider.setAccount(account: updatedAccount['account']);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

@@ -32,7 +32,10 @@ class HeaderDrawer extends StatelessWidget {
               Navigator.of(context).pop();
               FocusScope.of(context).unfocus();
             },
-            child: const Icon(Icons.create, color: Color(0xFF323232)),
+            child: const Icon(
+              Icons.create,
+              color: Color(0xFF323232),
+            ),
           ),
           Text(
             'History',
@@ -45,7 +48,7 @@ class HeaderDrawer extends StatelessWidget {
             onTap: () {
               context.push("/messages-chat");
             },
-            child: const Icon(Icons.person, color: Color(0xFF323232)),
+            child: const Icon(Icons.chat_outlined, color: Color(0xFF323232)),
           ),
         ],
       ),
