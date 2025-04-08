@@ -33,9 +33,10 @@ Color getCategoryColor(String category) {
     case "Utility Areas":
       return const Color.fromARGB(255, 255, 91, 200);
     case "Others (Miscellaneous)":
-      return const Color.fromARGB(255, 78, 185, 247);
+      return  Colors.orange;
     default:
-      return const Color.fromARGB(255, 38, 129, 248);
+      return const Color.fromARGB(
+                                    255, 18, 165, 188);
   }
 }
 

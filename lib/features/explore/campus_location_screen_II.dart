@@ -238,7 +238,7 @@ class _CampusLocationScreenIIState extends State<CampusLocationScreenII> {
                 controller: scrollController,
                 child: Padding(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                      const EdgeInsets.only(left: 15, right: 15, top: 20, bottom: 10),
                   child: Row(
                     children: [
                       Expanded(

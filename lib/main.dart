@@ -46,7 +46,7 @@ void main() {
         child: QueryClientProvider(
           queryClient: queryClient,
           child: MyApp(
-            initialRoute: hasVisitedSplash ? "/feature-overview" : "/splash",
+            initialRoute: hasVisitedSplash ? "/auth-layer" : "/splash",
           ),
         ),
       ),

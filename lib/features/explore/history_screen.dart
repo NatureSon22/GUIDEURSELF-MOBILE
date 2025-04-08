@@ -166,7 +166,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
     var document = html_parser.parse(htmlContent);
     document.querySelectorAll('br').forEach((br) => br.remove());
     document.querySelectorAll('strong').forEach((strong) {
-      strong.attributes['style'] = 'font-size: 20px;';
+      strong.attributes['style'] = 'font-size: 20px; font-family: CinzelDecorative;';
     });
     return document.body?.innerHtml ?? htmlContent;
   }

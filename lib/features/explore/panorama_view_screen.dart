@@ -294,7 +294,6 @@ class _PanoramaViewScreenState extends State<PanoramaViewScreen> {
                             return const Center(child: Text("Failed to load"));
                           }
 
-                          final university = snapshot.data!;
                           return Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
