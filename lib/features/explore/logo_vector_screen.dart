@@ -105,7 +105,7 @@ class _LogoVectorScreenState extends State<LogoVectorScreen> {
                                     "OFFICIAL LOGO",
                                     style: TextStyle(
                                         fontFamily: "CinzelDecorative",
-                                        fontSize: 15,
+                                        fontSize: 18,
                                         fontWeight: FontWeight.bold),
                                   ),
                                   const SizedBox(height: 10),
@@ -141,7 +141,7 @@ class _LogoVectorScreenState extends State<LogoVectorScreen> {
                                     "OFFICIAL VECTOR",
                                     style: TextStyle(
                                         fontFamily: "CinzelDecorative",
-                                        fontSize: 15,
+                                        fontSize: 18,
                                         fontWeight: FontWeight.bold),
                                   ),
                                   const SizedBox(height: 10),

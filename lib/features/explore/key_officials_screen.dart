@@ -50,6 +50,7 @@ class _KeyOfficialsScreenState extends State<KeyOfficialsScreen> {
               ),
             ),
           ),
+          
           // FutureBuilder for fetching university details
           FutureBuilder<UniversityManagement>(
             future: _universityFuture,
@@ -175,6 +176,15 @@ class _KeyOfficialsScreenState extends State<KeyOfficialsScreen> {
                               color: Colors.black),
                         ),
                         const SizedBox(height: 20),
+
+                        const Text(
+                          "KEY OFFICIALS",
+                          style: TextStyle(
+                              fontFamily: "CinzelDecorative",
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 5),
 
                         // Key Officials List
                         Column(
