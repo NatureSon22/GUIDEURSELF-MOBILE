@@ -27,7 +27,7 @@ class _GlowingMarkerState extends State<GlowingMarker>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 1),
+      duration: const Duration(milliseconds: 750),
     );
 
     _animation = Tween<double>(begin: 27, end: 40).animate(CurvedAnimation(

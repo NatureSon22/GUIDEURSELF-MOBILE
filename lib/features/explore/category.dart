@@ -13,6 +13,8 @@ IconData getCategoryIcon(String category) {
       return Icons.flag; // Flag icon
     case "Utility Areas":
       return Icons.wc; // Restroom (women/men) icon
+    case "Multi-Purpose":
+      return Icons.star;
     case "Others (Miscellaneous)":
       return Icons.widgets; // Square plus icon
     default:
@@ -32,11 +34,12 @@ Color getCategoryColor(String category) {
       return Colors.green;
     case "Utility Areas":
       return const Color.fromARGB(255, 255, 91, 200);
+    case "Multi-Purpose":
+      return Colors.orange;
     case "Others (Miscellaneous)":
-      return  Colors.orange;
+      return const Color.fromARGB(255, 169, 21, 214);
     default:
-      return const Color.fromARGB(
-                                    255, 18, 165, 188);
+      return const Color.fromARGB(255, 18, 165, 188);
   }
 }
 
@@ -51,6 +54,8 @@ String getCategoryDescription(String category) {
     case "Campus Attraction":
       return "Key locations that highlight the vibrant and historic aspects of the campus.";
     case "Utility Areas":
+      return "Essential service areas, such as restrooms, maintenance rooms, and storage spaces.";
+    case "Multi-Purpose":
       return "Essential service areas, such as restrooms, maintenance rooms, and storage spaces.";
     case "Others (Miscellaneous)":
       return "Uncategorized areas or locations with unique purposes within the campus.";
