@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:guideurself/core/themes/style.dart';
 import 'package:guideurself/features/chat/showlistening.dart';
 import 'package:guideurself/providers/account.dart';
@@ -176,7 +177,7 @@ class _RecordInputModalState extends State<RecordInputModal> {
       await _record.stop();
       setState(() {
         _isRecording = false;
-        _transcription = "Transcribing your speech, please hold on";
+        _transcription = "Transcribing your speech, please wait";
       });
 
       if (_filePath != null && await File(_filePath!).exists()) {
@@ -289,7 +290,7 @@ class _RecordInputModalState extends State<RecordInputModal> {
             ),
             onPressed: _isRecording ? _stopRecording : () {},
             child: Icon(
-              _isRecording ? Icons.stop : Icons.mic_outlined,
+              _isRecording ? Icons.stop : FontAwesomeIcons.microphoneLines,
               size: 40,
               color: Colors.white,
             ),

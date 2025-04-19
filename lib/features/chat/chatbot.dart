@@ -237,6 +237,7 @@ class Chatbot extends HookWidget {
         if (didPop) {
           debugPrint("Pop invoked with result: ${extras['prev']}");
           bottomNavProvider.setIndex(index: extras['prev'] ?? 0);
+          context.read<ConversationProvider>().resetConversation();
         }
       },
       child: Scaffold(

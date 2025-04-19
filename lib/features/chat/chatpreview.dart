@@ -17,6 +17,7 @@ class ChatPreview extends StatelessWidget {
     return PopScope(
       onPopInvokedWithResult: (didPop, result) {
         if (didPop) {
+          print("prev: " + extras['prev']);
           bottomNavProvider.setIndex(index: extras['prev'] ?? 0);
         }
       },

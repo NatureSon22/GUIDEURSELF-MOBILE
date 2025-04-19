@@ -113,11 +113,12 @@ Future<Map<String, dynamic>> sendMessage({
   }
 }
 
-Future<void> reviewIsHelpful({required messageId, required isHelpful}) async {
+Future<void> reviewIsHelpful(
+    {required messageId, required isHelpful, reason}) async {
   try {
     final response = await dio.put(
       "/message/review-message",
-      data: {"id": messageId, "is_helpful": isHelpful},
+      data: {"id": messageId, "is_helpful": isHelpful, "reason": reason},
     );
 
     print(response.data);

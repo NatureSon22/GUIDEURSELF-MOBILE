@@ -18,12 +18,6 @@ final allSettingsFeatures = [
     "goto": "/chatbot-preference",
     "requiresAuth": true
   },
-  // {
-  //   "icon": Icons.location_pin,
-  //   "label": "Virtual Tour Preferences",
-  //   "goto": "/virtual-preference",
-  //   "requiresAuth": false
-  // },
   {
     "icon": Icons.key,
     "label": "Change Password",

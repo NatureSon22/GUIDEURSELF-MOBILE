@@ -4,17 +4,26 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:gap/gap.dart';
 import 'package:guideurself/core/themes/style.dart';
 import 'package:guideurself/providers/account.dart';
-import 'package:guideurself/services/conversation.dart';
+import 'package:guideurself/providers/messagereview.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 
-class MessageBubble extends StatefulWidget {
+final Map<String, String> reasonValue = {
+  "notFactuallyCorrect": 'The information is not accurate or reliable',
+  "didntFollowInstructions": 'The response did not follow the instructions',
+  "offensiveOrUnsafe": 'The response contains offensive or harmful content',
+  "other": 'Other'
+};
+
+class MessageBubble extends StatelessWidget {
+  final bool? initialIsHelpful;
   const MessageBubble({
     super.key,
     required this.messageId,
     required this.content,
     required this.isMachine,
     required this.isFailed,
+    required this.showDislikeReason,
     this.initialIsHelpful,
   });
 
@@ -22,63 +31,46 @@ class MessageBubble extends StatefulWidget {
   final String content;
   final bool isMachine;
   final bool isFailed;
-  final bool? initialIsHelpful;
+  final Future<Map<String, dynamic>?> Function(BuildContext) showDislikeReason;
 
-  @override
-  State<MessageBubble> createState() => _MessageBubbleState();
-}
+  Future<void> handleReview(BuildContext context, bool helpful) async {
+    final provider = context.read<MessageReviewProvider>();
 
-class _MessageBubbleState extends State<MessageBubble> {
-  bool? isHelpful;
+    if (helpful) {
+      await provider.setReviewState(messageId, helpful);
+    } else {
+      final reason = await showDislikeReason(context);
+      final value = reason?["reason"] ?? reason?["customReason"];
+      await provider.setReviewState(messageId, helpful, reason: value);
+    }
 
-  @override
-  void initState() {
-    super.initState();
-    isHelpful = widget.initialIsHelpful;
-  }
-
-  bool get isReviewed => isHelpful != null;
-
-  Future<void> handleReview(bool helpful) async {
-    final previousState = isHelpful;
-    setState(() {
-      isHelpful = helpful;
-    });
-
-    try {
-      await reviewIsHelpful(messageId: widget.messageId, isHelpful: helpful);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              "Feedback submitted!",
-              style: styleText(
-                context: context,
-                fontSizeOption: 12.0,
-                color: Colors.white,
-              ),
-            ),
-            backgroundColor: const Color(0xFF323232),
-            duration: const Duration(seconds: 2),
-            behavior: SnackBarBehavior.floating,
-            margin: const EdgeInsets.all(16),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            "Feedback submitted!",
+            style: styleText(
+              context: context,
+              fontSizeOption: 12.0,
+              color: Colors.white,
             ),
           ),
-        );
-      }
-    } catch (e) {
-      setState(() {
-        isHelpful = previousState;
-      });
+          backgroundColor: const Color(0xFF323232),
+          duration: const Duration(seconds: 2),
+          behavior: SnackBarBehavior.floating,
+          margin: const EdgeInsets.all(16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
+      );
     }
   }
 
-  Future<void> _copyToClipboard() async {
-    await Clipboard.setData(ClipboardData(text: widget.content));
+  Future<void> _copyToClipboard(BuildContext context) async {
+    await Clipboard.setData(ClipboardData(text: content));
 
-    if (mounted) {
+    if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -107,17 +99,24 @@ class _MessageBubbleState extends State<MessageBubble> {
     final accountProvider = context.read<AccountProvider>();
     final account = accountProvider.account;
     final isGuest = account.isEmpty;
-    final String contentLower = widget.content.toLowerCase();
-    final bool showChatButton = widget.isMachine &&
+    final String contentLower = content.toLowerCase();
+    final bool showChatButton = isMachine &&
         (contentLower.contains("couldn't find a direct answer") ||
             contentLower.contains("for university-related questions") ||
             contentLower.contains("please check official resources") ||
             contentLower.contains("refine your query")) &&
         !isGuest;
+    final reviewProvider = context.watch<MessageReviewProvider>();
+    var reviewState = reviewProvider.getReviewState(messageId);
+    if (reviewState == null && initialIsHelpful != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        reviewProvider.reviewStates[messageId] = initialIsHelpful;
+      });
+      reviewState = initialIsHelpful;
+    }
 
     return Align(
-      alignment:
-          widget.isMachine ? Alignment.centerLeft : Alignment.centerRight,
+      alignment: isMachine ? Alignment.centerLeft : Alignment.centerRight,
       child: ConstrainedBox(
         constraints: BoxConstraints(
           maxWidth: MediaQuery.of(context).size.width * 0.7,
@@ -128,17 +127,16 @@ class _MessageBubbleState extends State<MessageBubble> {
           children: [
             Container(
               padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-              margin:
-                  EdgeInsets.symmetric(vertical: widget.isMachine ? 10 : 15),
+              margin: EdgeInsets.symmetric(vertical: isMachine ? 10 : 15),
               decoration: BoxDecoration(
-                color: widget.isMachine
-                    ? widget.isFailed
+                color: isMachine
+                    ? isFailed
                         ? const Color.fromRGBO(239, 68, 68, 0.1)
                         : const Color(0xFF12A5BC).withOpacity(0.1)
                     : Colors.white,
                 border: Border.all(
-                  color: widget.isMachine
-                      ? widget.isFailed
+                  color: isMachine
+                      ? isFailed
                           ? const Color.fromRGBO(239, 68, 68, 1)
                           : const Color(0xFF12A5BC)
                       : const Color(0xFF323232).withOpacity(0.1),
@@ -147,8 +145,8 @@ class _MessageBubbleState extends State<MessageBubble> {
                 borderRadius: BorderRadius.only(
                   topLeft: const Radius.circular(20),
                   topRight: const Radius.circular(20),
-                  bottomLeft: Radius.circular(widget.isMachine ? 0 : 20),
-                  bottomRight: Radius.circular(widget.isMachine ? 20 : 0),
+                  bottomLeft: Radius.circular(isMachine ? 0 : 20),
+                  bottomRight: Radius.circular(isMachine ? 20 : 0),
                 ),
               ),
               child: Column(
@@ -157,50 +155,36 @@ class _MessageBubbleState extends State<MessageBubble> {
                   LayoutBuilder(
                     builder: (context, constraints) {
                       return MarkdownBody(
-                        data: widget.isMachine
-                            ? widget.content.replaceAll('MOBILE:', '')
-                            : widget.content.replaceAll('MOBILE:', ''),
+                        data: content.replaceAll('MOBILE:', ''),
                         shrinkWrap: true,
                         fitContent: true,
                         styleSheet: MarkdownStyleSheet(
-                          // Heading styles
                           h1: styleText(
-                            context: context,
-                            fontSizeOption: 13.0,
-                            color: const Color(0xFF323232),
-                          ),
+                              context: context,
+                              fontSizeOption: 13.0,
+                              color: const Color(0xFF323232)),
                           h2: styleText(
-                            context: context,
-                            fontSizeOption: 12.0,
-                            color: const Color(0xFF323232),
-                          ),
+                              context: context,
+                              fontSizeOption: 12.0,
+                              color: const Color(0xFF323232)),
                           h3: styleText(
-                            context: context,
-                            fontSizeOption: 12.0,
-                            color: const Color(0xFF323232),
-                          ),
+                              context: context,
+                              fontSizeOption: 12.0,
+                              color: const Color(0xFF323232)),
                           h4: styleText(
-                            context: context,
-                            fontSizeOption: 12.0,
-                            color: const Color(0xFF323232),
-                          ),
-                          // Paragraph styles
+                              context: context,
+                              fontSizeOption: 12.0,
+                              color: const Color(0xFF323232)),
                           p: styleText(
-                            context: context,
-                            fontSizeOption: 11.5,
-                            color: const Color(0xFF323232),
-                          ),
-                          // List styles
+                              context: context,
+                              fontSizeOption: 11.5,
+                              color: const Color(0xFF323232)),
                           listBullet: styleText(
-                            context: context,
-                            fontSizeOption: 11.5,
-                            color: const Color(0xFF323232),
-                          ),
+                              context: context,
+                              fontSizeOption: 11.5,
+                              color: const Color(0xFF323232)),
                           tableBody: const TextStyle(
-                            fontSize: 11,
-                            color: Color(0xFF323232),
-                          ),
-                          // Spacing
+                              fontSize: 11, color: Color(0xFF323232)),
                           blockSpacing: 8.0,
                           h1Padding:
                               const EdgeInsets.only(top: 16.0, bottom: 8.0),
@@ -218,8 +202,6 @@ class _MessageBubbleState extends State<MessageBubble> {
                       );
                     },
                   ),
-
-                  // Add the "Chat" button if the conditions are met
                   if (showChatButton)
                     Padding(
                       padding: const EdgeInsets.only(top: 12.0),
@@ -251,33 +233,33 @@ class _MessageBubbleState extends State<MessageBubble> {
                 ],
               ),
             ),
-            if (widget.isMachine && !widget.isFailed)
+            if (isMachine && !isFailed)
               Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
                 child: Row(
                   children: [
                     GestureDetector(
-                      onTap: _copyToClipboard,
+                      onTap: () => _copyToClipboard(context),
                       child: Icon(Icons.copy_all_outlined,
                           size: 18, color: iconColor),
                     ),
                     const Gap(17),
-                    if (isHelpful == true)
+                    if (reviewState == true)
                       Icon(Icons.thumb_up_alt_rounded,
                           size: 18, color: iconColor)
-                    else if (isHelpful == false)
+                    else if (reviewState == false)
                       Icon(Icons.thumb_down_alt_rounded,
                           size: 18, color: iconColor)
                     else if (!isGuest) ...[
                       GestureDetector(
-                        onTap: () => handleReview(true),
+                        onTap: () => handleReview(context, true),
                         child: Icon(Icons.thumb_up_off_alt_outlined,
                             size: 18, color: iconColor),
                       ),
                       const Gap(17),
                       GestureDetector(
-                        onTap: () => handleReview(false),
+                        onTap: () => handleReview(context, false),
                         child: Icon(Icons.thumb_down_alt_outlined,
                             size: 18, color: iconColor),
                       ),

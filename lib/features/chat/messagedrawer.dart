@@ -225,7 +225,14 @@ class _MessageDrawerState extends State<MessageDrawer> {
                     style: ElevatedButton.styleFrom(
                       textStyle: const TextStyle(fontSize: 13),
                     ),
-                    child: const Text('Load More'),
+                    child: const Text(
+                      'See More',
+                      style: TextStyle(
+                        fontFamily: "Poppins",
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 1.2,
+                      ),
+                    ),
                   ),
                 );
               }

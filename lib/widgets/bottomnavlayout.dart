@@ -54,7 +54,7 @@ class _BottomNavLayoutState extends State<BottomNavLayout> {
 
             final routes = hasVisited
                 ? ['/', '/explore', '/chatbot', '/settings']
-                : ['/', '/explore', '/chat', '/settings'];
+                : ['/', '/explore', '/chatbot', '/settings'];
 
             if (index == 2) {
               await BottomNavLayout.storage
@@ -70,7 +70,7 @@ class _BottomNavLayoutState extends State<BottomNavLayout> {
               }
             }
 
-            bottomNavProvider.setIndex(index: index == 2 ? 0 : index);
+            bottomNavProvider.setIndex(index: index);
           },
           tabs: [
             _buildNavItem(Icons.home_rounded, 'Home'),
