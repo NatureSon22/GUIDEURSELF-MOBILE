@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:guideurself/widgets/textgradient.dart';
 import 'package:panorama_viewer/panorama_viewer.dart';
 import 'package:guideurself/models/campus_model.dart';
 import 'package:guideurself/services/campus_service.dart';
@@ -25,10 +26,17 @@ class _PanoramaViewScreenState extends State<PanoramaViewScreen> {
   late Future<UniversityManagement> futureUniversityDetails;
   final CampusService _campusService = CampusService();
   bool isFirstTime = true;
+  bool isFloorSelect = true;
 
   void setFirstTimeFalse() {
     setState(() {
       isFirstTime = false;
+    });
+  }
+
+   void setFloorSelectFalse() {
+    setState(() {
+      isFloorSelect = false;
     });
   }
 
@@ -96,11 +104,14 @@ class _PanoramaViewScreenState extends State<PanoramaViewScreen> {
       _selectedFloor = floorName;
       selectedFloorName = floorName;
 
+      // Find the selected floor based on the floor name
       final selectedFloor = _selectedCampus!.floors.firstWhere(
         (f) => f.floorName == floorName,
-        orElse: () => _selectedCampus!.floors.first,
+        orElse: () =>
+            _selectedCampus!.floors.first, // Fallback to the first floor
       );
 
+      // Now, find the first marker with a markerPhotoUrl on the selected floor
       if (selectedFloor.markers.isNotEmpty) {
         final marker = selectedFloor.markers.firstWhere(
           (m) => m.markerPhotoUrl.isNotEmpty,
@@ -283,7 +294,6 @@ class _PanoramaViewScreenState extends State<PanoramaViewScreen> {
                             return const Center(child: Text("Failed to load"));
                           }
 
-                          final university = snapshot.data!;
                           return Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -292,51 +302,67 @@ class _PanoramaViewScreenState extends State<PanoramaViewScreen> {
                                 height: 250,
                                 decoration: BoxDecoration(
                                   image: isFirstTime
-                                  ? const DecorationImage(
-                                    image: AssetImage(
-                                        'lib/assets/webp/full_bow.gif'),
-                                    fit: BoxFit.cover,
-                                  ) : const DecorationImage(
-                                    image: AssetImage(
-                                        'lib/assets/webp/full_headtilt_think.gif'),
-                                    fit: BoxFit.cover,
-                                  ),
+                                      ? const DecorationImage(
+                                          image: AssetImage(
+                                              'lib/assets/webp/full_bow.gif'),
+                                          fit: BoxFit.cover,
+                                        )
+                                      : const DecorationImage(
+                                          image: AssetImage(
+                                              'lib/assets/webp/full_headtilt_think.gif'),
+                                          fit: BoxFit.cover,
+                                        ),
                                 ),
                               ),
                               const SizedBox(height: 10),
                               isFirstTime
-                                  ? const Column(
+                                  ? Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
                                       children: [
-                                        Text(
-                                          "Hey there explorer! I'm\nGiga your campus\nguide!",
-                                          textAlign: TextAlign.center,
+                                        const GradientText(
+                                          "Hey there explorer! I'm\n     Giga your campus\n                   guide!",
                                           style: TextStyle(
-                                            fontSize: 24,
-                                            fontWeight: FontWeight.bold,
-                                            color: Color.fromRGBO(0, 0, 0, 1),
-                                          ),
+                                              fontSize: 24,
+                                              fontWeight: FontWeight.bold),
+                                          gradient: LinearGradient(colors: [
+                                            Color(0xFF12A5BC),
+                                            Color(0xFF0E46A3),
+                                          ]),
                                         ),
-                                        SizedBox(height: 10),
-                                        Text(
-                                          "To kick things off, select a floor to start our\nadventure!",
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                            fontSize: 13,
-                                            color: Colors.black,
-                                          ),
-                                        ),
+                                        const SizedBox(height: 10),
+                                        isFloorSelect
+                                            ? const Text(
+                                                "To kick things off, select a floor to start our\nadventure!",
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                  fontSize: 13,
+                                                  color: Colors.black,
+                                                ),
+                                              )
+                                            : const Text(
+                                                "Enjoy and take your time to explore and start your\nown journey!",
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                  fontSize: 13,
+                                                  color: Colors.black,
+                                                ),
+                                              ),
                                       ],
                                     )
                                   : const Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
                                       children: [
-                                        Text(
-                                          "Oops! It looks like this\nfloor doesn’t have any\npanorama to explore! ",
-                                          textAlign: TextAlign.center,
+                                        const GradientText(
+                                          " Oops! It looks like this\nfloor doesn’t have any\n panorama to explore! ",
                                           style: TextStyle(
-                                            fontSize: 24,
-                                            fontWeight: FontWeight.bold,
-                                            color: Color.fromRGBO(0, 0, 0, 1),
-                                          ),
+                                              fontSize: 24,
+                                              fontWeight: FontWeight.bold),
+                                          gradient: LinearGradient(colors: [
+                                            Color(0xFF12A5BC),
+                                            Color(0xFF0E46A3),
+                                          ]),
                                         ),
                                         SizedBox(height: 10),
                                         Text(
@@ -350,10 +376,11 @@ class _PanoramaViewScreenState extends State<PanoramaViewScreen> {
                                       ],
                                     ),
                               const SizedBox(height: 20),
-                              isFirstTime
-                                  ? GestureDetector(
+                              isFloorSelect
+                                            ? GestureDetector(
                                       onTap: () {
                                         _onSelectFloor();
+                                        setFloorSelectFalse();
                                       },
                                       child: Container(
                                         width: 130, // Set fixed width
@@ -364,18 +391,23 @@ class _PanoramaViewScreenState extends State<PanoramaViewScreen> {
                                           borderRadius: BorderRadius.circular(
                                               7), // ✅ Rounded corners
                                         ),
-                                        child: const Center(
-                                          child: Text(
-                                            "Select Floor",
-                                            style: TextStyle(
-                                              color: Color.fromARGB(255, 18,
-                                                  165, 188), // ✅ Text color
-                                              fontSize:
-                                                  11, // Adjust font size if needed
-                                              fontWeight: FontWeight.w600,
-                                            ),
-                                          ),
-                                        ),
+
+                                        child:  const Center(
+                                                child: Text(
+                                                  "Select Floor",
+                                                  style: TextStyle(
+                                                    color: Color.fromARGB(
+                                                        255,
+                                                        18,
+                                                        165,
+                                                        188), // ✅ Text color
+                                                    fontSize:
+                                                        11, // Adjust font size if needed
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
+                                                ),
+                                              )
+                                            ,
                                       ),
                                     )
                                   : const SizedBox.shrink(),
@@ -552,16 +584,17 @@ class _PanoramaViewScreenState extends State<PanoramaViewScreen> {
                 offset: _isSetFloorSelected ? Offset(0, 0) : Offset(0, 1),
                 duration: const Duration(milliseconds: 1000),
                 curve: Curves.easeOut,
-                  child: _isSetFloorSelected
-                      ? FloorListDrawer(
-                          floors: _selectedCampus!.floors,
-                          selectedFloor: _selectedFloor,
-                          onFloorSelected: _onFloorSelected,
-                          onMarkerSelected: _onMarkerSelected,
-                          onClose: _onClose,
-                          onSet: setFirstTimeFalse,
-                        )
-                      : const SizedBox.shrink(),
+                child: _isSetFloorSelected
+                    ? FloorListDrawer(
+                        floors: _selectedCampus!.floors,
+                        selectedFloor: _selectedFloor,
+                        onFloorSelected: _onFloorSelected,
+                        onMarkerSelected: _onMarkerSelected,
+                        onClose: _onClose,
+                        selectedMarkerPhotoUrl: _selectedMarkerPhotoUrl,
+                        onSet: setFirstTimeFalse,
+                      )
+                    : const SizedBox.shrink(),
               ),
             ),
           ],

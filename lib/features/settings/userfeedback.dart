@@ -108,7 +108,7 @@ class _UserFeedbackState extends State<UserFeedback> {
           icon: const Icon(Icons.arrow_back_ios_sharp),
         ),
         title: Text(
-          "Virtual Tour Preferences",
+          "Feedback",
           style: styleText(
             context: context,
             fontSizeOption: 17.0,

@@ -93,13 +93,14 @@ class MenuDrawer extends StatelessWidget {
                       final marker = validMarkers[index];
                       return Padding(
                         padding: const EdgeInsets.symmetric(
-                            vertical: 2), // Reduce spacing
+                            vertical: 0), // Reduce spacing
                         child: ListTile(
                           title: Text(
                             marker.markerName,
                             style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              fontFamily: "Poppins"
                             ),
                             textAlign: TextAlign.center,
                           ),

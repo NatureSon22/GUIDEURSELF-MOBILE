@@ -90,7 +90,7 @@ class _CampusDetailsScreenState extends State<CampusDetailsScreen> {
                                     errorBuilder: (context, error, stackTrace) {
                                       if (kDebugMode) {
                                         print(
-                                          "Failed to load vector image: ${university.universityVectorUrl}");
+                                            "Failed to load vector image: ${university.universityVectorUrl}");
                                       }
                                       return const Icon(
                                           Icons.image_not_supported);
@@ -108,7 +108,7 @@ class _CampusDetailsScreenState extends State<CampusDetailsScreen> {
                                     errorBuilder: (context, error, stackTrace) {
                                       if (kDebugMode) {
                                         print(
-                                          "Failed to load logo image: ${university.universityLogoUrl}");
+                                            "Failed to load logo image: ${university.universityLogoUrl}");
                                       }
                                       return const Icon(
                                           Icons.image_not_supported);
@@ -157,15 +157,69 @@ class _CampusDetailsScreenState extends State<CampusDetailsScreen> {
                     ),
                     textAlign: TextAlign.center,
                   ),
+
                   const SizedBox(height: 10),
 
                   // Contact Information
                   _infoRow(Icons.phone, widget.campus.campusPhoneNumber),
-                  const SizedBox(height: 5),
                   _infoRow(Icons.email, widget.campus.campusEmail),
-                  const SizedBox(height: 5),
                   _infoRow(Icons.location_on, widget.campus.campusAddress),
                   const SizedBox(height: 5),
+
+                  ElevatedButton(
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return Dialog(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(20),
+                                  child: Image.network(
+                                    widget.campus.campusCoverPhotoUrl,
+                                    fit: BoxFit.cover,
+                                    width: double.infinity,
+                                    height: 200,
+                                    errorBuilder:
+                                        (context, error, stackTrace) =>
+                                            const Padding(
+                                      padding: EdgeInsets.all(20),
+                                      child: Text('Failed to load image'),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromARGB(85, 121, 233, 250),
+                      shadowColor: Colors.transparent,
+                      foregroundColor: const Color.fromARGB(255, 18, 165, 188),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
+                      minimumSize: const Size(0, 30),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                    ),
+                    child: const Text(
+                      "View Photo",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color: Color.fromARGB(255, 18, 165, 188),
+                      ),
+                    ),
+                  ),
 
                   // About Section in a Container
                   Container(
@@ -185,7 +239,9 @@ class _CampusDetailsScreenState extends State<CampusDetailsScreen> {
                         const Text(
                           "ABOUT",
                           style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold),
+                              fontFamily: "CinzelDecorative",
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(height: 5),
                         Text(
@@ -212,62 +268,92 @@ class _CampusDetailsScreenState extends State<CampusDetailsScreen> {
                     ),
                     padding: const EdgeInsets.all(20),
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          "ACADEMIC PROGRAMS",
-                          style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold),
+                        const Center(
+                          child: Text(
+                            "ACADEMIC PROGRAMS",
+                            style: TextStyle(
+                              fontFamily: "CinzelDecorative",
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
-                        const SizedBox(height: 5),
-                        ...widget.campus.campusPrograms.map((program) =>
-                            Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 6),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  // Program Names and Majors
-                                  ...program.programs.map(
-                                    (p) => Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        // Program Name
-                                        Text(
-                                          p.programName.trim(),
-                                          style: const TextStyle(
-                                            fontSize: 13,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                          textAlign: TextAlign.center,
-                                        ),
+                        const SizedBox(height: 10),
 
-                                        // Majors (if available)
-                                        if (p.majors.isNotEmpty)
-                                          Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
-                                            children: [
-                                              const Text(
-                                                "Major in:",
-                                                style: TextStyle(
-                                                  fontSize: 13,
-                                                  fontWeight: FontWeight.w500,
-                                                ),
-                                                textAlign: TextAlign.center,
-                                              ),
-                                              ...p.majors.map(
-                                                (major) => Text(
-                                                  major.trim(),
-                                                  style: const TextStyle(
-                                                      fontSize: 13),
-                                                  textAlign: TextAlign.center,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                      ],
+                        // Loop through each program type
+                        ...widget.campus.campusPrograms.map((programSchema) =>
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 16),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // Program Type Title (e.g., Undergraduate, Graduate)
+                                  Text(
+                                    "${programSchema.programTypeId.trim()} Programs",
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
                                     ),
                                   ),
+                                  const SizedBox(height: 6),
+
+                                  // Loop through each program under this type
+                                  ...programSchema.programs.map((program) =>
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 4),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            // Program Name (e.g., BSIT, BSIS)
+                                            Text(
+                                              program.programName.trim(),
+                                              style: const TextStyle(
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+
+                                            // Majors (if any)
+                                            if (program.majors.isNotEmpty)
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    left: 12, top: 2),
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    const Text(
+                                                      "Major in:",
+                                                      style: TextStyle(
+                                                        fontSize: 11,
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                      ),
+                                                    ),
+                                                    ...program.majors
+                                                        .map((major) => Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .only(
+                                                                      left: 8),
+                                                              child: Text(
+                                                                major.trim(),
+                                                                style:
+                                                                    const TextStyle(
+                                                                        fontSize:
+                                                                            11),
+                                                              ),
+                                                            )),
+                                                  ],
+                                                ),
+                                              ),
+                                          ],
+                                        ),
+                                      )),
                                 ],
                               ),
                             )),

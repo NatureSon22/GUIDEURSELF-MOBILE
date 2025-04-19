@@ -8,6 +8,7 @@ import 'package:guideurself/features/explore/glowing_marker.dart';
 class FloorListDrawer extends StatefulWidget {
   final List<Floor> floors;
   final String? selectedFloor;
+  final String? selectedMarkerPhotoUrl;
   final Function(String) onFloorSelected;
   final VoidCallback onClose;
   final VoidCallback onSet;
@@ -17,6 +18,7 @@ class FloorListDrawer extends StatefulWidget {
     super.key,
     required this.floors,
     required this.selectedFloor,
+    required this.selectedMarkerPhotoUrl,
     required this.onFloorSelected,
     required this.onClose,
     required this.onSet,
@@ -30,9 +32,10 @@ class FloorListDrawer extends StatefulWidget {
 
 class _FloorListDrawerState extends State<FloorListDrawer> {
   final TextEditingController _searchController = TextEditingController();
+  UniqueKey _mapKey = UniqueKey();
   double? _markerLatitude;
   double? _markerLongitude;
-  UniqueKey _mapKey = UniqueKey();
+  
   String? _localSelectedFloor;
   String? _floorPhotoUrl;
   bool _isExpanded = false;
@@ -42,8 +45,47 @@ class _FloorListDrawerState extends State<FloorListDrawer> {
   @override
   void initState() {
     super.initState();
-    _localSelectedFloor = widget.selectedFloor;
-    _updateFloorPhoto(widget.selectedFloor);
+
+    // Set default floor if not selected
+    if (widget.selectedFloor == null && widget.floors.isNotEmpty) {
+      _localSelectedFloor = widget.floors.first.floorName;
+    } else {
+      _localSelectedFloor = widget.selectedFloor;
+    }
+
+    _updateFloorPhoto(_localSelectedFloor);
+
+    // Call both callbacks safely after the first frame
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      widget.onFloorSelected(_localSelectedFloor!);
+      _setSelectedMarkerPhotoUrl();
+    });
+  }
+
+  void _setSelectedMarkerPhotoUrl() {
+    final selectedFloor = widget.floors.firstWhere(
+      (floor) => floor.floorName == _localSelectedFloor,
+      orElse: () => Floor(
+          floorName: '', markers: [], id: '', floorPhotoUrl: '', order: 0),
+    );
+
+    final markerWithPhoto = selectedFloor.markers.firstWhere(
+      (marker) => marker.markerPhotoUrl.isNotEmpty,
+      orElse: () => Marker(
+        id: '',
+        markerName: '',
+        latitude: 0,
+        longitude: 0,
+        markerDescription: '',
+        category: '',
+        markerPhotoUrl: '',
+        dateAdded: DateTime.now(),
+      ),
+    );
+
+    if (markerWithPhoto.markerPhotoUrl.isNotEmpty) {
+      widget.onMarkerSelected(markerWithPhoto.markerPhotoUrl);
+    }
   }
 
   void _showMarkerDetails(Marker marker) {
@@ -158,7 +200,7 @@ class _FloorListDrawerState extends State<FloorListDrawer> {
                               ),
                               child: const Center(
                                 child: Text(
-                                  "360° View",
+                                  "Preview",
                                   style: TextStyle(
                                     color: Colors.white, // ✅ Text color
                                     fontSize: 11, // Adjust font size if needed
@@ -226,7 +268,7 @@ class _FloorListDrawerState extends State<FloorListDrawer> {
       );
     } else {
       _controller.animateTo(
-        1, // Use minChildSize and maxChildSize dynamically
+        0.8, // Use minChildSize and maxChildSize dynamically
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
       );
@@ -378,7 +420,7 @@ class _FloorListDrawerState extends State<FloorListDrawer> {
 
     return DraggableScrollableSheet(
       controller: _controller,
-      initialChildSize: 1,
+      initialChildSize:0.8,
       minChildSize: 0.13,
       maxChildSize: 1,
       builder: (context, scrollController) {
@@ -428,9 +470,13 @@ class _FloorListDrawerState extends State<FloorListDrawer> {
                         child: TextField(
                           controller: _searchController,
                           decoration: InputDecoration(
-                            hintText: 'Search...',
-                            contentPadding: const EdgeInsets.symmetric(
-                                vertical: 10, horizontal: 10),
+                            hintText: 'Search Location',
+                            hintStyle: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight
+                                  .w300, // You can adjust the weight as needed (e.g., w100, w200, etc.)
+                            ),
+                            contentPadding: const EdgeInsets.only(top: 2),
                             prefixIcon: const Icon(Icons.search, size: 20),
                             suffixIcon: IconButton(
                               icon: const Icon(Icons.clear, size: 20),
@@ -458,8 +504,7 @@ class _FloorListDrawerState extends State<FloorListDrawer> {
                               // Handle empty search (e.g., show a message or reset the map)
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
-                                    content:
-                                        Text('Please enter a search term.')),
+                                    content: Text('Please enter a location')),
                               );
                             }
                           },
@@ -641,7 +686,7 @@ class _FloorListDrawerState extends State<FloorListDrawer> {
                 else if (_floorPhotoUrl != null && _floorPhotoUrl!.isNotEmpty)
                   SizedBox(
                     height: MediaQuery.of(context).size.height *
-                        0.8, // Adjust height as needed
+                        0.6, // Adjust height as needed
                     child: Container(
                       decoration: BoxDecoration(
                         color: Colors.white,
