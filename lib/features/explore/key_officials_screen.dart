@@ -20,32 +20,46 @@ class _KeyOfficialsScreenState extends State<KeyOfficialsScreen> {
   String? selectedCampusName;
   bool _isLoading = true;
   String _error = '';
-  late Future<List<KeyOfficial>> _keyOfficialsFuture;
-  late Future<UniversityManagement>
-      _universityFuture; // Future for university details
+  Future<List<KeyOfficial>> _keyOfficialsFuture =
+      Future.value([]); // Initialize with empty list
+  Future<UniversityManagement> _universityFuture =
+      Future.value(UniversityManagement()); // Initialize with empty object
 
   @override
   void initState() {
     super.initState();
-    _fetchCampuses();
-    _keyOfficialsFuture = fetchKeyOfficials();
-    _universityFuture = fetchUniversityDetails(); // Fetch university details
+    _initializeData();
   }
 
-  Future<void> _fetchCampuses() async {
+  Future<void> _initializeData() async {
     try {
-      List<Campus> campuses = await _campusService.fetchAllCampuses();
-      campuses.sort((a, b) => a.campusName.compareTo(b.campusName));
+      final campuses = await _campusService.fetchAllCampuses();
+      final keyOfficials = await fetchKeyOfficials();
+      final universityDetails = await fetchUniversityDetails();
+
       setState(() {
         _campuses = campuses;
+        _keyOfficialsFuture = Future.value(keyOfficials);
+        _universityFuture = Future.value(universityDetails);
+        if (campuses.isNotEmpty) {
+          // Sort campuses alphabetically by name
+          campuses.sort((a, b) => a.campusName.compareTo(b.campusName));
+          // Set to first campus in alphabetical order
+          selectedCampusName = campuses.first.campusName;
+        }
         _isLoading = false;
       });
     } catch (e) {
       setState(() {
-        _error = "Failed to load campuses";
+        _error = 'Error loading data: $e';
         _isLoading = false;
       });
     }
+  }
+
+  Future<List<Campus>> _fetchCampuses() async {
+    final response = await CampusService().fetchAllCampuses();
+    return response; // Ensure this is List<Campus>
   }
 
   Widget buildKeyOfficialCard(KeyOfficial official) {
@@ -170,261 +184,273 @@ class _KeyOfficialsScreenState extends State<KeyOfficialsScreen> {
                 );
               }
 
-              return FutureBuilder<List<KeyOfficial>>(
-                future: _keyOfficialsFuture,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(
-                        child: CircularProgressIndicator(
-                      color: const Color(0xFF12A5BC),
-                      backgroundColor: const Color(0xFF323232).withOpacity(0.1),
-                    ));
-                  } else if (snapshot.hasError) {
-                    return Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Text(
-                          "Error: ${snapshot.error}",
-                          textAlign: TextAlign.center,
-                          style:
-                              const TextStyle(color: Colors.red, fontSize: 16),
-                        ),
-                      ),
-                    );
-                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return const Center(
-                      child: Text(
-                        "No key officials found",
-                        style: TextStyle(fontSize: 16, color: Colors.grey),
-                      ),
-                    );
-                  }
+              return Builder(
+                builder: (context) {
+                  final List<String> campusNames = _campuses
+                      .map((campus) => campus.campusName)
+                      .where((name) => name.isNotEmpty)
+                      .toList()
+                    ..sort();
 
-                  List<KeyOfficial> keyOfficials = snapshot.data!;
-
-                  List<KeyOfficial> universityWide = keyOfficials
-                      .where((official) =>
-                          official.campusName == null ||
-                          official.campusName!.isEmpty)
-                      .toList();
-
-                  List<KeyOfficial> campusBased = keyOfficials
-                      .where((official) =>
-                          official.campusName != null &&
-                          official.campusName!.isNotEmpty)
-                      .toList();
-
-                  // Group by campusName
-                  Map<String, List<KeyOfficial>> groupedByCampus = {};
-                  for (var official in campusBased) {
-                    String campus = official.campusName!;
-                    groupedByCampus.putIfAbsent(campus, () => []).add(official);
-                  }
-
-                  // Optional: sort the map alphabetically by campus name
-                  final sortedCampusEntries = groupedByCampus.entries.toList()
-                    ..sort((a, b) => a.key.compareTo(b.key));
-
-                  // Grouped by campus section
-                  final List<String> campusNames =
-                      sortedCampusEntries.map((e) => e.key).toList();
-
-                  // Initialize selected campus once
-                  if (selectedCampusName == null && campusNames.isNotEmpty) {
-                    selectedCampusName = campusNames.first;
-                  }
-
-                  final filteredCampusOfficials = selectedCampusName != null
-                      ? groupedByCampus[selectedCampusName] ?? []
-                      : [];
-
-                  return SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(
-                         vertical: 20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        // Header Section
-                        Padding(
-                          padding: const EdgeInsets.only(top: 16.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              // Use Image.network for the vector URL from the database
-                              if (universitySnapshot
-                                      .data!.universityVectorUrl !=
-                                  null)
-                                Image.network(
-                                  universitySnapshot.data!.universityVectorUrl!,
-                                  width: 60,
-                                  height: 60,
-                                  fit: BoxFit.contain,
-                                  errorBuilder: (context, error, stackTrace) {
-                                    return const Icon(Icons
-                                        .image_not_supported); // Fallback if image fails to load
-                                  },
-                                ),
-                              const SizedBox(width: 4),
-                              // Use Image.network for the logo URL from the database
-                              if (universitySnapshot.data!.universityLogoUrl !=
-                                  null)
-                                Image.network(
-                                  universitySnapshot.data!.universityLogoUrl!,
-                                  width: 60,
-                                  height: 60,
-                                  fit: BoxFit.contain,
-                                  errorBuilder: (context, error, stackTrace) {
-                                    return const Icon(Icons
-                                        .image_not_supported); // Fallback if image fails to load
-                                  },
-                                ),
-                            ],
+                  return FutureBuilder<List<KeyOfficial>>(
+                    future: _keyOfficialsFuture,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Center(
+                            child: CircularProgressIndicator(
+                          color: const Color(0xFF12A5BC),
+                          backgroundColor:
+                              const Color(0xFF323232).withOpacity(0.1),
+                        ));
+                      } else if (snapshot.hasError) {
+                        return Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Text(
+                              "Error: ${snapshot.error}",
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                  color: Colors.red, fontSize: 16),
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 8),
-                        const Text(
-                          'University Of Rizal System',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              fontFamily: "Cinzel",
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                              color: Colors.black),
-                        ),
-                        const Text(
-                          "Nurturing Tomorrow's Noblest",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              fontFamily: "CinzelDecorative",
-                              fontSize: 12,
-                              color: Colors.black),
-                        ),
-                        const SizedBox(height: 20),
-                        const Text(
-                          "KEY OFFICIALS",
-                          style: TextStyle(
-                            fontFamily: "CinzelDecorative",
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                        );
+                      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                        return const Center(
+                            child: CircularProgressIndicator(
+                          color: Color(0xFF12A5BC),
+                        ));
+                      }
 
-                        // University-wide section
-                        if (universityWide.isNotEmpty) ...[
-                          const Text("",
-                              style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.bold)),
-                          const SizedBox(height: 8),
-                          ...universityWide.map<Widget>(
-                              (official) => buildKeyOfficialCard(official)),
-                          const SizedBox(height: 16),
-                        ],
+                      List<KeyOfficial> keyOfficials = snapshot.data!;
 
-                        // Campus-based grouped section
-                        // Campus Filter Buttons
-                        if (campusNames.isNotEmpty) ...[
-                          const SizedBox(height: 10),
-                          SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: Row(
-                              children: campusNames.map((campus) {
-                                final isSelected = campus == selectedCampusName;
-                                return Padding(
-                                  padding: const EdgeInsets.only(right: 5, left:5),
-                                  child: Container(
-                                    height: 32,
-                                    decoration: BoxDecoration(
-                                      gradient: isSelected
-                                          ? const LinearGradient(
-                                              colors: [
-                                                Color(0xFF12A5BC),
-                                                Color(0xFF0E46A3),
-                                              ],
-                                              begin: Alignment.topLeft,
-                                              end: Alignment.bottomRight,
-                                            )
-                                          : null,
-                                      color:
-                                          isSelected ? null : Colors.grey[200],
-                                      borderRadius: BorderRadius.circular(
-                                          100.0), // Rounded container
-                                    ),
-                                    child: ElevatedButton(
-                                      onPressed: () {
-                                        setState(() {
-                                          selectedCampusName = campus;
-                                        });
+                      List<KeyOfficial> universityWide = keyOfficials
+                          .where((official) =>
+                              official.campusName == null ||
+                              official.campusName!.isEmpty)
+                          .toList();
+
+                      List<KeyOfficial> campusBased = keyOfficials
+                          .where((official) =>
+                              official.campusName != null &&
+                              official.campusName!.isNotEmpty)
+                          .toList();
+
+                      Map<String, List<KeyOfficial>> groupedByCampus = {};
+                      for (var official in campusBased) {
+                        String campus = official.campusName!;
+                        groupedByCampus
+                            .putIfAbsent(campus, () => [])
+                            .add(official);
+                      }
+
+                      if (selectedCampusName == null &&
+                          campusNames.isNotEmpty) {
+                        selectedCampusName = campusNames.first;
+                      }
+
+                      final filteredCampusOfficials = selectedCampusName != null
+                          ? groupedByCampus[selectedCampusName] ?? []
+                          : [];
+
+                      return SingleChildScrollView(
+                        padding: const EdgeInsets.symmetric(vertical: 20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            // --- header and logos ---
+                            Padding(
+                              padding: const EdgeInsets.only(top: 16.0),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  if (universitySnapshot
+                                          .data!.universityVectorUrl !=
+                                      null)
+                                    Image.network(
+                                      universitySnapshot
+                                          .data!.universityVectorUrl!,
+                                      width: 60,
+                                      height: 60,
+                                      fit: BoxFit.contain,
+                                      errorBuilder:
+                                          (context, error, stackTrace) {
+                                        return const Icon(
+                                            Icons.image_not_supported);
                                       },
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: Colors
-                                            .transparent, // transparent background
-                                        shadowColor:
-                                            Colors.transparent, // no shadow
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 16, vertical: 8),
-                                        minimumSize: const Size(
-                                            0, 30), // small button height
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                              100.0), // rounded button shape
+                                    ),
+                                  const SizedBox(width: 4),
+                                  if (universitySnapshot
+                                          .data!.universityLogoUrl !=
+                                      null)
+                                    Image.network(
+                                      universitySnapshot
+                                          .data!.universityLogoUrl!,
+                                      width: 60,
+                                      height: 60,
+                                      fit: BoxFit.contain,
+                                      errorBuilder:
+                                          (context, error, stackTrace) {
+                                        return const Icon(
+                                            Icons.image_not_supported);
+                                      },
+                                    ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            const Text(
+                              'University Of Rizal System',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontFamily: "Cinzel",
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                                color: Colors.black,
+                              ),
+                            ),
+                            const Text(
+                              "Nurturing Tomorrow's Noblest",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontFamily: "CinzelDecorative",
+                                fontSize: 12,
+                                color: Colors.black,
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                            const Text(
+                              "KEY OFFICIALS",
+                              style: TextStyle(
+                                fontFamily: "CinzelDecorative",
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+
+                            // University-wide officials
+                            if (universityWide.isNotEmpty) ...[
+                              const SizedBox(height: 8),
+                              ...universityWide.map<Widget>(
+                                  (official) => buildKeyOfficialCard(official)),
+                              const SizedBox(height: 16),
+                            ],
+
+                            // Campus Filter Buttons
+                            if (campusNames.isNotEmpty) ...[
+                              const SizedBox(height: 10),
+                              SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Row(
+                                  children: campusNames.map((campus) {
+                                    final isSelected =
+                                        campus == selectedCampusName;
+                                    return Padding(
+                                      padding: const EdgeInsets.only(
+                                          right: 5, left: 5),
+                                      child: Container(
+                                        height: 32,
+                                        decoration: BoxDecoration(
+                                          gradient: isSelected
+                                              ? const LinearGradient(
+                                                  colors: [
+                                                    Color(0xFF12A5BC),
+                                                    Color(0xFF0E46A3),
+                                                  ],
+                                                  begin: Alignment.topLeft,
+                                                  end: Alignment.bottomRight,
+                                                )
+                                              : null,
+                                          color: isSelected
+                                              ? null
+                                              : Colors.grey[200],
+                                          borderRadius:
+                                              BorderRadius.circular(100.0),
+                                        ),
+                                        child: ElevatedButton(
+                                          onPressed: () {
+                                            setState(() {
+                                              selectedCampusName = campus;
+                                            });
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: Colors.transparent,
+                                            shadowColor: Colors.transparent,
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 16, vertical: 8),
+                                            minimumSize: const Size(0, 30),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(100.0),
+                                            ),
+                                          ),
+                                          child: Text(
+                                            campus,
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w500,
+                                              color: isSelected
+                                                  ? Colors.white
+                                                  : const Color.fromARGB(
+                                                      255, 161, 161, 161),
+                                            ),
+                                          ),
                                         ),
                                       ),
-                                      child: Text(
-                                        campus,
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w500,
-                                          color: isSelected
-                                              ? Colors.white
-                                              : const Color.fromARGB(
-                                                  255, 161, 161, 161),
-                                        ),
+                                    );
+                                  }).toList(),
+                                ),
+                              ),
+                              const SizedBox(height: 30),
+                              RichText(
+                                text: TextSpan(
+                                  children: [
+                                    TextSpan(
+                                      text: selectedCampusName!.isNotEmpty
+                                          ? selectedCampusName![0]
+                                          : '',
+                                      style: const TextStyle(
+                                        fontSize: 18,
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.bold,
+                                        fontFamily: "Cinzel",
                                       ),
                                     ),
-                                  ),
-                                );
-                              }).toList(),
-                            ),
-                          ),
-                          const SizedBox(height: 30),
-
-                          // Filtered Campus Officials List
-                          RichText(
-                            text: TextSpan(
-                              children: [
-                                // First letter (Cinzel)
-                                TextSpan(
-                                  text: selectedCampusName!.isNotEmpty
-                                      ? selectedCampusName![0]
-                                      : '',
-                                  style: const TextStyle(
-                                    fontSize: 18,
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold,
-                                    fontFamily: "Cinzel",
+                                    TextSpan(
+                                      text: selectedCampusName!.isNotEmpty
+                                          ? "${selectedCampusName!.substring(1)} CAMPUS"
+                                          : ' CAMPUS',
+                                      style: const TextStyle(
+                                        fontSize: 18,
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.bold,
+                                        fontFamily: "CinzelDecorative",
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(height: 30),
+                              if (filteredCampusOfficials.isNotEmpty)
+                                ...filteredCampusOfficials.map<Widget>(
+                                    (official) =>
+                                        buildKeyOfficialCard(official)),
+                              if (filteredCampusOfficials.isEmpty)
+                                const Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 20.0),
+                                  child: Text(
+                                    "No Key Officials",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.grey,
+                                      fontFamily: "CinzelDecorative",
+                                    ),
                                   ),
                                 ),
-                                // Rest of the text (CinzelDecorative)
-                                TextSpan(
-                                  text: selectedCampusName!.isNotEmpty
-                                      ? "${selectedCampusName!.substring(1)} CAMPUS"
-                                      : ' CAMPUS',
-                                  style: const TextStyle(
-                                    fontSize: 18,
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold,
-                                    fontFamily: "CinzelDecorative",
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(height: 30),
-                          ...filteredCampusOfficials.map<Widget>(
-                              (official) => buildKeyOfficialCard(official))
-                        ]
-                      ],
-                    ),
+                            ]
+                          ],
+                        ),
+                      );
+                    },
                   );
                 },
               );

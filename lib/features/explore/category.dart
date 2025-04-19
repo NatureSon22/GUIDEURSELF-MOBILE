@@ -56,7 +56,7 @@ String getCategoryDescription(String category) {
     case "Utility Areas":
       return "Essential service areas, such as restrooms, maintenance rooms, and storage spaces.";
     case "Multi-Purpose":
-      return "Essential service areas, such as restrooms, maintenance rooms, and storage spaces.";
+      return "A flexible space for meetings, events, and student activities.";
     case "Others (Miscellaneous)":
       return "Uncategorized areas or locations with unique purposes within the campus.";
     default:
