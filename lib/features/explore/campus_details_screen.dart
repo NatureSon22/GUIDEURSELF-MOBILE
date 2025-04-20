@@ -271,7 +271,7 @@ class _CampusDetailsScreenState extends State<CampusDetailsScreen> {
                     ),
                     padding: const EdgeInsets.all(20),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Center(
                           child: Text(
