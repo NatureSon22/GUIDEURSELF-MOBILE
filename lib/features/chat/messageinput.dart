@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
 import 'package:guideurself/features/chat/recordinput.dart';
 import 'package:guideurself/providers/account.dart';
@@ -224,7 +225,7 @@ class _MessageInputState extends State<MessageInput> {
               backgroundColor: Colors.white,
             ),
             child: const Icon(
-              Icons.mic_none_sharp,
+              FontAwesomeIcons.microphoneLines,
               size: 20,
             ),
           ),
@@ -255,6 +256,7 @@ class _MessageInputState extends State<MessageInput> {
           ),
           const Gap(4),
           ElevatedButton(
+            iconAlignment: IconAlignment.end,
             onPressed: () {
               if (_controller.text.trim().isNotEmpty) {
                 handleSendQuestion(question: _controller.text);
@@ -264,12 +266,9 @@ class _MessageInputState extends State<MessageInput> {
               shape: const CircleBorder(),
               padding: const EdgeInsets.all(11),
             ),
-            child: Transform.rotate(
-              angle: -0.785398,
-              child: const Icon(
-                Icons.send,
-                size: 22,
-              ),
+            child: const Icon(
+              FontAwesomeIcons.solidPaperPlane,
+              size: 18,
             ),
           ),
         ],

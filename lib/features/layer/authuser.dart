@@ -43,6 +43,7 @@ class _AuthLayerState extends State<AuthLayer> {
           final destination = isValid ? '/' : '/login';
 
           WidgetsBinding.instance.addPostFrameCallback((_) {
+            print('Navigating to $destination');
             context.go(destination);
           });
         }

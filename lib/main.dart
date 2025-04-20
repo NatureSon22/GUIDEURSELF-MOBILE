@@ -8,6 +8,7 @@ import 'package:guideurself/providers/bottomnav.dart';
 import 'package:guideurself/providers/conversation.dart';
 import 'package:guideurself/providers/loading.dart';
 import 'package:guideurself/providers/messagechat.dart';
+import 'package:guideurself/providers/messagereview.dart';
 import 'package:guideurself/providers/transcribing.dart';
 import 'package:guideurself/routes/router.dart';
 import 'package:guideurself/services/socket.dart';
@@ -42,6 +43,7 @@ void main() {
           ChangeNotifierProvider(create: (context) => Transcribing()),
           ChangeNotifierProvider(create: (context) => MessageChatProvider()),
           ChangeNotifierProvider(create: (context) => BottomNavProvider()),
+          ChangeNotifierProvider(create: (context) => MessageReviewProvider()),
         ],
         child: QueryClientProvider(
           queryClient: queryClient,

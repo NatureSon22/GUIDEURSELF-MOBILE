@@ -5,68 +5,90 @@ import 'package:http_parser/http_parser.dart';
 import 'package:path/path.dart' as path;
 import 'package:mime/mime.dart';
 
-Future<Map<String, dynamic>> updateProfile(File img, String accountId) async {
-  // Validate file existence
-  if (!img.existsSync() || img.lengthSync() == 0) {
-    throw Exception('File does not exist or is empty: ${img.path}');
+Future<Map<String, dynamic>> updateProfile(
+    {File? img, required String accountId, String? name}) async {
+  Map<String, dynamic> formDataMap = {
+    "accountId": accountId,
+    "device": "mobile"
+  };
+
+  // Add username to form data if provided
+  if (name != null) {
+    formDataMap["username"] = name;
   }
 
-  // Get file extension and validate
-  final fileExtension = path.extension(img.path).toLowerCase();
-  const allowedExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
+  // Process image if provided
+  if (img != null) {
+    // Replace null-unsafe existsSync() with safer file checking
+    try {
+      final fileExists = await img.exists();
+      final fileLength = await img.length();
 
-  if (!allowedExtensions.contains(fileExtension)) {
-    throw Exception(
-        'Invalid file type. Only JPG, JPEG, PNG, GIF, and WEBP are allowed.');
-  }
+      if (!fileExists || fileLength == 0) {
+        throw Exception('File does not exist or is empty: ${img.path}');
+      }
 
-  // Get MIME type and validate
-  String? mimeType = lookupMimeType(img.path);
+      // Get file extension and validate
+      final fileExtension = path.extension(img.path).toLowerCase();
+      const allowedExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
 
-  // If MIME type couldn't be determined, set based on extension
-  if (mimeType == null) {
-    switch (fileExtension) {
-      case '.jpg':
-      case '.jpeg':
-        mimeType = 'image/jpeg';
-        break;
-      case '.png':
-        mimeType = 'image/png';
-        break;
-      case '.gif':
-        mimeType = 'image/gif';
-        break;
-      case '.webp':
-        mimeType = 'image/webp';
-        break;
-      default:
-        mimeType = 'image/jpeg'; // Default fallback
-    }
-  }
+      if (!allowedExtensions.contains(fileExtension)) {
+        throw Exception(
+            'Invalid file type. Only JPG, JPEG, PNG, GIF, and WEBP are allowed.');
+      }
 
-  const allowedMimeTypes = [
-    'image/jpeg',
-    'image/png',
-    'image/gif',
-    'image/webp'
-  ];
-  if (!allowedMimeTypes.contains(mimeType)) {
-    throw Exception('Invalid MIME type. Detected: $mimeType');
-  }
+      // Get MIME type and validate
+      String? mimeType = lookupMimeType(img.path);
 
-  try {
-    // Create bytes from file to ensure it's a valid image
-    final bytes = await img.readAsBytes();
+      // If MIME type couldn't be determined, set based on extension
+      if (mimeType == null) {
+        switch (fileExtension) {
+          case '.jpg':
+          case '.jpeg':
+            mimeType = 'image/jpeg';
+            break;
+          case '.png':
+            mimeType = 'image/png';
+            break;
+          case '.gif':
+            mimeType = 'image/gif';
+            break;
+          case '.webp':
+            mimeType = 'image/webp';
+            break;
+          default:
+            mimeType = 'image/jpeg'; // Default fallback
+        }
+      }
 
-    // Prepare FormData with explicit MIME type and content type
-    final formData = FormData.fromMap({
-      "profile_photo": MultipartFile.fromBytes(
+      const allowedMimeTypes = [
+        'image/jpeg',
+        'image/png',
+        'image/gif',
+        'image/webp'
+      ];
+      if (!allowedMimeTypes.contains(mimeType)) {
+        throw Exception('Invalid MIME type. Detected: $mimeType');
+      }
+
+      // Create bytes from file to ensure it's a valid image
+      final bytes = await img.readAsBytes();
+
+      // Add image to form data
+      formDataMap["profile_photo"] = MultipartFile.fromBytes(
         bytes,
         filename: "profile$fileExtension",
         contentType: MediaType.parse(mimeType),
-      ),
-      "accountId": accountId,
-    });
+      );
+    } catch (e) {
+      if (e is Exception) rethrow;
+      throw Exception('Error processing image file: ${e.toString()}');
+    }
+  }
+
+  try {
+    // Prepare FormData with the collected map
+    final formData = FormData.fromMap(formDataMap);
 
     final response = await dio.put(
       "/accounts/update-profile",
@@ -74,8 +96,8 @@ Future<Map<String, dynamic>> updateProfile(File img, String accountId) async {
     );
 
     return response.data["user"];
-  } on DioException catch (_) {
-    throw Exception('Failed to update profile photo');
+  } on DioException catch (e) {
+    throw Exception('Failed to update profile: ${e.message}');
   }
 }
 

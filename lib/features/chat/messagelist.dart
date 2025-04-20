@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:guideurself/features/chat/dislikereason.dart';
 import 'package:guideurself/features/chat/messagebubble.dart';
 
 class MessageList extends StatefulWidget {
@@ -53,6 +54,7 @@ class _MessageListState extends State<MessageList> {
           content: message["content"],
           isMachine: message["is_machine_generated"],
           isFailed: message["is_failed"] ?? false,
+          showDislikeReason: showDislikeReasonSheet,
           initialIsHelpful: message["is_helpful"] as bool?,
         );
       },

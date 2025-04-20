@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
 import 'package:guideurself/core/themes/style.dart';
 import 'package:guideurself/providers/account.dart';
@@ -20,6 +21,9 @@ class _EditProfileState extends State<EditProfile> {
   File? _image;
   final ImagePicker _picker = ImagePicker();
   bool _isUploading = false;
+  bool isEditing = false;
+  bool edit = false;
+  final TextEditingController _nameController = TextEditingController();
 
   Future<void> _pickImage() async {
     try {
@@ -65,24 +69,24 @@ class _EditProfileState extends State<EditProfile> {
     final accountProvider =
         Provider.of<AccountProvider>(context, listen: false);
 
-    if (_image == null) return;
-
     setState(() {
       _isUploading = true;
     });
 
     try {
-      final user = await updateProfile(_image!, accountId);
+      final user = await updateProfile(
+          img: _image, accountId: accountId, name: _nameController.text);
       accountProvider.setAccount(account: user);
 
       // Show success dialog
       _showSuccessDialog('Profile photo updated successfully');
     } catch (e) {
-      _showErrorDialog('Failed to update profile photo');
+      _showErrorDialog('Failed to update profile');
     } finally {
       setState(() {
         _isUploading = false;
         _image = null;
+        edit = false;
       });
     }
   }
@@ -158,18 +162,39 @@ class _EditProfileState extends State<EditProfile> {
           ),
         ),
         centerTitle: true,
+        actions: [
+          TextButton(
+            child: Text(
+              edit ? "Cancel" : "Edit",
+              style: TextStyle(
+                fontFamily: "Poppins",
+                fontSize: 15,
+                fontWeight: FontWeight.w500,
+                color: const Color(0xFF323232).withOpacity(0.5),
+              ),
+            ),
+            onPressed: () {
+              setState(() {
+                isEditing = !isEditing;
+                edit = !edit;
+                _image = null;
+              });
+              _nameController.clear();
+            },
+          )
+        ],
       ),
       body: Container(
         height: double.infinity,
         width: double.infinity,
+        alignment: Alignment.center,
         padding: const EdgeInsets.symmetric(horizontal: 35, vertical: 20),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            GestureDetector(
-              onTap: _isUploading ? null : _pickImage,
-              child: SizedBox(
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SizedBox(
                 width: 200,
                 child: Stack(
                   children: [
@@ -188,44 +213,121 @@ class _EditProfileState extends State<EditProfile> {
                     Positioned(
                       bottom: 0,
                       right: 10,
-                      child: Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(100),
-                          border: Border.all(
-                            color: const Color(0xFF323232).withOpacity(0.1),
-                          ),
-                        ),
-                        child: _isUploading
-                            ? const SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: Color(0xFF12A5BC),
+                      child: GestureDetector(
+                        onTap: () {
+                          _image != null
+                              ? setState(() {
+                                  _image = null;
+                                })
+                              : _pickImage();
+                        },
+                        child: edit
+                            ? Container(
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(100),
+                                  border: Border.all(
+                                    color: const Color(0xFF323232)
+                                        .withOpacity(0.1),
+                                  ),
+                                ),
+                                child: Icon(
+                                  _image != null
+                                      ? Icons.close
+                                      : FontAwesomeIcons.pen,
+                                  size: 20,
+                                  color: const Color(0xFF323232),
                                 ),
                               )
-                            : const Icon(
-                                Icons.camera,
-                                color: Color(0xFF323232),
-                              ),
+                            : Container(),
                       ),
                     )
                   ],
                 ),
               ),
-            ),
-            const Gap(40),
-            if (_image != null && !_isUploading)
-              SizedBox(
-                width: 180,
-                child: ElevatedButton(
-                  onPressed: () => _saveProfile(accountId),
-                  child: const Text("Save Profile"),
+              const Gap(20),
+              if (!edit)
+                Text(
+                  account["username"],
+                  style: TextStyle(
+                    fontFamily: "Poppins",
+                    fontSize: 18,
+                    fontWeight: FontWeight.w500,
+                    color: const Color(0xFF323232).withOpacity(0.8),
+                  ),
                 ),
-              )
-          ],
+              const Gap(35),
+              if (edit) ...[
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text(
+                      "Name",
+                      style: TextStyle(
+                        fontFamily: "Poppins",
+                        fontSize: 15,
+                        fontWeight: FontWeight.w500,
+                        color: Color(0xFF323232),
+                      ),
+                    ),
+                    const Gap(25),
+                    Flexible(
+                      child: TextField(
+                        controller: _nameController,
+                        style: styleText(
+                          context: context,
+                          fontSizeOption: 15.0,
+                          fontWeight: CustomFontWeight.weight500,
+                        ),
+                        decoration: InputDecoration(
+                          border: UnderlineInputBorder(
+                            borderSide: BorderSide(
+                              width: 1,
+                              color: const Color(0xFF323232).withOpacity(0.2),
+                            ),
+                          ),
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(
+                              width: 1,
+                              color: const Color(0xFF323232).withOpacity(0.2),
+                            ),
+                          ),
+                          enabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(
+                              width: 1,
+                              color: const Color(0xFF323232).withOpacity(0.2),
+                            ),
+                          ),
+                          errorBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(
+                              width: 1,
+                              color: const Color(0xFF323232).withOpacity(0.2),
+                            ),
+                          ),
+                          disabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(
+                              width: 1,
+                              color: const Color(0xFF323232).withOpacity(0.2),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const Gap(30),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () => _saveProfile(accountId),
+                    child: Text(_isUploading ? "Saving..." : "Save Profile"),
+                  ),
+                ),
+                const Gap(40),
+              ],
+            ],
+          ),
         ),
       ),
     );
