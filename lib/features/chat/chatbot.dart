@@ -250,14 +250,11 @@ class Chatbot extends HookWidget {
           leading: IconButton(
             onPressed: () async {
               final hasVisited = storage.getData(key: "visited-chat");
-              bottomNavProvider.setIndex(index: extras['prev'] ?? 0);
               FocusScope.of(context).unfocus();
 
-              await Future.delayed(const Duration(milliseconds: 100));
               if (context.mounted) {
-                bottomNavProvider.setIndex(index: extras['prev'] ?? 0);
+                bottomNavProvider.setIndex(index: extras['prev']);
                 context.go(hasVisited == true ? "/" : "/chat");
-                context.read<ConversationProvider>().resetConversation();
               }
             },
             icon: const Icon(Icons.arrow_back_ios_sharp),
