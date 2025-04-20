@@ -52,9 +52,7 @@ class _BottomNavLayoutState extends State<BottomNavLayout> {
                 await BottomNavLayout.storage.getData(key: "visited-chat") ??
                     false;
 
-            final routes = hasVisited
-                ? ['/', '/explore', '/chatbot', '/settings']
-                : ['/', '/explore', '/chat', '/settings'];
+            final routes = ['/', '/explore', '/chatbot', '/settings'];
 
             if (index == 2) {
               await BottomNavLayout.storage
@@ -62,15 +60,20 @@ class _BottomNavLayoutState extends State<BottomNavLayout> {
             }
 
             if (context.mounted) {
-              final current = GoRouterState.of(context).name;
+              final currentLocation = GoRouterState.of(context).uri.toString();
 
-              if (routes[index] != current) {
+              final currentPath = Uri.parse(currentLocation).path;
+
+              if (routes[index] != currentPath) {
                 context.push(routes[index], extra: {'prev': providerIndex});
-                debugPrint("prev index: $providerIndex");
+                debugPrint(
+                    "pushing route: ${routes[index]}, prev index: $providerIndex");
+              } else {
+                debugPrint("Already on route: ${routes[index]}");
               }
             }
 
-            bottomNavProvider.setIndex(index: index == 2 ? 0 : index);
+            bottomNavProvider.setIndex(index: index);
           },
           tabs: [
             _buildNavItem(Icons.home_rounded, 'Home'),
