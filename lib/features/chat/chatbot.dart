@@ -247,18 +247,12 @@ class Chatbot extends HookWidget {
           shadowColor: const Color(0xFF323232).withOpacity(0.2),
           surfaceTintColor: Colors.white,
           scrolledUnderElevation: 0,
-          leading: IconButton(
-            onPressed: () async {
-              final hasVisited = storage.getData(key: "visited-chat");
-              FocusScope.of(context).unfocus();
-
-              if (context.mounted) {
-                bottomNavProvider.setIndex(index: extras['prev']);
-                context.go(hasVisited == true ? "/" : "/chat");
-              }
-            },
-            icon: const Icon(Icons.arrow_back_ios_sharp),
-          ),
+          leading: ModalRoute.of(context)?.canPop == true
+      ? IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new_rounded), // your custom back icon
+          onPressed: () => Navigator.of(context).pop(),
+        )
+      : null,
           actions: !isGuest
               ? [
                   IconButton(
