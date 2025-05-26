@@ -581,7 +581,7 @@ class _PanoramaViewScreenState extends State<PanoramaViewScreen> {
             Align(
               alignment: Alignment.bottomCenter,
               child: AnimatedSlide(
-                offset: _isSetFloorSelected ? Offset(0, 0) : Offset(0, 1),
+                offset: _isSetFloorSelected ? const Offset(0, 0) : const Offset(0, 1),
                 duration: const Duration(milliseconds: 1000),
                 curve: Curves.easeOut,
                 child: _isSetFloorSelected

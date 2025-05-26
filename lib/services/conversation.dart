@@ -143,7 +143,7 @@ Future<String> transcribeAudio(String filePath) async {
 
     final request = http.Request("POST", url);
     request.headers["Authorization"] =
-        "Token c87148c253bf5f5c4088f7f12bebace1b36bb9af";
+        "Token 8aca5ccec355f6d70e921f908f243bf1339879cb";
     request.headers["Content-Type"] = "audio/wav";
     request.bodyBytes = fileBytes;
 

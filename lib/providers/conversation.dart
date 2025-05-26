@@ -8,6 +8,7 @@ class ConversationProvider extends ChangeNotifier {
       {required Map<String, dynamic> conversation, bool? isNew}) {
     this.conversation = conversation;
     isNewConversation = isNew ?? false;
+    debugPrint("Setting conversation: $conversation, isNew: $isNewConversation");
     notifyListeners();
   }
 

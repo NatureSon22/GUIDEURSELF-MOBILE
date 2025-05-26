@@ -64,8 +64,10 @@ class _BottomNavLayoutState extends State<BottomNavLayout> {
             if (context.mounted) {
               final current = GoRouterState.of(context).name;
 
+              ///////
               if (routes[index] != current) {
-                context.push(routes[index], extra: {'prev': providerIndex});
+                context.push(routes[index],
+                    extra: {'prev': providerIndex, 'path': routes[providerIndex]});
                 debugPrint("prev index: $providerIndex");
               }
             }

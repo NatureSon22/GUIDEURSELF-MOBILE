@@ -5,9 +5,11 @@ class Transcribing extends ChangeNotifier {
 
   void setIsTranscribing(bool value) {
     isTranscribing = value;
+    notifyListeners();
   }
 
   void resetIsTranscribing() {
     isTranscribing = false;
+    notifyListeners();
   }
 }

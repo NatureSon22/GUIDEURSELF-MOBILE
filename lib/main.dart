@@ -4,6 +4,7 @@ import 'package:guideurself/core/config/dioconfig.dart';
 import 'package:guideurself/core/themes/dark_theme.dart';
 import 'package:guideurself/core/themes/light_theme.dart';
 import 'package:guideurself/providers/account.dart';
+import 'package:guideurself/providers/apperance.dart';
 import 'package:guideurself/providers/bottomnav.dart';
 import 'package:guideurself/providers/conversation.dart';
 import 'package:guideurself/providers/loading.dart';
@@ -44,11 +45,12 @@ void main() {
           ChangeNotifierProvider(create: (context) => MessageChatProvider()),
           ChangeNotifierProvider(create: (context) => BottomNavProvider()),
           ChangeNotifierProvider(create: (context) => MessageReviewProvider()),
+          ChangeNotifierProvider(create: (context) => AppearanceProvider())
         ],
         child: QueryClientProvider(
           queryClient: queryClient,
           child: MyApp(
-            initialRoute: hasVisitedSplash ? "/auth-layer" : "/splash",
+            initialRoute: hasVisitedSplash ? "/settings" : "/splash",
           ),
         ),
       ),

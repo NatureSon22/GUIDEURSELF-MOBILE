@@ -46,6 +46,7 @@ class Chatbot extends HookWidget {
 
     // Extract conversationId for easier reference
     final conversationId = conversation['conversation_id'];
+
     final extras =
         GoRouterState.of(context).extra as Map<String, dynamic>? ?? {};
     useEffect(() {
@@ -237,7 +238,7 @@ class Chatbot extends HookWidget {
         if (didPop) {
           debugPrint("Pop invoked with result: ${extras['prev']}");
           bottomNavProvider.setIndex(index: extras['prev'] ?? 0);
-          context.read<ConversationProvider>().resetConversation();
+          // context.read<ConversationProvider>().resetConversation();
         }
       },
       child: Scaffold(
@@ -250,14 +251,11 @@ class Chatbot extends HookWidget {
           leading: IconButton(
             onPressed: () async {
               final hasVisited = storage.getData(key: "visited-chat");
-              bottomNavProvider.setIndex(index: extras['prev'] ?? 0);
               FocusScope.of(context).unfocus();
 
-              await Future.delayed(const Duration(milliseconds: 100));
               if (context.mounted) {
-                bottomNavProvider.setIndex(index: extras['prev'] ?? 0);
-                context.go(hasVisited == true ? "/" : "/chat");
-                context.read<ConversationProvider>().resetConversation();
+                bottomNavProvider.setIndex(index: extras['prev']);
+                context.go(hasVisited == true ? extras['path'] : "/chat");
               }
             },
             icon: const Icon(Icons.arrow_back_ios_sharp),
@@ -316,6 +314,7 @@ class Chatbot extends HookWidget {
               MessageInput(
                 question: question.value,
                 handleSendQuestion: sendQuestion,
+                handleSelectQuestion: handleSelectQuestion
               ),
             ],
           ),

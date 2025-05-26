@@ -7,6 +7,7 @@ import 'package:guideurself/features/home/history.dart';
 import 'package:guideurself/features/home/navfeature.dart';
 import 'package:guideurself/providers/account.dart';
 import 'package:guideurself/services/auth.dart';
+import 'package:guideurself/services/storage.dart';
 import 'package:provider/provider.dart';
 
 class Home extends StatefulWidget {
@@ -17,18 +18,20 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  final storage = StorageService();
+
   @override
   void initState() {
     super.initState();
-    _fetchUserAccount();
+    //_fetchUserAccount();
   }
 
   Future<void> _fetchUserAccount() async {
     try {
       final account = await userAccount();
-      if (mounted) {
-        context.read<AccountProvider>().setAccount(account: account);
-      }
+      // if (mounted) {
+      //   context.read<AccountProvider>().setAccount(account: account);
+      // }
     } catch (e) {
       debugPrint('Failed to fetch user account: $e');
     }

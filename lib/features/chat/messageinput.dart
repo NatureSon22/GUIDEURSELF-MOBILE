@@ -14,12 +14,13 @@ import 'package:go_router/go_router.dart';
 class MessageInput extends StatefulWidget {
   final String? question;
   final void Function(Map<String, dynamic> question) handleSendQuestion;
+  final void Function(String selectedQuestion) handleSelectQuestion;
 
-  const MessageInput({
-    super.key,
-    required this.question,
-    required this.handleSendQuestion,
-  });
+  const MessageInput(
+      {super.key,
+      required this.question,
+      required this.handleSendQuestion,
+      required this.handleSelectQuestion});
 
   @override
   State<MessageInput> createState() => _MessageInputState();
@@ -213,7 +214,8 @@ class _MessageInputState extends State<MessageInput> {
                 outOfQueries();
                 return;
               }
-              recordInput(context, widget.handleSendQuestion);
+              recordInput(context, widget.handleSendQuestion,
+                  widget.handleSelectQuestion);
             },
             style: OutlinedButton.styleFrom(
               shape: const CircleBorder(),

@@ -43,6 +43,12 @@ final allSettingsFeatures = [
     "requiresAuth": false
   },
   {
+    "icon": Icons.color_lens,
+    "label": "Apperance",
+    "goto": "/appearance",
+    "requiresAuth": false
+  },
+  {
     "icon": Icons.logout,
     "label": "Logout",
     "goto": "/logout",
@@ -76,7 +82,7 @@ class Settings extends StatelessWidget {
     final bottomNavProvider = context.watch<BottomNavProvider>();
     final extras =
         GoRouterState.of(context).extra as Map<String, dynamic>? ?? {};
-  
+
     final settingsFeatures = allSettingsFeatures
         .where((feature) => isGuest ? !(feature['requiresAuth'] as bool) : true)
         .toList();

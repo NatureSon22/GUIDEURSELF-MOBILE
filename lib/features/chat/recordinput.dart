@@ -1,7 +1,8 @@
+import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:gap/gap.dart';
 import 'package:guideurself/core/themes/style.dart';
-import 'package:guideurself/features/chat/showlistening.dart';
 import 'package:guideurself/providers/account.dart';
 import 'package:guideurself/providers/conversation.dart';
 import 'package:guideurself/providers/loading.dart';
@@ -15,27 +16,34 @@ import 'dart:io';
 
 class RecordInputModal extends StatefulWidget {
   final Function handleSendQuestion;
-  const RecordInputModal({super.key, required this.handleSendQuestion});
+  final Function handleSelectQuestion;
+  const RecordInputModal(
+      {super.key,
+      required this.handleSendQuestion,
+      required this.handleSelectQuestion});
 
   @override
   State<RecordInputModal> createState() => _RecordInputModalState();
 }
 
 class _RecordInputModalState extends State<RecordInputModal> {
+  final RecorderController recorderController = RecorderController();
   final AudioRecorder _record = AudioRecorder();
-  bool _isRecording = true;
+  bool _isRecording = false;
   String? _filePath;
-  String _transcription = "Listening... Start speaking when ready";
+  final bool _isTranscribing = false;
   final storage = StorageService();
 
   @override
   void initState() {
     super.initState();
-    _startRecording();
+    recorderController.checkPermission();
+    //_startRecording();
   }
 
   @override
   void dispose() {
+    recorderController.dispose();
     _record.dispose();
     super.dispose();
   }
@@ -55,11 +63,17 @@ class _RecordInputModalState extends State<RecordInputModal> {
         DateTime.now().millisecondsSinceEpoch.toString();
 
     // Immediately show the user's question in the UI
-    widget.handleSendQuestion({
-      "_id": tempMessageId,
-      "content": question,
-      "is_machine_generated": false,
-    });
+    // widget.handleSendQuestion({
+    //   "_id": tempMessageId,
+    //   "content": question,
+    //   "is_machine_generated": false,
+    // });
+
+    widget.handleSelectQuestion(question);
+
+    if (question.isNotEmpty) {
+      return;
+    }
 
     try {
       //If there's no conversation, create a temporary one
@@ -130,6 +144,10 @@ class _RecordInputModalState extends State<RecordInputModal> {
     try {
       // if (_isRecording) return;
 
+      // setState(() {
+      //   _isRecording = true;
+      // });
+
       final hasPermission = await _record.hasPermission();
       if (!hasPermission) {
         if (mounted) {
@@ -175,10 +193,10 @@ class _RecordInputModalState extends State<RecordInputModal> {
       // if (!_isRecording) return;
 
       await _record.stop();
-      setState(() {
-        _isRecording = false;
-        _transcription = "Transcribing your speech, please wait";
-      });
+      // setState(() {
+      //   // _isRecording = false;
+      //   // _transcription = "Transcribing your speech, please wait";
+      // });
 
       if (_filePath != null && await File(_filePath!).exists()) {
         _transcribeAudio();
@@ -211,13 +229,14 @@ class _RecordInputModalState extends State<RecordInputModal> {
   }
 
   Future<void> _transcribeAudio() async {
+    final transcribingProvider =
+        Provider.of<Transcribing>(context, listen: false);
+
     try {
-      final transcribingProvider = context.read<Transcribing>();
       if (_filePath == null) return;
 
       transcribingProvider.setIsTranscribing(true);
       String transcript = await transcribeAudio(_filePath!);
-      transcribingProvider.setIsTranscribing(false);
 
       if (mounted) {
         Navigator.pop(context);
@@ -251,35 +270,84 @@ class _RecordInputModalState extends State<RecordInputModal> {
       await handleSendQuestion(question: transcript);
     } catch (e) {
       debugPrint("Transcription error: $e");
+    } finally {
+      transcribingProvider.setIsTranscribing(false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final isTranscribing = context.watch<Transcribing>().isTranscribing;
+
     return Container(
       width: double.infinity,
-      height: MediaQuery.of(context).size.height * 0.45,
+      height: MediaQuery.of(context).size.height * 0.4,
       padding: const EdgeInsets.symmetric(vertical: 20),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Stack(
             children: [
-              const Showlistening(),
-              Positioned(
-                bottom: 18,
-                child: Text(
-                  _transcription,
-                  style: styleText(
-                    context: context,
-                    fontSizeOption: 12.5,
-                    color: const Color(0xFF323232).withOpacity(0.8),
+              //const Showlistening()
+              if (_filePath == null)
+                Text(
+                  "Tap the button to ask a question",
+                  style: TextStyle(
+                    fontSize: 15.0,
+                    color: const Color(0xFF323232).withOpacity(0.5),
+                    fontWeight: FontWeight.w500,
+                  ),
+                )
+              else
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      AudioWaveforms(
+                        size: const Size(300, 50),
+                        recorderController: recorderController,
+                        waveStyle: const WaveStyle(
+                          waveColor: Colors.white,
+                          extendWaveform: true,
+                          showMiddleLine: false,
+                        ),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12.0),
+                          color: const Color(0xFF12A5BC),
+                        ),
+                        padding: const EdgeInsets.only(left: 18),
+                        margin: const EdgeInsets.symmetric(horizontal: 15),
+                      ),
+                      const Gap(15),
+                      Text(
+                        isTranscribing
+                            ? "Transcribing your question..."
+                            : "Awaiting voice input...",
+                        style: TextStyle(
+                          fontSize: 14.0,
+                          color: const Color(0xFF323232).withOpacity(0.5),
+                          fontWeight: FontWeight.w500,
+                        ),
+                      )
+                    ],
                   ),
                 ),
-              ),
+
+              // Positioned(
+              //   bottom: 18,
+              //   child: Text(
+              //     _transcription,
+              //     style: styleText(
+              //       context: context,
+              //       fontSizeOption: 12.5,
+              //       color: const Color(0xFF323232).withOpacity(0.8),
+              //     ),
+              //   ),
+              // ),
             ],
           ),
-          const SizedBox(height: 15),
+          Gap(isTranscribing ? 40 : 50),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               shape: const CircleBorder(),
@@ -288,7 +356,21 @@ class _RecordInputModalState extends State<RecordInputModal> {
                   ? const Color.fromRGBO(239, 68, 68, 1)
                   : Colors.grey.shade400,
             ),
-            onPressed: _isRecording ? _stopRecording : () {},
+            onPressed: () async {
+              if (!recorderController.hasPermission || isTranscribing) return;
+
+              setState(() {
+                _isRecording = !_isRecording;
+              });
+
+              if (_isRecording) {
+                await recorderController.record();
+                _startRecording();
+              } else {
+                await recorderController.stop();
+                _stopRecording();
+              }
+            },
             child: Icon(
               _isRecording ? Icons.stop : FontAwesomeIcons.microphoneLines,
               size: 40,
@@ -301,7 +383,8 @@ class _RecordInputModalState extends State<RecordInputModal> {
   }
 }
 
-Future<void> recordInput(BuildContext context, Function handleSendQuestion) {
+Future<void> recordInput(BuildContext context, Function handleSendQuestion,
+    Function handleSelectQuestion) {
   return showModalBottomSheet(
     context: context,
     isScrollControlled: true,
@@ -310,7 +393,8 @@ Future<void> recordInput(BuildContext context, Function handleSendQuestion) {
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
     ),
-    builder: (context) =>
-        RecordInputModal(handleSendQuestion: handleSendQuestion),
+    builder: (context) => RecordInputModal(
+        handleSendQuestion: handleSendQuestion,
+        handleSelectQuestion: handleSelectQuestion),
   );
 }
