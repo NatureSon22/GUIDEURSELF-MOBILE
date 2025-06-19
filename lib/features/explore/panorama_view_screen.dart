@@ -173,9 +173,6 @@ class _PanoramaViewScreenState extends State<PanoramaViewScreen> {
       padding: WidgetStateProperty.all(
         const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
       ),
-      backgroundColor: WidgetStateProperty.all(
-        Colors.white.withOpacity(0.3),
-      ),
       shape: WidgetStateProperty.all(
         RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
@@ -188,12 +185,11 @@ class _PanoramaViewScreenState extends State<PanoramaViewScreen> {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, color: Colors.white, size: 14),
+        Icon(icon, size: 14),
         const SizedBox(width: 6),
         Text(
           text,
           style: const TextStyle(
-            color: Colors.white,
             fontSize: 10,
             fontWeight: FontWeight.w500,
           ),
@@ -234,7 +230,6 @@ class _PanoramaViewScreenState extends State<PanoramaViewScreen> {
     }
 
     return Scaffold(
-        backgroundColor: Colors.white,
         key: _scaffoldKey,
         endDrawer: MenuDrawer(
           floorName: currentFloorName,
@@ -247,7 +242,6 @@ class _PanoramaViewScreenState extends State<PanoramaViewScreen> {
         body: Stack(
           children: [
             Container(
-              color: Colors.white,
             ),
 
             Positioned.fill(
@@ -337,7 +331,6 @@ class _PanoramaViewScreenState extends State<PanoramaViewScreen> {
                                                 textAlign: TextAlign.center,
                                                 style: TextStyle(
                                                   fontSize: 13,
-                                                  color: Colors.black,
                                                 ),
                                               )
                                             : const Text(
@@ -345,7 +338,6 @@ class _PanoramaViewScreenState extends State<PanoramaViewScreen> {
                                                 textAlign: TextAlign.center,
                                                 style: TextStyle(
                                                   fontSize: 13,
-                                                  color: Colors.black,
                                                 ),
                                               ),
                                       ],
@@ -370,7 +362,6 @@ class _PanoramaViewScreenState extends State<PanoramaViewScreen> {
                                           textAlign: TextAlign.center,
                                           style: TextStyle(
                                             fontSize: 13,
-                                            color: Colors.black,
                                           ),
                                         ),
                                       ],
@@ -435,7 +426,6 @@ class _PanoramaViewScreenState extends State<PanoramaViewScreen> {
                       width: 40,
                       height: 40,
                       decoration: BoxDecoration(
-                        color: Colors.white,
                         borderRadius: BorderRadius.circular(25),
                       ),
                       child: IconButton(
@@ -446,7 +436,6 @@ class _PanoramaViewScreenState extends State<PanoramaViewScreen> {
                         },
                         icon: const Icon(
                           Icons.arrow_back_ios_sharp,
-                          color: Colors.black,
                           size: 16,
                         ),
                         padding: EdgeInsets.zero,
@@ -460,7 +449,6 @@ class _PanoramaViewScreenState extends State<PanoramaViewScreen> {
                         child: Container(
                           height: 40,
                           decoration: BoxDecoration(
-                            color: Colors.white,
                             borderRadius: BorderRadius.circular(50),
                           ),
                           child: InkWell(
@@ -483,7 +471,6 @@ class _PanoramaViewScreenState extends State<PanoramaViewScreen> {
                                 child: Text(
                                   _selectedCampus?.campusName ?? 'Campus',
                                   style: const TextStyle(
-                                    color: Colors.black,
                                     fontSize: 15,
                                     fontWeight: FontWeight.w600,
                                   ),
@@ -502,7 +489,6 @@ class _PanoramaViewScreenState extends State<PanoramaViewScreen> {
                       width: 40,
                       height: 40,
                       decoration: BoxDecoration(
-                        color: Colors.white,
                         borderRadius: BorderRadius.circular(50),
                       ),
                       child: IconButton(
@@ -511,7 +497,6 @@ class _PanoramaViewScreenState extends State<PanoramaViewScreen> {
                         },
                         icon: const Icon(
                           Icons.menu,
-                          color: Colors.black,
                           size: 18,
                         ),
                       ),

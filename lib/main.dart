@@ -71,7 +71,9 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: lightTheme,
       darkTheme: darkTheme,
-      themeMode: ThemeMode.system,
+      themeMode: context.watch<AppearanceProvider>().isDarkMode
+          ? ThemeMode.dark
+          : ThemeMode.light,
       routerConfig: router(initialRoute),
     );
   }

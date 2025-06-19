@@ -113,16 +113,14 @@ class _LoadingScreenState extends State<LoadingScreen> {
                               style: TextStyle(
                                   fontFamily: "Cinzel",
                                   fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                  color: Colors.black),
+                                  fontSize: 16,),
                             ),
                             const Text(
                               "Virtual Campus Tour",
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                   fontFamily: "CinzelDecorative",
-                                  fontSize: 12,
-                                  color: Colors.black),
+                                  fontSize: 12,),
                             ),
                             Image.asset(
                               'lib/assets/lottie/loading.gif',

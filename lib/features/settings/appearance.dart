@@ -1,11 +1,10 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:guideurself/core/themes/style.dart';
 import 'package:flutter_switch/flutter_switch.dart';
-import 'package:guideurself/services/storage.dart';
+import 'package:provider/provider.dart';
+import 'package:guideurself/providers/apperance.dart'; // Make sure this is correctly spelled
 
 class Appearance extends StatefulWidget {
   const Appearance({super.key});
@@ -19,6 +18,13 @@ class _AppearanceState extends State<Appearance> {
   bool isDarkMode = false;
 
   @override
+  void initState() {
+    super.initState();
+    // Load isDarkMode from provider
+    isDarkMode = context.read<AppearanceProvider>().isDarkMode;
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -27,7 +33,7 @@ class _AppearanceState extends State<Appearance> {
         surfaceTintColor: Colors.white,
         scrolledUnderElevation: 0,
         leading: IconButton(
-          onPressed: () async {
+          onPressed: () {
             context.go("/settings");
           },
           icon: const Icon(Icons.arrow_back_ios_sharp),
@@ -43,7 +49,11 @@ class _AppearanceState extends State<Appearance> {
         centerTitle: true,
         actions: [
           TextButton(
-            onPressed: () {},
+            onPressed: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Appearance settings saved')),
+              );
+            },
             child: Text(
               "Save",
               style: TextStyle(
@@ -85,6 +95,9 @@ class _AppearanceState extends State<Appearance> {
                       inactiveColor: Colors.grey.shade400,
                       value: isDarkMode,
                       onToggle: (value) {
+                        context
+                            .read<AppearanceProvider>()
+                            .toggleDarkMode(value);
                         setState(() {
                           isDarkMode = value;
                         });

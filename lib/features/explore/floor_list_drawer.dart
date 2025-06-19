@@ -201,8 +201,7 @@ class _FloorListDrawerState extends State<FloorListDrawer> {
                               child: const Center(
                                 child: Text(
                                   "Preview",
-                                  style: TextStyle(
-                                    color: Colors.white, // ✅ Text color
+                                  style: TextStyle(// ✅ Text color
                                     fontSize: 11, // Adjust font size if needed
                                   ),
                                 ),
@@ -324,7 +323,6 @@ class _FloorListDrawerState extends State<FloorListDrawer> {
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20.0),
-                  color: Colors.white,
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -340,7 +338,6 @@ class _FloorListDrawerState extends State<FloorListDrawer> {
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
-                        color: Colors.black87,
                       ),
                     ),
                     const SizedBox(height: 10),
@@ -349,7 +346,6 @@ class _FloorListDrawerState extends State<FloorListDrawer> {
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 16,
-                        color: Colors.black54,
                       ),
                     ),
                   ],
@@ -427,7 +423,6 @@ class _FloorListDrawerState extends State<FloorListDrawer> {
         return Container(
           padding: const EdgeInsets.only(bottom: 20, left: 20, right: 20),
           decoration: const BoxDecoration(
-            color: Colors.white,
             border: Border(
               top: BorderSide(
                 color: Colors.grey,
@@ -460,7 +455,6 @@ class _FloorListDrawerState extends State<FloorListDrawer> {
                       child: Container(
                         height: 40,
                         decoration: BoxDecoration(
-                          color: Colors.white,
                           border: Border.all(
                             color: Colors.grey,
                             width: 1.0,
@@ -516,7 +510,6 @@ class _FloorListDrawerState extends State<FloorListDrawer> {
                       height: 40,
                       width: 40,
                       decoration: BoxDecoration(
-                        color: Colors.white,
                         borderRadius: BorderRadius.circular(50),
                         border: Border.all(
                           color: _isGridLayout
@@ -541,7 +534,6 @@ class _FloorListDrawerState extends State<FloorListDrawer> {
                       height: 40,
                       width: 40,
                       decoration: BoxDecoration(
-                        color: Colors.white,
                         borderRadius: BorderRadius.circular(50),
                         border: Border.all(
                           color: _isExpanded
@@ -628,7 +620,6 @@ class _FloorListDrawerState extends State<FloorListDrawer> {
                                     child: flutter_map.FlutterMap(
                                       key: _mapKey,
                                       options: flutter_map.MapOptions(
-                                        backgroundColor: Colors.white,
                                         initialCenter: _markerLatitude !=
                                                     null &&
                                                 _markerLongitude != null
@@ -689,7 +680,6 @@ class _FloorListDrawerState extends State<FloorListDrawer> {
                         0.6, // Adjust height as needed
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.white,
                         borderRadius: BorderRadius.circular(10),
                         border: Border.all(
                           color: Colors.grey.withOpacity(0.5),
@@ -701,7 +691,6 @@ class _FloorListDrawerState extends State<FloorListDrawer> {
                         child: flutter_map.FlutterMap(
                           key: _mapKey,
                           options: flutter_map.MapOptions(
-                            backgroundColor: Colors.white,
                             initialCenter: _markerLatitude != null &&
                                     _markerLongitude != null
                                 ? LatLng(_markerLatitude!,

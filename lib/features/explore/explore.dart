@@ -44,7 +44,6 @@ class _ExploreState extends State<Explore> {
       },
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.white,
           scrolledUnderElevation: 0,
           automaticallyImplyLeading: false, // prevent default back button
           leadingWidth: 120, // adjust depending on your text length
@@ -188,7 +187,7 @@ class _ExploreState extends State<Explore> {
                         children: [
                           Text(
                             'Navigate, learn, and explore everything\nyour campus has to offer.',
-                            style: TextStyle(fontSize: 16, color: Colors.black),
+                            style: TextStyle(fontSize: 16),
                           ),
                           SizedBox(height: 15.0),
                           Divider(
@@ -243,7 +242,6 @@ class _ExploreState extends State<Explore> {
                                   style: const TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.w500,
-                                    color: Colors.white,
                                   ),
                                 ),
                               ),
@@ -316,7 +314,6 @@ class _ExploreState extends State<Explore> {
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
                                         fontSize: 16,
-                                        color: Colors.black,
                                         fontFamily: "Cinzel",
                                         fontWeight: FontWeight.bold),
                                   ),
@@ -325,8 +322,7 @@ class _ExploreState extends State<Explore> {
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
                                         fontFamily: "CinzelDecorative",
-                                        fontSize: 12,
-                                        color: Colors.black),
+                                        fontSize: 12,),
                                   ),
                                 ],
                               );

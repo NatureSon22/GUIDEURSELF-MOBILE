@@ -188,16 +188,14 @@ class _KeyOfficialsScreenState extends State<KeyOfficialsScreen> {
                           style: TextStyle(
                               fontFamily: "Cinzel",
                               fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                              color: Colors.black),
+                              fontSize: 16,),
                         ),
                         const Text(
                           "Nurturing Tomorrow's Noblest",
                           textAlign: TextAlign.center,
                           style: TextStyle(
                               fontFamily: "CinzelDecorative",
-                              fontSize: 12,
-                              color: Colors.black),
+                              fontSize: 12,),
                         ),
                         const SizedBox(height: 20),
 

@@ -18,7 +18,6 @@ class MenuDrawer extends StatelessWidget {
               height: 110,
               child: Container(
                 decoration: const BoxDecoration(
-                  color: Colors.white,
                   border: Border(
                     bottom: BorderSide(
                         color: Color.fromARGB(255, 206, 206, 206), width: 1.0),
@@ -34,7 +33,6 @@ class MenuDrawer extends StatelessWidget {
                         'University of Rizal System',
                         style: TextStyle(
                           fontFamily: "Cinzel",
-                          color: Colors.black,
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
@@ -43,7 +41,6 @@ class MenuDrawer extends StatelessWidget {
                         "Nurturing Tomorrow's Noblest",
                         style: TextStyle(
                           fontFamily: "CinzelDecorative",
-                          color: Colors.black,
                           fontSize: 12,
                         ),
                       ),

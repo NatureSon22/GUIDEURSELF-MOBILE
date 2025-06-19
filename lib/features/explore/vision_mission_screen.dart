@@ -25,7 +25,6 @@ class _VisionMissionScreenState extends State<VisionMissionScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
         scrolledUnderElevation: 0,
         leading: IconButton(
           onPressed: () {
@@ -106,16 +105,14 @@ class _VisionMissionScreenState extends State<VisionMissionScreen> {
                           style: TextStyle(
                               fontFamily: "Cinzel",
                               fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black),
+                              fontWeight: FontWeight.bold,),
                         ),
                         const Text(
                           "Nurturing Tomorrow's Noblest",
                           textAlign: TextAlign.center,
                           style: TextStyle(
                               fontFamily: "CinzelDecorative",
-                              fontSize: 12,
-                              color: Colors.black),
+                              fontSize: 12,),
                         ),
                         const SizedBox(height: 20),
                         if (university.universityVision != null)
@@ -142,8 +139,7 @@ class _VisionMissionScreenState extends State<VisionMissionScreen> {
       padding: const EdgeInsets.only(bottom: 16.0),
       child: Container(
         padding: const EdgeInsets.all(12.0),
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.3), // Semi-transparent background
+        decoration: BoxDecoration( // Semi-transparent background
 
           borderRadius: BorderRadius.circular(12),
           border: Border.all(

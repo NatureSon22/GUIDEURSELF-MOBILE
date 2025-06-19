@@ -25,7 +25,6 @@ class _UniversityAboutScreenState extends State<UniversityAboutScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
         elevation: 0,
         scrolledUnderElevation: 0,
         leading: IconButton(
@@ -115,25 +114,21 @@ class _UniversityAboutScreenState extends State<UniversityAboutScreen> {
                       style: TextStyle(
                           fontFamily: "Cinzel",
                           fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                          color: Colors.black),
+                          fontSize: 16,),
                     ),
                     const Text(
                       "Nurturing Tomorrow's Noblest",
                       textAlign: TextAlign.center,
                       style: TextStyle(
                           fontFamily: "CinzelDecorative",
-                          fontSize: 12,
-                          color: Colors.black),
+                          fontSize: 12,),
                     ),
                     const SizedBox(height: 20),
 
                     // HTML Content
                     Container(
                       padding: const EdgeInsets.all(12.0),
-                      decoration: BoxDecoration(
-                        color: Colors.white
-                            .withOpacity(0.3), // Semi-transparent background
+                      decoration: BoxDecoration( // Semi-transparent background
 
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(

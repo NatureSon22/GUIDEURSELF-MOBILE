@@ -23,7 +23,6 @@ class _LogoVectorScreenState extends State<LogoVectorScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.white,
           scrolledUnderElevation: 0,
           leading: IconButton(
             onPressed: () {
@@ -72,16 +71,14 @@ class _LogoVectorScreenState extends State<LogoVectorScreen> {
                             style: TextStyle(
                                 fontFamily: "Cinzel",
                                 fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black),
+                                fontWeight: FontWeight.bold,),
                           ),
                           const Text(
                             "Nurturing Tomorrow's Noblest",
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 fontFamily: "CinzelDecorative",
-                                fontSize: 12,
-                                color: Colors.black),
+                                fontSize: 12,),
                           ),
                           const SizedBox(
                               height: 40), // Space between text and images
@@ -90,8 +87,6 @@ class _LogoVectorScreenState extends State<LogoVectorScreen> {
                               padding: const EdgeInsets.all(12.0),
                               width: 250, // Fixed width
                               decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(
-                                    0.3), // Semi-transparent background
                                 borderRadius: BorderRadius.circular(12),
                                 border: Border.all(
                                   color:
@@ -127,7 +122,6 @@ class _LogoVectorScreenState extends State<LogoVectorScreen> {
                                 minHeight: 250,
                               ),
                               decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.3),
                                 borderRadius: BorderRadius.circular(12),
                                 border: Border.all(
                                   color:

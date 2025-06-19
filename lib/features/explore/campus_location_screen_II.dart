@@ -230,7 +230,6 @@ class _CampusLocationScreenIIState extends State<CampusLocationScreenII> {
           builder: (context, scrollController) {
             return Container(
               decoration: const BoxDecoration(
-                color: Colors.white,
                 borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
                 boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 5)],
               ),
@@ -245,7 +244,6 @@ class _CampusLocationScreenIIState extends State<CampusLocationScreenII> {
                         child: Container(
                           height: 40,
                           decoration: BoxDecoration(
-                            color: Colors.white,
                             border: Border.all(
                               color: Colors.grey,
                               width: 1.0,

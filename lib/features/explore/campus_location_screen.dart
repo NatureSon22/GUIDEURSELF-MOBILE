@@ -211,8 +211,7 @@ class _CampusLocationScreenState extends State<CampusLocationScreen> {
                     onPressed: () {
                       context.go("/explore");
                     },
-                    icon: const Icon(Icons.arrow_back_ios_sharp,
-                        color: Colors.black),
+                    icon: const Icon(Icons.arrow_back_ios_sharp),
                   ),
                 ),
                 Align(
@@ -240,7 +239,6 @@ class _CampusLocationScreenState extends State<CampusLocationScreen> {
           builder: (context, scrollController) {
             return Container(
               decoration: const BoxDecoration(
-                color: Colors.white,
                 borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
                 boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 5)],
               ),
@@ -255,7 +253,6 @@ class _CampusLocationScreenState extends State<CampusLocationScreen> {
                         child: Container(
                           height: 40,
                           decoration: BoxDecoration(
-                            color: Colors.white,
                             border: Border.all(
                               color: Colors.grey,
                               width: 1.0,

@@ -31,7 +31,6 @@ class _CampusDetailsScreenState extends State<CampusDetailsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
         elevation: 0,
         scrolledUnderElevation: 0,
         leading: IconButton(
@@ -42,7 +41,6 @@ class _CampusDetailsScreenState extends State<CampusDetailsScreen> {
           },
           icon: const Icon(
             Icons.arrow_back_ios_sharp,
-            color: Colors.black,
             size: 24,
           ),
         ),
@@ -128,16 +126,14 @@ class _CampusDetailsScreenState extends State<CampusDetailsScreen> {
                             style: TextStyle(
                                 fontFamily: "Cinzel",
                                 fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                                color: Colors.black),
+                                fontSize: 16,),
                           ),
                           const Text(
                             "Nurturing Tomorrow's Noblest",
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 fontFamily: "CinzelDecorative",
-                                fontSize: 12,
-                                color: Colors.black),
+                                fontSize: 12,),
                           ),
                           const SizedBox(height: 20),
                           const Divider(
@@ -229,7 +225,6 @@ class _CampusDetailsScreenState extends State<CampusDetailsScreen> {
                     width: double.infinity,
                     constraints: const BoxConstraints(maxWidth: 350),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.3),
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
                         color: const Color.fromARGB(255, 235, 235, 235),
@@ -262,7 +257,6 @@ class _CampusDetailsScreenState extends State<CampusDetailsScreen> {
                     width: double.infinity,
                     constraints: const BoxConstraints(maxWidth: 350),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.3),
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
                         color: const Color.fromARGB(255, 235, 235, 235),
@@ -395,8 +389,7 @@ class _CampusDetailsScreenState extends State<CampusDetailsScreen> {
                 TextSpan(
                   text: text,
                   style: const TextStyle(
-                    fontSize: 13,
-                    color: Colors.black, // Set text color
+                    fontSize: 13, // Set text color
                     height: 1.5,
                   ),
                 ),

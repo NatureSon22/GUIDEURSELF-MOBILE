@@ -74,7 +74,6 @@ class _KeyOfficialsScreenState extends State<KeyOfficialsScreen> {
       width: double.infinity,
       constraints: const BoxConstraints(minHeight: 250, maxWidth: 250),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.3),
         borderRadius: BorderRadius.circular(12),
         border:
             Border.all(color: Color.fromARGB(255, 235, 235, 235), width: 0.5),
@@ -128,7 +127,6 @@ class _KeyOfficialsScreenState extends State<KeyOfficialsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
         scrolledUnderElevation: 0,
         leading: IconButton(
           onPressed: () => context.go("/explore"),
@@ -305,7 +303,6 @@ class _KeyOfficialsScreenState extends State<KeyOfficialsScreen> {
                                 fontFamily: "Cinzel",
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16,
-                                color: Colors.black,
                               ),
                             ),
                             const Text(
@@ -314,7 +311,6 @@ class _KeyOfficialsScreenState extends State<KeyOfficialsScreen> {
                               style: TextStyle(
                                 fontFamily: "CinzelDecorative",
                                 fontSize: 12,
-                                color: Colors.black,
                               ),
                             ),
                             const SizedBox(height: 20),
@@ -410,7 +406,6 @@ class _KeyOfficialsScreenState extends State<KeyOfficialsScreen> {
                                           : '',
                                       style: const TextStyle(
                                         fontSize: 18,
-                                        color: Colors.black,
                                         fontWeight: FontWeight.bold,
                                         fontFamily: "Cinzel",
                                       ),
@@ -421,7 +416,6 @@ class _KeyOfficialsScreenState extends State<KeyOfficialsScreen> {
                                           : ' CAMPUS',
                                       style: const TextStyle(
                                         fontSize: 18,
-                                        color: Colors.black,
                                         fontWeight: FontWeight.bold,
                                         fontFamily: "CinzelDecorative",
                                       ),

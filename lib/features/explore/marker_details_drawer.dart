@@ -50,7 +50,6 @@ class _MarkerDetailsDrawerState extends State<MarkerDetailsDrawer> {
         return Container(
           padding: const EdgeInsets.all(20),
           decoration: const BoxDecoration(
-            color: Colors.white,
             borderRadius: BorderRadius.only(
               topLeft: Radius.circular(20),
               topRight: Radius.circular(20),
@@ -182,7 +181,7 @@ class _MarkerDetailsDrawerState extends State<MarkerDetailsDrawer> {
                 Text(
                   widget.markerDescription,
                   textAlign: TextAlign.justify,
-                  style: const TextStyle(fontSize: 13.5, color: Colors.black),
+                  style: const TextStyle(fontSize: 13.5),
                 ),
               ],
             ),

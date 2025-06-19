@@ -48,7 +48,6 @@ class _VirtualTourScreenIIState extends State<VirtualTourScreenII> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
         elevation: 0,
         scrolledUnderElevation: 0,
         centerTitle: true,
@@ -171,16 +170,14 @@ class _VirtualTourScreenIIState extends State<VirtualTourScreenII> {
                               style: TextStyle(
                                   fontFamily: "Cinzel",
                                   fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                  color: Colors.black),
+                                  fontSize: 16,),
                             ),
                             const Text(
                               "Nurturing Tomorrow's Noblest",
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                   fontFamily: "CinzelDecorative",
-                                  fontSize: 12,
-                                  color: Colors.black),
+                                  fontSize: 12,),
                             ),
                             const SizedBox(height: 20),
                             ..._campuses.map((campus) {

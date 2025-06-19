@@ -85,7 +85,6 @@ class _GlowingMarkerState extends State<GlowingMarker>
             child: Center(
               child: Icon(
                 getCategoryIcon(widget.category),
-                color: Colors.white,
                 size: 18,
               ),
             ),

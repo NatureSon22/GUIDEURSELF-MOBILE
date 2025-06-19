@@ -45,7 +45,6 @@ class MenuDrawer extends StatelessWidget {
                     Text(
                       'University of Rizal System',
                       style: TextStyle(
-                        color: Colors.black,
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
                       ),
@@ -53,7 +52,6 @@ class MenuDrawer extends StatelessWidget {
                     Text(
                       "Nurturing Tomorrow's Noblest",
                       style: TextStyle(
-                        color: Colors.black,
                         fontSize: 11,
                       ),
                     ),

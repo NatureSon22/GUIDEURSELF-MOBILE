@@ -54,7 +54,7 @@ class CategoryInfoModal extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               description,
-              style: const TextStyle(fontSize: 14, color: Colors.black),
+              style: const TextStyle(fontSize: 14),
               textAlign: TextAlign.center,
             ),
           ],
