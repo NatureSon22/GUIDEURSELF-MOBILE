@@ -1,6 +1,8 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:guideurself/providers/apperance.dart';
 import 'package:guideurself/providers/conversation.dart';
+import 'package:guideurself/providers/textscale.dart';
 import 'package:guideurself/services/conversation.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
@@ -24,12 +26,14 @@ class _HistoryListState extends State<HistoryList> {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = context.watch<AppearanceProvider>().isDarkMode;
+
     return SizedBox(
       child: FutureBuilder<List<Map<String, dynamic>>>(
         future: _futureMessages,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return _buildLoadingWidget();
+            return _buildLoadingWidget(isDarkMode);
           }
 
           if (snapshot.hasError) {
@@ -62,23 +66,30 @@ class _HistoryListState extends State<HistoryList> {
     );
   }
 
-  Widget _buildLoadingWidget() {
+  Widget _buildLoadingWidget(bool isDarkMode) {
     return ListView.builder(
       padding: const EdgeInsets.all(0),
       physics: const AlwaysScrollableScrollPhysics(),
       itemCount: 3,
       itemBuilder: (context, index) {
+        final Color shimmerBaseColor =
+            isDarkMode ? const Color(0xFF2C2C2C) : Colors.grey[300]!;
+        final Color shimmerHighlightColor =
+            isDarkMode ? const Color(0xFF404040) : Colors.grey[100]!;
+        final Color containerColor =
+            isDarkMode ? const Color(0xFF1E1E1E) : Colors.white;
+
         return Padding(
           padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
           child: Shimmer.fromColors(
-            baseColor: Colors.grey[300]!,
-            highlightColor: Colors.grey[100]!,
+            baseColor: shimmerBaseColor,
+            highlightColor: shimmerHighlightColor,
             direction: ShimmerDirection.ltr,
             period: const Duration(milliseconds: 1500),
             child: Container(
               height: 60,
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: containerColor,
                 borderRadius: BorderRadius.circular(8),
               ),
             ),
@@ -129,6 +140,8 @@ class _HistoryListState extends State<HistoryList> {
 
   Widget _buildMessageList(List<Map<String, dynamic>> messages) {
     final conversationProvider = context.read<ConversationProvider>();
+    final textScaleFactor = context.watch<TextScaleProvider>().scaleFactor;
+    final isDarkMode = context.watch<AppearanceProvider>().isDarkMode;
 
     return ListView.builder(
       padding: const EdgeInsets.all(0),
@@ -143,7 +156,7 @@ class _HistoryListState extends State<HistoryList> {
         return Container(
           margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: isDarkMode ? Colors.white.withOpacity(0.05) : Colors.white,
             borderRadius: BorderRadius.circular(15),
             border: Border.all(
               color: const Color(0xFF323232).withOpacity(0.1),
@@ -152,21 +165,25 @@ class _HistoryListState extends State<HistoryList> {
           child: ListTile(
             leading: Icon(
               Icons.chat_bubble,
-              color: const Color(0xFF323232).withOpacity(0.8),
+              color: isDarkMode
+                  ? Colors.white.withOpacity(0.8)
+                  : const Color(0xFF323232).withOpacity(0.8),
               size: 18,
             ),
             title: Text(
               title,
-              style: const TextStyle(
-                fontSize: 11.5,
-                color: Color(0xFF323232),
+              style: TextStyle(
+                fontSize: 11.5 * textScaleFactor,
+                color: isDarkMode ? Colors.white : const Color(0xFF323232),
               ),
             ),
             trailing: Transform.rotate(
               angle: pi,
               child: Icon(
                 Icons.arrow_back_ios_new_rounded,
-                color: const Color(0xFF323232).withOpacity(0.2),
+                color: isDarkMode
+                    ? Colors.white.withOpacity(0.2)
+                    : const Color(0xFF323232).withOpacity(0.2),
                 size: 18,
               ),
             ),

@@ -3,6 +3,7 @@ import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:guideurself/core/themes/style.dart';
 import 'package:flutter_switch/flutter_switch.dart';
+import 'package:guideurself/providers/textscale.dart';
 import 'package:provider/provider.dart';
 import 'package:guideurself/providers/apperance.dart'; // Make sure this is correctly spelled
 
@@ -15,17 +16,21 @@ class Appearance extends StatefulWidget {
 
 class _AppearanceState extends State<Appearance> {
   double scaleFactor = 1.0;
-  bool isDarkMode = false;
+  // bool isDarkMode = false;
 
   @override
   void initState() {
     super.initState();
     // Load isDarkMode from provider
-    isDarkMode = context.read<AppearanceProvider>().isDarkMode;
+    //isDarkMode = context.read<AppearanceProvider>().isDarkMode;
+    scaleFactor = context.read<TextScaleProvider>().scaleFactor;
   }
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = context.watch<AppearanceProvider>().isDarkMode;
+    final textScaleFactor = context.watch<TextScaleProvider>().scaleFactor;
+
     return Scaffold(
       appBar: AppBar(
         elevation: 1,
@@ -74,16 +79,18 @@ class _AppearanceState extends State<Appearance> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
+                Text(
                   "Light mode",
-                  style: TextStyle(fontSize: 14),
+                  style: TextStyle(fontSize: 14 * textScaleFactor),
                 ),
                 Row(
                   children: [
                     Icon(
                       Icons.light_mode,
                       size: 19,
-                      color: const Color(0xFF323232).withOpacity(0.6),
+                      color: isDarkMode
+                          ? Colors.white.withOpacity(0.7)
+                          : const Color(0xFF323232).withOpacity(0.6),
                     ),
                     const Gap(15),
                     FlutterSwitch(
@@ -98,16 +105,18 @@ class _AppearanceState extends State<Appearance> {
                         context
                             .read<AppearanceProvider>()
                             .toggleDarkMode(value);
-                        setState(() {
-                          isDarkMode = value;
-                        });
+                        // setState(() {
+                        //   isDarkMode = value;
+                        // });
                       },
                     ),
                     const Gap(15),
                     Icon(
                       Icons.dark_mode,
                       size: 19,
-                      color: const Color(0xFF323232).withOpacity(0.6),
+                      color: isDarkMode
+                          ? Colors.white.withOpacity(0.7)
+                          : const Color(0xFF323232).withOpacity(0.6),
                     )
                   ],
                 )
@@ -119,7 +128,7 @@ class _AppearanceState extends State<Appearance> {
               children: [
                 Text(
                   "Font Scaling ($scaleFactor%)",
-                  style: const TextStyle(fontSize: 14),
+                  style: TextStyle(fontSize: 14 * textScaleFactor),
                 ),
                 const Gap(10),
                 SliderTheme(
@@ -131,9 +140,10 @@ class _AppearanceState extends State<Appearance> {
                   child: Slider(
                     value: scaleFactor,
                     min: 1.0,
-                    max: 1.5,
-                    divisions: 5,
+                    max: 1.3,
+                    divisions: 3,
                     onChanged: (value) {
+                      context.read<TextScaleProvider>().setScaleFactor(value);
                       setState(() {
                         scaleFactor = value;
                       });
@@ -141,18 +151,20 @@ class _AppearanceState extends State<Appearance> {
                   ),
                 ),
                 const Gap(20),
-                Align(
-                  alignment: Alignment.center,
-                  child: Text(
-                    "Sample Text",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 14 * scaleFactor,
-                      color: const Color(0xFF323232).withOpacity(0.5),
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
+                // Align(
+                //   alignment: Alignment.center,
+                //   child: Text(
+                //     "Sample Text",
+                //     textAlign: TextAlign.center,
+                //     style: TextStyle(
+                //       fontSize: 14 * scaleFactor,
+                //       color: isDarkMode
+                //           ? Colors.white
+                //           : const Color(0xFF323232).withOpacity(0.5),
+                //       fontWeight: FontWeight.w600,
+                //     ),
+                //   ),
+                // ),
               ],
             )
           ],

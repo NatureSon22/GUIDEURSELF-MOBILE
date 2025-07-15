@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:guideurself/core/constants/frequentlyasked.dart';
+import 'package:guideurself/providers/textscale.dart';
+import 'package:provider/provider.dart';
 
 class Questions extends StatefulWidget {
   final Function handleSelectQuestion;
@@ -52,6 +54,8 @@ class _QuestionsState extends State<Questions> {
 
   @override
   Widget build(BuildContext context) {
+    final textScaleFactor = context.watch<TextScaleProvider>().scaleFactor;
+
     return SizedBox(
       height: 50,
       child: ListView.builder(
@@ -78,7 +82,9 @@ class _QuestionsState extends State<Questions> {
               ),
               child: Text(
                 label,
-                style: const TextStyle(fontSize: 12),
+                style: TextStyle(
+                  fontSize: 12 * textScaleFactor,
+                ),
               ),
             ),
           );

@@ -3,10 +3,12 @@ import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:guideurself/core/themes/style.dart';
 import 'package:guideurself/providers/account.dart';
+import 'package:guideurself/providers/apperance.dart';
 import 'package:guideurself/providers/bottomnav.dart';
 import 'package:guideurself/providers/conversation.dart';
 import 'package:guideurself/providers/loading.dart';
 import 'package:guideurself/providers/messagechat.dart';
+import 'package:guideurself/providers/textscale.dart';
 import 'package:guideurself/providers/transcribing.dart';
 import 'package:guideurself/services/auth.dart';
 import 'package:provider/provider.dart';
@@ -77,6 +79,8 @@ class Settings extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final accountProvider = context.watch<AccountProvider>();
+    final isDarkMode = context.watch<AppearanceProvider>().isDarkMode;
+    final textScaleFactor = context.watch<TextScaleProvider>().scaleFactor;
     final account = accountProvider.account;
     final isGuest = account.isEmpty;
     final bottomNavProvider = context.watch<BottomNavProvider>();
@@ -104,14 +108,16 @@ class Settings extends StatelessWidget {
               children: [
                 if (!isGuest)
                   Card(
+                    color: isDarkMode ? const Color(0xFF12A5BC) : Colors.white,
                     shadowColor:
                         const Color.fromARGB(255, 50, 50, 50).withOpacity(0.1),
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15),
-                        side: BorderSide(
-                          color: const Color(0xFF323232).withOpacity(0.1),
-                          width: 1,
-                        )),
+                      borderRadius: BorderRadius.circular(15),
+                      side: BorderSide(
+                        color: const Color(0xFF323232).withOpacity(0.1),
+                        width: 1,
+                      ),
+                    ),
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 25, vertical: 20),
@@ -141,10 +147,10 @@ class Settings extends StatelessWidget {
                                 Text(
                                   account["username"]?.toUpperCase() ??
                                       'GUEST'.toUpperCase(),
-                                  style: const TextStyle(
-                                    fontSize: 13,
+                                  style: TextStyle(
+                                    fontSize: 13 * textScaleFactor,
                                     fontWeight: FontWeight.w600,
-                                    color: Color(0xFF323232),
+                                    color: const Color(0xFF323232),
                                     height: 1.0,
                                   ),
                                 ),
@@ -153,7 +159,7 @@ class Settings extends StatelessWidget {
                                   'ID No: ${account["user_number"] ?? "-- --"}',
                                   style: TextStyle(
                                     fontFamily: "Poppins",
-                                    fontSize: 11,
+                                    fontSize: 11 * textScaleFactor,
                                     fontWeight: FontWeight.w400,
                                     color: const Color(0xFF323232)
                                         .withOpacity(0.7),
@@ -167,10 +173,25 @@ class Settings extends StatelessWidget {
                                       context.push('/edit-profile');
                                     },
                                     style: ElevatedButton.styleFrom(
+                                      backgroundColor: isDarkMode
+                                          ? Colors.white
+                                          : const Color(0xFF12A5BC),
                                       padding: const EdgeInsets.all(0),
-                                      textStyle: const TextStyle(fontSize: 12),
+                                      textStyle: const TextStyle(
+                                        fontSize: 12,
+                                      ),
                                     ),
-                                    child: const Text('Edit Profile'),
+                                    child: Text(
+                                      'Edit Profile',
+                                      style: TextStyle(
+                                        color: isDarkMode
+                                            ? const Color(0xFF12A5BC)
+                                            : Colors.white,
+                                        fontWeight: isDarkMode
+                                            ? FontWeight.w700
+                                            : FontWeight.normal,
+                                      ),
+                                    ),
                                   ),
                                 )
                               ],
@@ -203,17 +224,21 @@ class Settings extends StatelessWidget {
                           size: 18,
                           color: feature["label"] == "Logout"
                               ? const Color.fromRGBO(239, 68, 68, 1)
-                              : const Color(0xFF323232),
+                              : isDarkMode
+                                  ? Colors.white.withOpacity(0.5)
+                                  : const Color(0xFF323232),
                         ),
                         title: Text(
                           feature['label'] as String,
                           style: styleText(
                             context: context,
-                            fontSizeOption: 12.0,
+                            fontSizeOption: 12.0 * textScaleFactor,
                             fontWeight: CustomFontWeight.weight500,
                             color: feature["label"] == "Logout"
                                 ? const Color.fromRGBO(239, 68, 68, 1)
-                                : const Color(0xFF323232),
+                                : isDarkMode
+                                    ? Colors.white
+                                    : const Color(0xFF323232),
                           ),
                         ),
                         onTap: () async {
@@ -236,7 +261,9 @@ class Settings extends StatelessWidget {
                           size: 18,
                           color: feature["label"] == "Logout"
                               ? const Color.fromRGBO(239, 68, 68, 1)
-                              : const Color(0xFF323232),
+                              : isDarkMode
+                                  ? Colors.white.withOpacity(0.3)
+                                  : const Color(0xFF323232),
                         ),
                       );
                     },

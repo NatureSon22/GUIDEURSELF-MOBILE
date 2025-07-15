@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:guideurself/providers/textscale.dart';
 import 'package:html/parser.dart' as html_parser;
+import 'package:provider/provider.dart';
 import '../../services/university_management_service.dart';
 import '../../models/university_management.dart';
 import 'package:go_router/go_router.dart';
@@ -23,6 +25,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final textScaleFactor = context.watch<TextScaleProvider>().scaleFactor;
+
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -113,16 +117,18 @@ class _HistoryScreenState extends State<HistoryScreen> {
                       'University Of Rizal System',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                          fontFamily: "Cinzel",
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,),
+                        fontFamily: "Cinzel",
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
                     ),
                     const Text(
                       "Nurturing Tomorrow's Noblest",
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                          fontFamily: "CinzelDecorative",
-                          fontSize: 12,),
+                        fontFamily: "CinzelDecorative",
+                        fontSize: 12,
+                      ),
                     ),
                     const SizedBox(height: 20),
 
@@ -141,6 +147,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         style: {
                           "body": Style(
                             textAlign: TextAlign.center,
+                            fontSize: FontSize(
+                              13 * textScaleFactor,
+                            ),
                           ),
                         },
                       ),
@@ -160,7 +169,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
     var document = html_parser.parse(htmlContent);
     document.querySelectorAll('br').forEach((br) => br.remove());
     document.querySelectorAll('strong').forEach((strong) {
-      strong.attributes['style'] = 'font-size: 20px; font-family: CinzelDecorative;';
+      strong.attributes['style'] =
+          'font-size: 20px; font-family: CinzelDecorative;';
     });
     return document.body?.innerHtml ?? htmlContent;
   }

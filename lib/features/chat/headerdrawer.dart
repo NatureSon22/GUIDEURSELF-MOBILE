@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:guideurself/core/themes/style.dart';
+import 'package:guideurself/providers/apperance.dart';
 import 'package:guideurself/providers/conversation.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
@@ -12,6 +13,7 @@ class HeaderDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final conversationProvider = context.watch<ConversationProvider>();
+    final isDarkMode = context.watch<AppearanceProvider>().isDarkMode;
 
     return Container(
       height: 90,
@@ -32,9 +34,9 @@ class HeaderDrawer extends StatelessWidget {
               Navigator.of(context).pop();
               FocusScope.of(context).unfocus();
             },
-            child: const Icon(
+            child: Icon(
               Icons.create,
-              color: Color(0xFF323232),
+              color: isDarkMode ? Colors.white : const Color(0xFF323232),
             ),
           ),
           Text(
@@ -48,7 +50,10 @@ class HeaderDrawer extends StatelessWidget {
             onTap: () {
               context.push("/messages-chat");
             },
-            child: const Icon(Icons.chat_outlined, color: Color(0xFF323232)),
+            child: Icon(
+              Icons.chat_outlined,
+              color: isDarkMode ? Colors.white : const Color(0xFF323232),
+            ),
           ),
         ],
       ),

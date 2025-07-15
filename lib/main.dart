@@ -10,6 +10,7 @@ import 'package:guideurself/providers/conversation.dart';
 import 'package:guideurself/providers/loading.dart';
 import 'package:guideurself/providers/messagechat.dart';
 import 'package:guideurself/providers/messagereview.dart';
+import 'package:guideurself/providers/textscale.dart';
 import 'package:guideurself/providers/transcribing.dart';
 import 'package:guideurself/routes/router.dart';
 import 'package:guideurself/services/socket.dart';
@@ -45,12 +46,13 @@ void main() {
           ChangeNotifierProvider(create: (context) => MessageChatProvider()),
           ChangeNotifierProvider(create: (context) => BottomNavProvider()),
           ChangeNotifierProvider(create: (context) => MessageReviewProvider()),
-          ChangeNotifierProvider(create: (context) => AppearanceProvider())
+          ChangeNotifierProvider(create: (context) => AppearanceProvider()),
+          ChangeNotifierProvider(create: (context) => TextScaleProvider())
         ],
         child: QueryClientProvider(
           queryClient: queryClient,
           child: MyApp(
-            initialRoute: hasVisitedSplash ? "/settings" : "/splash",
+            initialRoute: hasVisitedSplash ? "/auth-layer" : "/splash",
           ),
         ),
       ),

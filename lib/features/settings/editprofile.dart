@@ -3,6 +3,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
 import 'package:guideurself/core/themes/style.dart';
 import 'package:guideurself/providers/account.dart';
+import 'package:guideurself/providers/apperance.dart';
+import 'package:guideurself/providers/textscale.dart';
 import 'package:guideurself/services/account.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
@@ -138,6 +140,8 @@ class _EditProfileState extends State<EditProfile> {
   @override
   Widget build(BuildContext context) {
     final account = context.watch<AccountProvider>().account;
+    final isDarkMode = context.watch<AppearanceProvider>().isDarkMode;
+    final textScaleFactor = context.watch<TextScaleProvider>().scaleFactor;
     final String? photoUrl = account["user_photo_url"] as String?;
     final String accountId = account["_id"];
 
@@ -170,7 +174,9 @@ class _EditProfileState extends State<EditProfile> {
                 fontFamily: "Poppins",
                 fontSize: 15,
                 fontWeight: FontWeight.w500,
-                color: const Color(0xFF323232).withOpacity(0.5),
+                color: isDarkMode
+                    ? Colors.white.withOpacity(0.5)
+                    : const Color(0xFF323232).withOpacity(0.5),
               ),
             ),
             onPressed: () {
@@ -252,9 +258,11 @@ class _EditProfileState extends State<EditProfile> {
                   account["username"],
                   style: TextStyle(
                     fontFamily: "Poppins",
-                    fontSize: 18,
+                    fontSize: 18 * textScaleFactor,
                     fontWeight: FontWeight.w500,
-                    color: const Color(0xFF323232).withOpacity(0.8),
+                    color: isDarkMode
+                        ? Colors.white
+                        : const Color(0xFF323232).withOpacity(0.8),
                   ),
                 ),
               const Gap(35),

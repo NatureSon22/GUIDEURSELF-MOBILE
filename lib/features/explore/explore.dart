@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:guideurself/providers/bottomnav.dart';
+import 'package:guideurself/providers/textscale.dart';
 import 'package:guideurself/widgets/textgradient.dart';
 import 'menu_drawer.dart';
 import 'package:go_router/go_router.dart';
@@ -26,6 +27,7 @@ class _ExploreState extends State<Explore> {
 
   @override
   Widget build(BuildContext context) {
+    final textScaleFactor = context.watch<TextScaleProvider>().scaleFactor;
     final List<Map<String, String>> sections = [
       {"title": "History", "route": "/history"},
       {"title": "Logo & Vector", "route": "/logo-vector"},
@@ -104,11 +106,12 @@ class _ExploreState extends State<Explore> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const GradientText(
+                          GradientText(
                             'Discover your\nuniversity like never',
                             style: TextStyle(
-                                fontSize: 28, fontWeight: FontWeight.w700),
-                            gradient: LinearGradient(colors: [
+                                fontSize: 28 * textScaleFactor,
+                                fontWeight: FontWeight.w700),
+                            gradient: const LinearGradient(colors: [
                               Color(0xFF12A5BC),
                               Color(0xFF0E46A3),
                             ]),
@@ -180,17 +183,19 @@ class _ExploreState extends State<Explore> {
 
                     const SizedBox(height: 15.0),
 
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 25.0),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 25.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             'Navigate, learn, and explore everything\nyour campus has to offer.',
-                            style: TextStyle(fontSize: 16),
+                            style: TextStyle(
+                              fontSize: 16 * textScaleFactor,
+                            ),
                           ),
-                          SizedBox(height: 15.0),
-                          Divider(
+                          const SizedBox(height: 15.0),
+                          const Divider(
                             color: Color.fromARGB(255, 207, 207, 207),
                             thickness: 0.5,
                             height: 20.0,
@@ -211,7 +216,10 @@ class _ExploreState extends State<Explore> {
                             padding:
                                 const EdgeInsets.symmetric(horizontal: 5.0),
                             child: Container(
-                              height: 32,
+                              padding: const EdgeInsetsDirectional.symmetric(
+                                horizontal: 15.0,
+                                vertical: 7.0,
+                              ),
                               decoration: BoxDecoration(
                                 gradient: const LinearGradient(
                                   colors: [
@@ -223,25 +231,16 @@ class _ExploreState extends State<Explore> {
                                 ),
                                 borderRadius: BorderRadius.circular(100.0),
                               ),
-                              child: ElevatedButton(
-                                onPressed: () {
+                              child: GestureDetector(
+                                onTap: () {
                                   context.push(section["route"]!);
                                 },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.transparent,
-                                  shadowColor: Colors.transparent,
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 16, vertical: 8),
-                                  minimumSize: const Size(0, 30),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(100.0),
-                                  ),
-                                ),
                                 child: Text(
                                   section["title"]!,
-                                  style: const TextStyle(
-                                    fontSize: 12,
+                                  style: TextStyle(
+                                    fontSize: 12 * textScaleFactor,
                                     fontWeight: FontWeight.w500,
+                                    color: Colors.white,
                                   ),
                                 ),
                               ),
@@ -309,20 +308,21 @@ class _ExploreState extends State<Explore> {
                                     ],
                                   ),
                                   const SizedBox(height: 10),
-                                  const Text(
+                                  Text(
                                     'University Of Rizal System',
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
-                                        fontSize: 16,
+                                        fontSize: 16 * textScaleFactor,
                                         fontFamily: "Cinzel",
                                         fontWeight: FontWeight.bold),
                                   ),
-                                  const Text(
+                                  Text(
                                     "Nurturing Tomorrow's Noblest",
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
-                                        fontFamily: "CinzelDecorative",
-                                        fontSize: 12,),
+                                      fontFamily: "CinzelDecorative",
+                                      fontSize: 12 * textScaleFactor,
+                                    ),
                                   ),
                                 ],
                               );

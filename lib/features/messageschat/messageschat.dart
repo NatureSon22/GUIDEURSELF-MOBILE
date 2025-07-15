@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:guideurself/core/themes/style.dart';
+import 'package:guideurself/providers/apperance.dart';
 import 'package:guideurself/providers/messagechat.dart';
+import 'package:guideurself/providers/textscale.dart';
 import 'package:guideurself/services/messagechats.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
@@ -27,6 +29,8 @@ class _MessageschatState extends State<Messageschat> {
   @override
   Widget build(BuildContext context) {
     final messageChatProvider = context.read<MessageChatProvider>();
+    final isDarkMode = context.watch<AppearanceProvider>().isDarkMode;
+    final textScaleFactor = context.watch<TextScaleProvider>().scaleFactor;
 
     return Scaffold(
       appBar: AppBar(
@@ -54,6 +58,13 @@ class _MessageschatState extends State<Messageschat> {
         future: _futureChatHeads,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
+            final Color shimmerBaseColor =
+                isDarkMode ? const Color(0xFF2C2C2C) : Colors.grey[300]!;
+            final Color shimmerHighlightColor =
+                isDarkMode ? const Color(0xFF404040) : Colors.grey[100]!;
+            final Color containerColor =
+                isDarkMode ? const Color(0xFF1E1E1E) : Colors.white;
+
             return Padding(
               padding: const EdgeInsets.only(top: 15),
               child: ListView.builder(
@@ -66,12 +77,12 @@ class _MessageschatState extends State<Messageschat> {
                       top: 12,
                     ),
                     child: Shimmer.fromColors(
-                      baseColor: Colors.grey[200]!,
-                      highlightColor: Colors.grey[100]!,
+                      baseColor: shimmerBaseColor,
+                      highlightColor: shimmerHighlightColor,
                       child: Container(
                         height: 70,
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: containerColor,
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
@@ -127,14 +138,18 @@ class _MessageschatState extends State<Messageschat> {
                     child: ListTile(
                       title: Text(
                         receiver?['name'] ?? 'Unknown',
-                        style:
-                            styleText(context: context, fontSizeOption: 14.0),
+                        style: styleText(
+                          context: context,
+                          fontSizeOption: 14.0 * textScaleFactor,
+                        ),
                       ),
                       subtitle: Text(
                         role,
                         style: TextStyle(
-                          fontSize: 11.5,
-                          color: const Color(0xFF323232).withOpacity(0.6),
+                          fontSize: 11.5 * textScaleFactor,
+                          color: isDarkMode
+                              ? Colors.white.withOpacity(0.5)
+                              : const Color(0xFF323232).withOpacity(0.6),
                         ),
                       ),
                       leading: CircleAvatar(

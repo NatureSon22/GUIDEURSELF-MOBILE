@@ -4,8 +4,10 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
 import 'package:guideurself/core/themes/style.dart';
 import 'package:guideurself/providers/account.dart';
+import 'package:guideurself/providers/apperance.dart';
 import 'package:guideurself/providers/conversation.dart';
 import 'package:guideurself/providers/loading.dart';
+import 'package:guideurself/providers/textscale.dart';
 import 'package:guideurself/providers/transcribing.dart';
 import 'package:guideurself/services/conversation.dart';
 import 'package:guideurself/services/storage.dart';
@@ -278,6 +280,8 @@ class _RecordInputModalState extends State<RecordInputModal> {
   @override
   Widget build(BuildContext context) {
     final isTranscribing = context.watch<Transcribing>().isTranscribing;
+    final isDarkMode = context.watch<AppearanceProvider>().isDarkMode;
+    final textScaleFactor = context.watch<TextScaleProvider>().scaleFactor;
 
     return Container(
       width: double.infinity,
@@ -293,8 +297,10 @@ class _RecordInputModalState extends State<RecordInputModal> {
                 Text(
                   "Tap the button to ask a question",
                   style: TextStyle(
-                    fontSize: 15.0,
-                    color: const Color(0xFF323232).withOpacity(0.5),
+                    fontSize: 15.0 * textScaleFactor,
+                    color: isDarkMode
+                        ? Colors.white
+                        : const Color(0xFF323232).withOpacity(0.5),
                     fontWeight: FontWeight.w500,
                   ),
                 )
@@ -325,8 +331,10 @@ class _RecordInputModalState extends State<RecordInputModal> {
                             ? "Transcribing your question..."
                             : "Awaiting voice input...",
                         style: TextStyle(
-                          fontSize: 14.0,
-                          color: const Color(0xFF323232).withOpacity(0.5),
+                          fontSize: 14.0 * textScaleFactor,
+                          color: isDarkMode
+                              ? Colors.white
+                              : const Color(0xFF323232).withOpacity(0.5),
                           fontWeight: FontWeight.w500,
                         ),
                       )

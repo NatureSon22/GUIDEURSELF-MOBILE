@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:guideurself/core/themes/style.dart';
+import 'package:guideurself/providers/textscale.dart';
+import 'package:provider/provider.dart';
 
 class FeedbackComment extends StatelessWidget {
   final TextEditingController controller;
@@ -9,6 +11,8 @@ class FeedbackComment extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textScaleFactor = context.watch<TextScaleProvider>().scaleFactor;
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
@@ -26,13 +30,15 @@ class FeedbackComment extends StatelessWidget {
             style: styleText(
               context: context,
               fontWeight: CustomFontWeight.weight600,
-              fontSizeOption: 12.0,
+              fontSizeOption: 12.0 * textScaleFactor,
             ),
           ),
           const Gap(10),
           TextFormField(
             controller: controller,
-            style: const TextStyle(fontSize: 12),
+            style: TextStyle(
+              fontSize: 12 * textScaleFactor,
+            ),
             decoration: InputDecoration(
               hintText: "What did you like? What could we improve?",
               contentPadding:

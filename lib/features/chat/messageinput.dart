@@ -4,6 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
 import 'package:guideurself/features/chat/recordinput.dart';
 import 'package:guideurself/providers/account.dart';
+import 'package:guideurself/providers/apperance.dart';
 import 'package:guideurself/providers/conversation.dart';
 import 'package:guideurself/providers/loading.dart';
 import 'package:guideurself/services/conversation.dart';
@@ -192,6 +193,7 @@ class _MessageInputState extends State<MessageInput> {
   @override
   Widget build(BuildContext context) {
     final accountProvider = context.read<AccountProvider>();
+    final isDarkMode = context.watch<AppearanceProvider>().isDarkMode;
     final account = accountProvider.account;
     final isGuest = account.isEmpty;
     int query = storage.getData(key: "query") ?? 0;
@@ -239,6 +241,9 @@ class _MessageInputState extends State<MessageInput> {
               controller: _controller,
               decoration: InputDecoration(
                 hintText: "Type something here...",
+                filled: isDarkMode,
+                fillColor:
+                    isDarkMode ? Colors.white.withOpacity(0.1) : Colors.white,
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(
                     color: const Color(0xFF323232).withOpacity(0.3),
