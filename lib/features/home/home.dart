@@ -6,6 +6,7 @@ import 'package:guideurself/features/home/header.dart';
 import 'package:guideurself/features/home/history.dart';
 import 'package:guideurself/features/home/navfeature.dart';
 import 'package:guideurself/providers/account.dart';
+import 'package:guideurself/providers/textscale.dart';
 import 'package:guideurself/services/auth.dart';
 import 'package:guideurself/services/storage.dart';
 import 'package:provider/provider.dart';
@@ -23,15 +24,15 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
-    //_fetchUserAccount();
+    _fetchUserAccount();
   }
 
   Future<void> _fetchUserAccount() async {
     try {
       final account = await userAccount();
-      // if (mounted) {
-      //   context.read<AccountProvider>().setAccount(account: account);
-      // }
+      if (mounted) {
+        context.read<AccountProvider>().setAccount(account: account);
+      }
     } catch (e) {
       debugPrint('Failed to fetch user account: $e');
     }
@@ -40,6 +41,7 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     final accountProvider = context.watch<AccountProvider>();
+    final textScaleFactor = context.watch<TextScaleProvider>().scaleFactor;
     final account = accountProvider.account;
 
     return Scaffold(
@@ -97,7 +99,9 @@ class _HomeState extends State<Home> {
                                 child: Text(
                                   "Recent Chats",
                                   style: styleText(
-                                      context: context, fontSizeOption: 14.0),
+                                    context: context,
+                                    fontSizeOption: 14.0 * textScaleFactor,
+                                  ),
                                 ),
                               ),
                               const Gap(10),

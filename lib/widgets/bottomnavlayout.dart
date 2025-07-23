@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:go_router/go_router.dart';
+import 'package:guideurself/providers/apperance.dart';
 import 'package:guideurself/providers/bottomnav.dart';
 import 'package:guideurself/services/storage.dart';
 import 'package:provider/provider.dart';
@@ -34,6 +35,7 @@ class _BottomNavLayoutState extends State<BottomNavLayout> {
   Widget build(BuildContext context) {
     final bottomNavProvider = context.watch<BottomNavProvider>();
     final providerIndex = context.watch<BottomNavProvider>().index;
+    final isDarkMode = context.watch<AppearanceProvider>().isDarkMode;
 
     return Scaffold(
       body: widget.child,
@@ -73,31 +75,35 @@ class _BottomNavLayoutState extends State<BottomNavLayout> {
             bottomNavProvider.setIndex(index: index);
           },
           tabs: [
-            _buildNavItem(Icons.home_rounded, 'Home'),
-            _buildNavItem(Icons.explore, 'Explore'),
-            _buildNavItem(Icons.chat_bubble, 'Chat'),
-            _buildNavItem(Icons.settings, 'Settings'),
+            _buildNavItem(Icons.home_rounded, 'Home', isDarkMode),
+            _buildNavItem(Icons.explore, 'Explore', isDarkMode),
+            _buildNavItem(Icons.chat_bubble, 'Chat', isDarkMode),
+            _buildNavItem(Icons.settings, 'Settings', isDarkMode),
           ],
         ),
       ),
     );
   }
 
-  GButton _buildNavItem(IconData icon, String label) {
+  GButton _buildNavItem(IconData icon, String label, bool isDarkMode) {
     return GButton(
       icon: icon,
       text: label,
-      textStyle: const TextStyle(
-        color: Color(0xFF12A5BC),
+      textStyle: TextStyle(
+        color: isDarkMode ? Colors.white : const Color(0xFF12A5BC),
         fontFamily: 'Poppins',
         fontWeight: FontWeight.w500,
         fontSize: 12,
       ),
       gap: 8,
-      backgroundColor: const Color(0xFF12A5BC).withOpacity(0.1),
+      backgroundColor: isDarkMode
+          ? const Color(0xFF12A5BC)
+          : const Color(0xFF12A5BC).withOpacity(0.1),
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-      iconColor: const Color(0xFF323232).withOpacity(0.55),
-      iconActiveColor: const Color(0xFF12A5BC),
+      iconColor: isDarkMode
+          ? Colors.white.withOpacity(0.2)
+          : const Color(0xFF323232).withOpacity(0.55),
+      iconActiveColor: isDarkMode ? Colors.white : const Color(0xFF12A5BC),
     );
   }
 }

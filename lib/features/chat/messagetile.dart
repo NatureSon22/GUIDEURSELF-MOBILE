@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:gap/gap.dart';
 import 'package:guideurself/core/themes/style.dart';
+import 'package:guideurself/providers/apperance.dart';
 import 'package:guideurself/providers/conversation.dart';
+import 'package:guideurself/providers/textscale.dart';
 import 'package:guideurself/services/conversation.dart';
 import 'package:provider/provider.dart';
 
@@ -133,13 +135,17 @@ class MessageTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = context.watch<AppearanceProvider>().isDarkMode;
+    final textScaleFactor = context.watch<TextScaleProvider>().scaleFactor;
+
     return Builder(
       builder: (scaffoldContext) {
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           child: Container(
             decoration: BoxDecoration(
-                color: const Color.fromRGBO(239, 68, 68, 1),
+                color:
+                    isDarkMode ? Colors.white.withOpacity(0.05) : Colors.white,
                 borderRadius: BorderRadius.circular(20)),
             child: Slidable(
               key: Key(message['conversation_id'] ?? title),
@@ -166,7 +172,9 @@ class MessageTile extends StatelessWidget {
               ),
               child: Container(
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: isDarkMode
+                      ? Colors.white.withOpacity(0.05)
+                      : Colors.white,
                   borderRadius: BorderRadius.circular(15),
                   border: Border.all(
                     color: const Color(0xFF323232).withOpacity(0.1),
@@ -175,18 +183,27 @@ class MessageTile extends StatelessWidget {
                 child: ListTile(
                   leading: Icon(
                     Icons.chat_bubble,
-                    color: const Color(0xFF323232).withOpacity(0.7),
+                    color: isDarkMode
+                        ? Colors.white
+                        : const Color(0xFF323232).withOpacity(0.7),
                     size: 18,
                   ),
                   title: Text(
                     title,
-                    style: styleText(context: context, fontSizeOption: 12.0),
+                    style: styleText(
+                      context: context,
+                      fontSizeOption: 12.0 * textScaleFactor,
+                      color:
+                          isDarkMode ? Colors.white : const Color(0xFF323232),
+                    ),
                   ),
                   trailing: Transform.rotate(
                     angle: pi,
                     child: Icon(
                       Icons.arrow_back_ios_new_rounded,
-                      color: const Color(0xFF323232).withOpacity(0.2),
+                      color: isDarkMode
+                          ? Colors.white.withOpacity(0.2)
+                          : const Color(0xFF323232).withOpacity(0.2),
                       size: 18,
                     ),
                   ),

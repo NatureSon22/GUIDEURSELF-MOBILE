@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:guideurself/providers/textscale.dart';
+import 'package:provider/provider.dart';
 
 class MenuDrawer extends StatelessWidget {
   const MenuDrawer({super.key});
@@ -78,15 +80,17 @@ class MenuDrawer extends StatelessWidget {
   /// Helper method to create a centered ListTile with GoRouter navigation
   Widget _buildCenteredListTile(
       BuildContext context, String title, String path) {
+    final textScaleFactor = context.watch<TextScaleProvider>().scaleFactor;
+
     return ListTile(
       contentPadding: EdgeInsets.zero,
       title: Center(
         child: Text(
           title,
           textAlign: TextAlign.center,
-          style: const TextStyle(
+          style: TextStyle(
             fontWeight: FontWeight.w500,
-            fontSize: 12,
+            fontSize: 12 * textScaleFactor,
           ),
         ),
       ),

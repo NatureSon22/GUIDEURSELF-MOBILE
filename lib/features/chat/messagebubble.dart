@@ -4,7 +4,9 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:gap/gap.dart';
 import 'package:guideurself/core/themes/style.dart';
 import 'package:guideurself/providers/account.dart';
+import 'package:guideurself/providers/apperance.dart';
 import 'package:guideurself/providers/messagereview.dart';
+import 'package:guideurself/providers/textscale.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 
@@ -95,8 +97,9 @@ class MessageBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final iconColor = const Color(0xFF323232).withOpacity(0.7);
     final accountProvider = context.read<AccountProvider>();
+    final isDarkMode = context.watch<AppearanceProvider>().isDarkMode;
+    final textScaleFactor = context.watch<TextScaleProvider>().scaleFactor;
     final account = accountProvider.account;
     final isGuest = account.isEmpty;
     final String contentLower = content.toLowerCase();
@@ -115,6 +118,24 @@ class MessageBubble extends StatelessWidget {
       reviewState = initialIsHelpful;
     }
 
+    final Color backgroundColor = isMachine
+        ? isFailed
+            ? const Color.fromRGBO(239, 68, 68, 0.1)
+            : const Color(0xFF12A5BC).withOpacity(isDarkMode ? 0.2 : 0.1)
+        : isDarkMode
+            ? Colors.white.withOpacity(0.1)
+            : Colors.white;
+
+    final Color borderColor = isMachine
+        ? isFailed
+            ? const Color.fromRGBO(239, 68, 68, 1)
+            : const Color(0xFF12A5BC)
+        : const Color(0xFF323232).withOpacity(0.1);
+
+    final iconColor = isDarkMode
+        ? Colors.white.withOpacity(0.7)
+        : const Color(0xFF323232).withOpacity(0.7);
+
     return Align(
       alignment: isMachine ? Alignment.centerLeft : Alignment.centerRight,
       child: ConstrainedBox(
@@ -129,17 +150,9 @@ class MessageBubble extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
               margin: EdgeInsets.symmetric(vertical: isMachine ? 10 : 15),
               decoration: BoxDecoration(
-                color: isMachine
-                    ? isFailed
-                        ? const Color.fromRGBO(239, 68, 68, 0.1)
-                        : const Color(0xFF12A5BC).withOpacity(0.1)
-                    : Colors.white,
+                color: backgroundColor,
                 border: Border.all(
-                  color: isMachine
-                      ? isFailed
-                          ? const Color.fromRGBO(239, 68, 68, 1)
-                          : const Color(0xFF12A5BC)
-                      : const Color(0xFF323232).withOpacity(0.1),
+                  color: borderColor,
                   width: 1.3,
                 ),
                 borderRadius: BorderRadius.only(
@@ -161,27 +174,27 @@ class MessageBubble extends StatelessWidget {
                         styleSheet: MarkdownStyleSheet(
                           h1: styleText(
                               context: context,
-                              fontSizeOption: 13.0,
+                              fontSizeOption: 13.0 * textScaleFactor,
                               color: const Color(0xFF323232)),
                           h2: styleText(
                               context: context,
-                              fontSizeOption: 12.0,
+                              fontSizeOption: 12.0 * textScaleFactor,
                               color: const Color(0xFF323232)),
                           h3: styleText(
                               context: context,
-                              fontSizeOption: 12.0,
+                              fontSizeOption: 12.0 * textScaleFactor,
                               color: const Color(0xFF323232)),
                           h4: styleText(
                               context: context,
-                              fontSizeOption: 12.0,
+                              fontSizeOption: 12.0 * textScaleFactor,
                               color: const Color(0xFF323232)),
                           p: styleText(
                               context: context,
-                              fontSizeOption: 11.5,
+                              fontSizeOption: 11.5 * textScaleFactor,
                               color: const Color(0xFF323232)),
                           listBullet: styleText(
                               context: context,
-                              fontSizeOption: 11.5,
+                              fontSizeOption: 11.5 * textScaleFactor,
                               color: const Color(0xFF323232)),
                           tableBody: const TextStyle(
                               fontSize: 11, color: Color(0xFF323232)),

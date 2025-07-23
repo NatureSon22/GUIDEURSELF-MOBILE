@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:guideurself/providers/textscale.dart';
 import 'package:html/parser.dart' as html_parser;
+import 'package:provider/provider.dart';
 import '../../services/university_management_service.dart';
 import '../../models/university_management.dart';
 import 'package:go_router/go_router.dart';
@@ -103,16 +105,18 @@ class _VisionMissionScreenState extends State<VisionMissionScreen> {
                           'University Of Rizal System',
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                              fontFamily: "Cinzel",
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,),
+                            fontFamily: "Cinzel",
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         const Text(
                           "Nurturing Tomorrow's Noblest",
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                              fontFamily: "CinzelDecorative",
-                              fontSize: 12,),
+                            fontFamily: "CinzelDecorative",
+                            fontSize: 12,
+                          ),
                         ),
                         const SizedBox(height: 20),
                         if (university.universityVision != null)
@@ -135,11 +139,15 @@ class _VisionMissionScreenState extends State<VisionMissionScreen> {
   }
 
   Widget _buildHtmlSection(String title, String htmlContent) {
+    final textScaleFactor = context.watch<TextScaleProvider>().scaleFactor;
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 16.0),
       child: Container(
         padding: const EdgeInsets.all(12.0),
-        decoration: BoxDecoration( // Semi-transparent backmmmground
+        decoration: BoxDecoration(
+          // Semi-transparent background
+
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: const Color.fromARGB(255, 235, 235, 235),
@@ -154,8 +162,8 @@ class _VisionMissionScreenState extends State<VisionMissionScreen> {
                 padding: const EdgeInsets.only(bottom: 8.0),
                 child: Text(
                   title,
-                  style: const TextStyle(
-                    fontSize: 18,
+                  style: TextStyle(
+                    fontSize: 18 * textScaleFactor,
                     fontWeight: FontWeight.bold,
                   ),
                   textAlign: TextAlign.center,
@@ -166,6 +174,7 @@ class _VisionMissionScreenState extends State<VisionMissionScreen> {
               style: {
                 "body": Style(
                   textAlign: TextAlign.center,
+                  fontSize: FontSize(13 * textScaleFactor),
                 ),
               },
             ),
@@ -179,7 +188,8 @@ class _VisionMissionScreenState extends State<VisionMissionScreen> {
     var document = html_parser.parse(htmlContent);
     document.querySelectorAll('br').forEach((br) => br.remove());
     document.querySelectorAll('strong').forEach((strong) {
-      strong.attributes['style'] = 'font-size: 20px; font-family: CinzelDecorative;';
+      strong.attributes['style'] =
+          'font-size: 20px; font-family: CinzelDecorative;';
     });
     return document.body?.innerHtml ?? htmlContent;
   }

@@ -12,6 +12,7 @@ TextStyle styleText({
   LineHeightOption lineHeightOption = LineHeightOption.height200,
   CustomFontWeight fontWeight = CustomFontWeight.weight400,
   Color color = const Color(0xFF323232),
+  double scaleFactor = 1.0,
 }) {
   final fontSizeMap = {
     FontSizeOption.size100: 11.0,
@@ -35,9 +36,10 @@ TextStyle styleText({
   };
 
   // Determine font size based on input type
-  final fontSize = fontSizeOption is FontSizeOption
-      ? fontSizeMap[fontSizeOption]
-      : fontSizeOption; 
+  final fontSize = (fontSizeOption is FontSizeOption
+          ? fontSizeMap[fontSizeOption]
+          : fontSizeOption) *
+      scaleFactor;
 
   final textColor = Theme.of(context).brightness == Brightness.light
       ? color

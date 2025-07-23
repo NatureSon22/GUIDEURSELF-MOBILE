@@ -3,6 +3,7 @@ import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:guideurself/core/themes/style.dart';
 import 'package:guideurself/providers/account.dart';
+import 'package:guideurself/providers/textscale.dart';
 import 'package:guideurself/services/auth.dart';
 import 'package:provider/provider.dart';
 
@@ -51,7 +52,7 @@ class _ChangepasswordState extends State<Changepassword> {
           password: newPasswordController.text, accountId: account['_id']);
 
       debugPrint(updatedAccount.toString());
-      
+
       accountProvider.setAccount(account: updatedAccount['account']);
 
       if (mounted) {
@@ -110,6 +111,8 @@ class _ChangepasswordState extends State<Changepassword> {
 
   @override
   Widget build(BuildContext context) {
+    final textScaleFactor = context.watch<TextScaleProvider>().scaleFactor;
+
     return Scaffold(
       appBar: AppBar(
         elevation: 1,
@@ -143,7 +146,10 @@ class _ChangepasswordState extends State<Changepassword> {
                 children: [
                   Text(
                     "Old Password",
-                    style: styleText(context: context, fontSizeOption: 12.0),
+                    style: styleText(
+                      context: context,
+                      fontSizeOption: 12.0 * textScaleFactor,
+                    ),
                   ),
                   const Gap(5),
                   TextFormField(
@@ -167,7 +173,10 @@ class _ChangepasswordState extends State<Changepassword> {
                 children: [
                   Text(
                     "New Password",
-                    style: styleText(context: context, fontSizeOption: 12.0),
+                    style: styleText(
+                      context: context,
+                      fontSizeOption: 12.0 * textScaleFactor,
+                    ),
                   ),
                   const Gap(5),
                   TextFormField(
@@ -203,7 +212,10 @@ class _ChangepasswordState extends State<Changepassword> {
                 children: [
                   Text(
                     "Confirm Password",
-                    style: styleText(context: context, fontSizeOption: 12.0),
+                    style: styleText(
+                      context: context,
+                      fontSizeOption: 12.0 * textScaleFactor,
+                    ),
                   ),
                   const Gap(5),
                   TextFormField(

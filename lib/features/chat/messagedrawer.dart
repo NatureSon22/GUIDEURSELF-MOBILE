@@ -3,7 +3,10 @@ import 'package:gap/gap.dart';
 import 'package:guideurself/core/themes/style.dart';
 import 'package:guideurself/features/chat/headerdrawer.dart';
 import 'package:guideurself/features/chat/messagetile.dart';
+import 'package:guideurself/providers/apperance.dart';
+import 'package:guideurself/providers/textscale.dart';
 import 'package:guideurself/services/conversation.dart';
+import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 
 class MessageDrawer extends StatefulWidget {
@@ -82,7 +85,9 @@ class _MessageDrawerState extends State<MessageDrawer> {
   }
 
   List<Widget> _buildMessageList(
-      Map<String, List<Map<String, dynamic>>> groupedMessages) {
+      Map<String, List<Map<String, dynamic>>> groupedMessages,
+      bool isDarkMode,
+      double textScaleFactor) {
     List<Map<String, dynamic>> allMessages = [];
 
     groupedMessages.forEach((category, messages) {
@@ -108,9 +113,11 @@ class _MessageDrawerState extends State<MessageDrawer> {
             category,
             style: styleText(
               context: context,
-              fontSizeOption: 12.0,
+              fontSizeOption: 12.0 * textScaleFactor,
               lineHeightOption: LineHeightOption.height200,
-              color: const Color(0xFF323232).withOpacity(0.5),
+              color: isDarkMode
+                  ? Colors.white
+                  : const Color(0xFF323232).withOpacity(0.5),
             ),
           ),
         ),
@@ -133,6 +140,9 @@ class _MessageDrawerState extends State<MessageDrawer> {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = context.watch<AppearanceProvider>().isDarkMode;
+    final textScaleFactor = context.watch<TextScaleProvider>().scaleFactor;
+
     return Drawer(
       width: MediaQuery.of(context).size.width * 0.75,
       child: Column(
@@ -143,6 +153,13 @@ class _MessageDrawerState extends State<MessageDrawer> {
               future: _futureMessages,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
+                  final Color shimmerBaseColor =
+                      isDarkMode ? const Color(0xFF2C2C2C) : Colors.grey[300]!;
+                  final Color shimmerHighlightColor =
+                      isDarkMode ? const Color(0xFF404040) : Colors.grey[100]!;
+                  final Color containerColor =
+                      isDarkMode ? const Color(0xFF1E1E1E) : Colors.white;
+
                   return ListView.builder(
                     itemCount: _messageLimit,
                     itemBuilder: (context, index) {
@@ -150,12 +167,12 @@ class _MessageDrawerState extends State<MessageDrawer> {
                         padding: const EdgeInsets.symmetric(
                             vertical: 8.0, horizontal: 16.0),
                         child: Shimmer.fromColors(
-                          baseColor: Colors.grey[200]!,
-                          highlightColor: Colors.grey[100]!,
+                          baseColor: shimmerBaseColor,
+                          highlightColor: shimmerHighlightColor,
                           child: Container(
                             height: 60,
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: containerColor,
                               borderRadius: BorderRadius.circular(8),
                             ),
                           ),
@@ -201,7 +218,11 @@ class _MessageDrawerState extends State<MessageDrawer> {
                 }
 
                 return ListView(
-                  children: _buildMessageList(groupedMessages),
+                  children: _buildMessageList(
+                    groupedMessages,
+                    isDarkMode,
+                    textScaleFactor,
+                  ),
                 );
               },
             ),

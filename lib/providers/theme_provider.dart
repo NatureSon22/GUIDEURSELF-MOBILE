@@ -7,11 +7,7 @@ class ThemeProvider extends ChangeNotifier {
 
   bool get isDarkMode => _isDarkMode;
 
-  ThemeProvider() {
-    _loadTheme();
-  }
-
-  Future<void> _loadTheme() async {
+  Future<void> loadTheme() async {
     await _storage.init();
     _isDarkMode = _storage.getData(key: 'darkMode') ?? false;
     notifyListeners();

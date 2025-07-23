@@ -3,7 +3,9 @@ import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:guideurself/core/themes/style.dart';
+import 'package:guideurself/providers/textscale.dart';
 import 'package:guideurself/services/setttings.dart';
+import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 
 class PrivacyLegal extends StatefulWidget {
@@ -24,6 +26,8 @@ class _PrivacyLegalState extends State<PrivacyLegal> {
 
   @override
   Widget build(BuildContext context) {
+    final textScaleFactor = context.watch<TextScaleProvider>().scaleFactor;
+
     return Scaffold(
       appBar: AppBar(
         elevation: 1,
@@ -118,7 +122,7 @@ class _PrivacyLegalState extends State<PrivacyLegal> {
                   "Privacy Policy",
                   style: styleText(
                     context: context,
-                    fontSizeOption: 14.0,
+                    fontSizeOption: 14.0 * textScaleFactor,
                     fontWeight: CustomFontWeight.weight600,
                   ),
                 ),
@@ -127,7 +131,7 @@ class _PrivacyLegalState extends State<PrivacyLegal> {
                   formattedText(privacyPolicy),
                   textStyle: styleText(
                     context: context,
-                    fontSizeOption: 12.0,
+                    fontSizeOption: 12.0 * textScaleFactor,
                   ),
                 ),
                 const Gap(40),
@@ -144,7 +148,7 @@ class _PrivacyLegalState extends State<PrivacyLegal> {
                   formattedText(termsAndConditions),
                   textStyle: styleText(
                     context: context,
-                    fontSizeOption: 12.0,
+                    fontSizeOption: 12.0 * textScaleFactor,
                   ),
                 ),
               ],

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:guideurself/core/themes/style.dart';
+import 'package:guideurself/providers/textscale.dart';
+import 'package:provider/provider.dart';
 
 class Stars extends StatefulWidget {
   final bool isFeedbackSubmitted;
@@ -32,6 +34,8 @@ class _StarsState extends State<Stars> {
 
   @override
   Widget build(BuildContext context) {
+    final textScaleFactor = context.watch<TextScaleProvider>().scaleFactor;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -40,7 +44,7 @@ class _StarsState extends State<Stars> {
           style: styleText(
             context: context,
             fontWeight: CustomFontWeight.weight600,
-            fontSizeOption: 12.0,
+            fontSizeOption: 12.0 * textScaleFactor,
           ),
         ),
         const Gap(10),

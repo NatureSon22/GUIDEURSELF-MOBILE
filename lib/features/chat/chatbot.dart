@@ -7,11 +7,12 @@ import 'package:guideurself/features/chat/messageinput.dart';
 import 'package:guideurself/features/chat/messagelist.dart';
 import 'package:guideurself/features/chat/questions.dart';
 import 'package:guideurself/providers/account.dart';
+import 'package:guideurself/providers/apperance.dart';
 import 'package:guideurself/providers/bottomnav.dart';
 import 'package:guideurself/providers/conversation.dart';
 import 'package:guideurself/providers/loading.dart';
+import 'package:guideurself/providers/textscale.dart';
 import 'package:guideurself/services/conversation.dart';
-import 'package:guideurself/services/storage.dart';
 import 'package:guideurself/widgets/textgradient.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
@@ -34,9 +35,9 @@ class Chatbot extends HookWidget {
     final isCreatingConversation = useState<bool>(false);
     final accountProvider = context.read<AccountProvider>();
     final bottomNavProvider = context.watch<BottomNavProvider>();
+    final textScaleFactor = context.watch<TextScaleProvider>().scaleFactor;
     final account = accountProvider.account;
     final isGuest = account.isEmpty;
-    final StorageService storage = StorageService();
 
     final conversation = context.watch<ConversationProvider>().conversation;
     final isNewConversation =
@@ -175,50 +176,48 @@ class Chatbot extends HookWidget {
         alignment: Alignment.center,
         height: double.infinity,
         child: SingleChildScrollView(
-          child: Container(
-            color: Colors.white,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Container(
-                  width: 280,
-                  height: 250,
-                  decoration: const BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage('lib/assets/webp/full_float.gif'),
-                      fit: BoxFit.cover,
-                    ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                width: 280,
+                height: 250,
+                decoration: const BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage('lib/assets/webp/full_float.gif'),
+                    fit: BoxFit.cover,
                   ),
                 ),
-                const GradientText(
-                  "Hey there, I'm Giga!",
-                  style: TextStyle(
-                    fontSize: 29,
-                    fontWeight: FontWeight.w700,
-                  ),
-                  gradient: LinearGradient(
-                    colors: [
-                      Color(0xFF12A5BC),
-                      Color(0xFF0E46A3),
-                    ],
+              ),
+              GradientText(
+                "Hey there, I'm Giga!",
+                style: TextStyle(
+                  fontSize: 29 * textScaleFactor,
+                  fontWeight: FontWeight.w700,
+                ),
+                gradient: const LinearGradient(
+                  colors: [
+                    Color(0xFF12A5BC),
+                    Color(0xFF0E46A3),
+                  ],
+                ),
+                align: TextAlign.center,
+              ),
+              const Gap(4),
+              SizedBox(
+                width: 270,
+                child: Text(
+                  "Got questions? Ask away, and I'll do my best to help you out!",
+                  textAlign: TextAlign.center,
+                  style: styleText(
+                    context: context,
+                    fontSizeOption: 12.0 * textScaleFactor,
+                    lineHeightOption: LineHeightOption.height200,
                   ),
                 ),
-                const Gap(4),
-                SizedBox(
-                  width: 270,
-                  child: Text(
-                    "Got questions? Ask away, and I'll do my best to help you out!",
-                    textAlign: TextAlign.center,
-                    style: styleText(
-                      context: context,
-                      fontSizeOption: 12.0,
-                      lineHeightOption: LineHeightOption.height200,
-                    ),
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       );

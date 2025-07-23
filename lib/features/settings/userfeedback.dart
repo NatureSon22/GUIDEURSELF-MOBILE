@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
+import 'package:guideurself/core/constants/projecttype.dart';
 import 'package:guideurself/core/themes/style.dart';
+import 'package:guideurself/features/settings/feedbacktype.dart';
 import 'package:guideurself/features/settings/stars.dart';
 import 'package:guideurself/features/settings/feedbackcomment.dart';
+import 'package:guideurself/providers/textscale.dart';
 import 'package:guideurself/services/feedback.dart';
 import 'package:guideurself/services/storage.dart';
+import 'package:provider/provider.dart';
 
 class UserFeedback extends StatefulWidget {
   const UserFeedback({super.key});
@@ -19,6 +23,7 @@ class _UserFeedbackState extends State<UserFeedback> {
   final TextEditingController _commentController = TextEditingController();
   final storage = StorageService();
   int rating = 0;
+  ProjectType type = ProjectType.chatbot;
   bool isSubmitting = false;
   bool isFeedbackSubmitted = false;
 
@@ -30,7 +35,8 @@ class _UserFeedbackState extends State<UserFeedback> {
       });
 
       try {
-        await addFeedback(feedback: _commentController.text, rating: rating);
+        await addFeedback(
+            feedback: _commentController.text, rating: rating, type: type);
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -64,6 +70,7 @@ class _UserFeedbackState extends State<UserFeedback> {
         setState(() {
           rating = 0;
           isFeedbackSubmitted = true;
+          type = ProjectType.chatbot;
         });
       } catch (error) {
         if (mounted) {
@@ -97,6 +104,8 @@ class _UserFeedbackState extends State<UserFeedback> {
 
   @override
   Widget build(BuildContext context) {
+    final textScaleFactor = context.watch<TextScaleProvider>().scaleFactor;
+
     return Scaffold(
       appBar: AppBar(
         elevation: 1,
@@ -135,19 +144,20 @@ class _UserFeedbackState extends State<UserFeedback> {
                     ),
                   ),
                 ),
-                const Gap(15),
+                const Gap(11),
                 Text(
                   "We Value Your Feedback",
                   style: styleText(
                     context: context,
                     fontWeight: CustomFontWeight.weight600,
-                    fontSizeOption: 12.0,
+                    fontSizeOption: 12.0 * textScaleFactor,
                   ),
                 ),
                 const Gap(10),
-                const Text(
+                Text(
                   "Let us know how we're doing to help us improve your GuideURSelf experience",
-                  style: TextStyle(height: 1.6, fontSize: 11.5),
+                  style:
+                      TextStyle(height: 1.6, fontSize: 11.5 * textScaleFactor),
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 10.0),
@@ -155,6 +165,15 @@ class _UserFeedbackState extends State<UserFeedback> {
                     color: const Color(0xFF323232).withOpacity(0.1),
                   ),
                 ),
+                const Gap(15),
+                FeedbackType(
+                    feedbackType: type,
+                    selectFeedbackType: (projectType) {
+                      setState(() {
+                        type = projectType;
+                      });
+                    }),
+                const Gap(10),
                 Stars(
                     isFeedbackSubmitted: isFeedbackSubmitted,
                     onRatingSelected: (selectedRating) {

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:guideurself/providers/apperance.dart';
+import 'package:guideurself/providers/textscale.dart';
 import 'package:guideurself/services/conversation.dart';
+import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 
 class Chatbothistorylist extends StatefulWidget {
@@ -35,11 +38,14 @@ class _ChatbothistorylistState extends State<Chatbothistorylist> {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = context.watch<AppearanceProvider>().isDarkMode;
+    final textScaleFactor = context.watch<TextScaleProvider>().scaleFactor;
+
     return FutureBuilder<List<Map<String, dynamic>>>(
       future: _futureMessages,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return _buildLoadingWidget();
+          return _buildLoadingWidget(isDarkMode);
         }
 
         if (snapshot.hasError) {
@@ -66,12 +72,19 @@ class _ChatbothistorylistState extends State<Chatbothistorylist> {
           );
         }
 
-        return _buildMessageList(messages);
+        return _buildMessageList(messages, isDarkMode, textScaleFactor);
       },
     );
   }
 
-  Widget _buildLoadingWidget() {
+  Widget _buildLoadingWidget(bool isDarkMode) {
+    final Color shimmerBaseColor =
+        isDarkMode ? const Color(0xFF2C2C2C) : Colors.grey[300]!;
+    final Color shimmerHighlightColor =
+        isDarkMode ? const Color(0xFF404040) : Colors.grey[100]!;
+    final Color containerColor =
+        isDarkMode ? const Color(0xFF1E1E1E) : Colors.white;
+
     return ListView.builder(
       padding: const EdgeInsets.all(0),
       physics: const AlwaysScrollableScrollPhysics(),
@@ -80,14 +93,14 @@ class _ChatbothistorylistState extends State<Chatbothistorylist> {
         return Padding(
           padding: const EdgeInsets.symmetric(vertical: 6.0),
           child: Shimmer.fromColors(
-            baseColor: Colors.grey[300]!,
-            highlightColor: Colors.grey[100]!,
+            baseColor: shimmerBaseColor,
+            highlightColor: shimmerHighlightColor,
             direction: ShimmerDirection.ltr,
             period: const Duration(milliseconds: 1500),
             child: Container(
               height: 60,
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: containerColor,
                 borderRadius: BorderRadius.circular(8),
               ),
             ),
@@ -136,7 +149,8 @@ class _ChatbothistorylistState extends State<Chatbothistorylist> {
     );
   }
 
-  Widget _buildMessageList(List<Map<String, dynamic>> messages) {
+  Widget _buildMessageList(List<Map<String, dynamic>> messages, bool isDarkMode,
+      double scaleFactor) {
     return ListView.builder(
       padding: const EdgeInsets.all(0),
       physics: const AlwaysScrollableScrollPhysics(),
@@ -150,7 +164,7 @@ class _ChatbothistorylistState extends State<Chatbothistorylist> {
         return Container(
           margin: const EdgeInsets.symmetric(vertical: 6),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: isDarkMode ? Colors.white.withOpacity(0.05) : Colors.white,
             borderRadius: BorderRadius.circular(15),
             border: Border.all(
               color: const Color(0xFF323232).withOpacity(0.1),
@@ -159,14 +173,18 @@ class _ChatbothistorylistState extends State<Chatbothistorylist> {
           child: ListTile(
             leading: Icon(
               Icons.chat_bubble,
-              color: const Color(0xFF323232).withOpacity(0.5),
+              color: isDarkMode
+                  ? Colors.white.withOpacity(0.8)
+                  : const Color(0xFF323232).withOpacity(0.8),
               size: 18,
             ),
             title: Text(
               title,
               style: TextStyle(
-                fontSize: 11.5,
-                color: const Color(0xFF323232).withOpacity(0.5),
+                fontSize: 11.5 * scaleFactor,
+                color: isDarkMode
+                    ? Colors.white
+                    : const Color(0xFF323232).withOpacity(0.5),
               ),
             ),
           ),

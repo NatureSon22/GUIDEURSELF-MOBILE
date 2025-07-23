@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:guideurself/core/themes/style.dart';
+import 'package:go_router/go_router.dart';
 import 'package:guideurself/providers/account.dart';
+import 'package:guideurself/providers/textscale.dart';
 import 'package:provider/provider.dart';
 
 class Header extends StatelessWidget {
@@ -10,6 +12,7 @@ class Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final accountProvider = context.watch<AccountProvider>();
+    final textScaleFactor = context.watch<TextScaleProvider>().scaleFactor;
     final account = accountProvider.account;
 
     return Row(
@@ -17,18 +20,24 @@ class Header extends StatelessWidget {
       children: [
         Row(
           children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                image: DecorationImage(
-                  image: account["user_photo_url"] != null &&
-                          account["user_photo_url"].isNotEmpty
-                      ? NetworkImage(account["user_photo_url"])
-                      : const AssetImage("lib/assets/images/avatar_placeholder.png")
-                          as ImageProvider,
-                  fit: BoxFit.cover,
+            GestureDetector(
+              onTap: () {
+                context.push("/edit-profile");
+              },
+              child: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  image: DecorationImage(
+                    image: account["user_photo_url"] != null &&
+                            account["user_photo_url"].isNotEmpty
+                        ? NetworkImage(account["user_photo_url"])
+                        : const AssetImage(
+                                "lib/assets/images/avatar_placeholder.png")
+                            as ImageProvider,
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
             ),
@@ -36,10 +45,10 @@ class Header extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Welcome!',
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 14 * textScaleFactor,
                     fontWeight: FontWeight.w700,
                     color: Colors.white,
                     height: 1.0,
@@ -47,11 +56,10 @@ class Header extends StatelessWidget {
                 ),
                 const Gap(1),
                 Text(
-                  account["username"] ??
-                      "Guest",
+                  account["username"] ?? "Guest",
                   style: styleText(
                     context: context,
-                    fontSizeOption: 12.2,
+                    fontSizeOption: 12.2 * textScaleFactor,
                     color: Colors.white,
                     fontWeight: CustomFontWeight.weight500,
                   ),

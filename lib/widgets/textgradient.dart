@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 
 class GradientText extends StatelessWidget {
-  const GradientText(
-    this.text, {
-    super.key,
-    required this.gradient,
-    this.style,
-  });
+  const GradientText(this.text,
+      {super.key,
+      required this.gradient,
+      this.style,
+      this.align = TextAlign.start});
 
   final String text;
   final TextStyle? style;
   final Gradient gradient;
+  final TextAlign align;
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +19,11 @@ class GradientText extends StatelessWidget {
       shaderCallback: (bounds) => gradient.createShader(
         Rect.fromLTWH(0, 0, bounds.width, bounds.height),
       ),
-      child: Text(text, style: style),
+      child: Text(
+        text,
+        style: style,
+        textAlign: align,
+      ),
     );
   }
 }

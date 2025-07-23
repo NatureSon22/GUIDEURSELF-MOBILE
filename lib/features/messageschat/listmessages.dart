@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:guideurself/providers/apperance.dart';
+import 'package:guideurself/providers/textscale.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:guideurself/providers/account.dart';
@@ -35,7 +37,7 @@ class _ListMessagesState extends State<ListMessages> {
   }
 
   Future<void> _openFile(String url) async {
-    // https://ucarecdn.com/d66df036-fb53-4c6b-8c8c-fcd857fe6e86/ 
+    // https://ucarecdn.com/d66df036-fb53-4c6b-8c8c-fcd857fe6e86/
     try {
       final Uri fileUrl = Uri.parse(url);
       // Use mode: LaunchMode.externalApplication to open in browser/external app
@@ -98,6 +100,8 @@ class _ListMessagesState extends State<ListMessages> {
   @override
   Widget build(BuildContext context) {
     final account = context.read<AccountProvider>().account;
+    final isDarkMode = context.watch<AppearanceProvider>().isDarkMode;
+    final textScaleFactor = context.watch<TextScaleProvider>().scaleFactor;
 
     return ListView.builder(
       controller: _scrollController,
@@ -143,9 +147,10 @@ class _ListMessagesState extends State<ListMessages> {
                     message["content"].toString().isNotEmpty)
                   Text(
                     message["content"],
-                    style: const TextStyle(
-                      color: Color(0xFF323232),
-                      fontSize: 11.5,
+                    style: TextStyle(
+                      color:
+                          isDarkMode ? Colors.white : const Color(0xFF323232),
+                      fontSize: 11.5 * textScaleFactor,
                     ),
                   ),
 

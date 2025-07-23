@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
+import 'package:guideurself/providers/apperance.dart';
+import 'package:guideurself/providers/textscale.dart';
 import 'package:guideurself/widgets/textgradient.dart';
+import 'package:provider/provider.dart';
 
 class NavFeature extends StatelessWidget {
   const NavFeature({
@@ -10,6 +13,9 @@ class NavFeature extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = context.watch<AppearanceProvider>().isDarkMode;
+    final textScaleFactor = context.watch<TextScaleProvider>().scaleFactor;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 5),
       child: Row(
@@ -23,7 +29,9 @@ class NavFeature extends StatelessWidget {
                 padding:
                     const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: isDarkMode
+                      ? const Color(0xFF12A5BC).withOpacity(0.15)
+                      : Colors.white,
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
@@ -66,14 +74,14 @@ class NavFeature extends StatelessWidget {
                       ),
                     ),
                     const Gap(10),
-                    const GradientText(
+                    GradientText(
                       "Know More About the University",
                       style: TextStyle(
-                        fontSize: 13,
+                        fontSize: 13 * textScaleFactor,
                         fontWeight: FontWeight.w700,
                         height: 1.5,
                       ),
-                      gradient: LinearGradient(
+                      gradient: const LinearGradient(
                         colors: [
                           Color(0xFF12A5BC),
                           Color(0xFF0E46A3),
@@ -95,7 +103,9 @@ class NavFeature extends StatelessWidget {
                 padding:
                     const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: isDarkMode
+                      ? const Color(0xFF12A5BC).withOpacity(0.15)
+                      : Colors.white,
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
@@ -138,14 +148,14 @@ class NavFeature extends StatelessWidget {
                       ),
                     ),
                     const Gap(10),
-                    const GradientText(
+                    GradientText(
                       "Explore University Virtual Tour",
                       style: TextStyle(
-                        fontSize: 13,
+                        fontSize: 13 * textScaleFactor,
                         fontWeight: FontWeight.w700,
                         height: 1.5,
                       ),
-                      gradient: LinearGradient(
+                      gradient: const LinearGradient(
                         colors: [
                           Color(0xFF12A5BC),
                           Color(0xFF0E46A3),

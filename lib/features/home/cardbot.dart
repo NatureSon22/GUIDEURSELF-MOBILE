@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:gap/gap.dart';
 import 'package:guideurself/core/themes/style.dart';
+import 'package:guideurself/providers/apperance.dart';
+import 'package:guideurself/providers/textscale.dart';
 import 'package:guideurself/services/storage.dart';
 import 'package:guideurself/widgets/textgradient.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 class CardBot extends StatelessWidget {
   const CardBot({
@@ -13,7 +17,13 @@ class CardBot extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = context.watch<AppearanceProvider>().isDarkMode;
+    final textScaleFactor = context.watch<TextScaleProvider>().scaleFactor;
+
     return Card(
+      surfaceTintColor: Colors.white,
+      color:
+          isDarkMode ? const Color(0xFF12A5BC).withOpacity(0.15) : Colors.white,
       shadowColor: const Color.fromARGB(255, 50, 50, 50).withOpacity(0.2),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(15),
@@ -45,13 +55,15 @@ class CardBot extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const GradientText(
+                GradientText(
                   "Meet Giga!",
                   gradient: LinearGradient(
-                    colors: [Color(0xFF12A5BC), Color(0xFF0E46A3)],
+                    colors: isDarkMode
+                        ? [Colors.white, Colors.white]
+                        : [const Color(0xFF12A5BC), const Color(0xFF0E46A3)],
                   ),
                   style: TextStyle(
-                    fontSize: 21,
+                    fontSize: 21 * textScaleFactor,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -59,7 +71,7 @@ class CardBot extends StatelessWidget {
                   "Meet Giga, your friendly virtual guide, here to assist with campus tours, answer questions, and make your university experience easier.",
                   style: styleText(
                     context: context,
-                    fontSizeOption: 10.3,
+                    fontSizeOption: 10.3 * textScaleFactor,
                   ),
                 ),
                 const Gap(10),
@@ -72,10 +84,25 @@ class CardBot extends StatelessWidget {
                       context.push(hasVisited == true ? "/chatbot" : "/chat");
                     },
                     style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 10),
-                      textStyle: const TextStyle(fontSize: 13.5),
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        textStyle: TextStyle(
+                          fontSize: 13.5,
+                          color: isDarkMode
+                              ? const Color(0xFF12A5BC)
+                              : Colors.white,
+                        ),
+                        backgroundColor: isDarkMode
+                            ? Colors.white
+                            : const Color(0xFF12A5BC)),
+                    child: Text(
+                      "Chat Now",
+                      style: TextStyle(
+                        color:
+                            isDarkMode ? const Color(0xFF12A5BC) : Colors.white,
+                        fontWeight:
+                            isDarkMode ? FontWeight.w700 : FontWeight.normal,
+                      ),
                     ),
-                    child: const Text("Chat Now"),
                   ),
                 ),
               ],
