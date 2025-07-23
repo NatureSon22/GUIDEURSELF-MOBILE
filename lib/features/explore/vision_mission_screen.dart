@@ -139,8 +139,7 @@ class _VisionMissionScreenState extends State<VisionMissionScreen> {
       padding: const EdgeInsets.only(bottom: 16.0),
       child: Container(
         padding: const EdgeInsets.all(12.0),
-        decoration: BoxDecoration( // Semi-transparent background
-
+        decoration: BoxDecoration( // Semi-transparent backmmmground
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: const Color.fromARGB(255, 235, 235, 235),
