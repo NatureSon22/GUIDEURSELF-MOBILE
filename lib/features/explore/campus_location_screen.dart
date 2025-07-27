@@ -81,8 +81,8 @@ class _CampusLocationScreenState extends State<CampusLocationScreen> {
                   children: [
                     TileLayer(
                       urlTemplate:
-                          "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                      subdomains: const ['a', 'b', 'c'],
+                          'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+                      subdomains: ['a', 'b', 'c'],
                     ),
                     PopupMarkerLayer(
                       options: PopupMarkerLayerOptions(
@@ -234,13 +234,16 @@ class _CampusLocationScreenState extends State<CampusLocationScreen> {
         return DraggableScrollableSheet(
           initialChildSize: 0.10,
           minChildSize: 0.10,
-          maxChildSize:
-              0.10, // Reduced since we no longer need space for a list
+          maxChildSize: 0.10,
           builder: (context, scrollController) {
             return Container(
-              decoration: const BoxDecoration(
-                borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-                boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 5)],
+              decoration: BoxDecoration(
+                color: Theme.of(context).scaffoldBackgroundColor,
+                borderRadius:
+                    const BorderRadius.vertical(top: Radius.circular(20)),
+                boxShadow: const [
+                  BoxShadow(color: Colors.black26, blurRadius: 5)
+                ],
               ),
               child: SingleChildScrollView(
                 controller: scrollController,
@@ -253,10 +256,7 @@ class _CampusLocationScreenState extends State<CampusLocationScreen> {
                         child: Container(
                           height: 40,
                           decoration: BoxDecoration(
-                            border: Border.all(
-                              color: Colors.grey,
-                              width: 1.0,
-                            ),
+                            border: Border.all(color: Colors.grey, width: 1.0),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: TextField(
@@ -264,18 +264,19 @@ class _CampusLocationScreenState extends State<CampusLocationScreen> {
                             decoration: InputDecoration(
                               hintText: "Find Campus",
                               hintStyle: const TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight
-                                    .w300, // You can adjust the weight as needed (e.g., w100, w200, etc.)
-                              ),
-                              contentPadding: const EdgeInsets.only(top: 2),
+                                  fontSize: 14, fontWeight: FontWeight.w300),
+                              contentPadding:
+                                  const EdgeInsets.symmetric(vertical: 2),
                               prefixIcon: const Icon(Icons.search, size: 20),
-                              suffixIcon: IconButton(
-                                icon: const Icon(Icons.clear, size: 20),
-                                onPressed: () {
-                                  searchController.clear();
-                                },
-                              ),
+                              suffixIcon: searchController.text.isNotEmpty
+                                  ? IconButton(
+                                      icon: const Icon(Icons.clear, size: 20),
+                                      onPressed: () {
+                                        searchController.clear();
+                                        setState(() {});
+                                      },
+                                    )
+                                  : null,
                               border: InputBorder.none,
                               enabledBorder: InputBorder.none,
                               focusedBorder: InputBorder.none,
@@ -300,16 +301,17 @@ class _CampusLocationScreenState extends State<CampusLocationScreen> {
                                     campusPrograms: [],
                                     dateAdded: DateTime.now(),
                                     floors: [],
-                                  ), // Dummy campus if not found
+                                  ),
                                 );
                                 if (campus.campusName.isNotEmpty) {
                                   _mapController.move(
-                                    LatLng(double.parse(campus.latitude),
-                                        double.parse(campus.longitude)),
+                                    LatLng(
+                                      double.parse(campus.latitude),
+                                      double.parse(campus.longitude),
+                                    ),
                                     16.0,
                                   );
                                 } else {
-                                  // Optional: Show a message if campus not found
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(
                                         content: Text("Campus not found")),
