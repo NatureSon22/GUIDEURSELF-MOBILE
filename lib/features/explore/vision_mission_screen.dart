@@ -148,7 +148,7 @@ class _VisionMissionScreenState extends State<VisionMissionScreen> {
         decoration: BoxDecoration(
           // Semi-transparent background
 
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: B+++++++++++++++++++++++++++++++++++++++++++++++++orderRadius.circular(12),
           border: Border.all(
             color: const Color.fromARGB(255, 235, 235, 235),
             width: 1,
