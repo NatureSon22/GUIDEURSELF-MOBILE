@@ -35,7 +35,7 @@ class _FloorListDrawerState extends State<FloorListDrawer> {
   UniqueKey _mapKey = UniqueKey();
   double? _markerLatitude;
   double? _markerLongitude;
-  
+
   String? _localSelectedFloor;
   String? _floorPhotoUrl;
   bool _isExpanded = false;
@@ -201,7 +201,8 @@ class _FloorListDrawerState extends State<FloorListDrawer> {
                               child: const Center(
                                 child: Text(
                                   "Preview",
-                                  style: TextStyle(// ✅ Text color
+                                  style: TextStyle(
+                                    // ✅ Text color
                                     fontSize: 11, // Adjust font size if needed
                                   ),
                                 ),
@@ -416,20 +417,18 @@ class _FloorListDrawerState extends State<FloorListDrawer> {
 
     return DraggableScrollableSheet(
       controller: _controller,
-      initialChildSize:0.8,
+      initialChildSize: 0.8,
       minChildSize: 0.13,
       maxChildSize: 1,
       builder: (context, scrollController) {
         return Container(
           padding: const EdgeInsets.only(bottom: 20, left: 20, right: 20),
-          decoration: const BoxDecoration(
-            border: Border(
-              top: BorderSide(
-                color: Colors.grey,
-                width: 1.0,
-              ),
+          decoration: BoxDecoration(
+            color: Theme.of(context).scaffoldBackgroundColor,
+            border: const Border(
+              top: BorderSide(color: Colors.grey, width: 1.0),
             ),
-            borderRadius: BorderRadius.only(
+            borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(20),
               topRight: Radius.circular(20),
             ),
@@ -514,7 +513,7 @@ class _FloorListDrawerState extends State<FloorListDrawer> {
                         border: Border.all(
                           color: _isGridLayout
                               ? const Color.fromARGB(255, 18, 165, 188)
-                              : Colors.black,
+                              :  Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey,
                           width: 1,
                         ),
                       ),
@@ -524,7 +523,7 @@ class _FloorListDrawerState extends State<FloorListDrawer> {
                           size: 20,
                           color: _isGridLayout
                               ? const Color.fromARGB(255, 18, 165, 188)
-                              : Colors.black,
+                              : Theme.of(context).textTheme.bodyMedium?.color,
                         ),
                         onPressed: _toggleGridLayout,
                       ),
@@ -537,7 +536,7 @@ class _FloorListDrawerState extends State<FloorListDrawer> {
                         borderRadius: BorderRadius.circular(50),
                         border: Border.all(
                           color: _isExpanded
-                              ? Colors.black
+                              ? Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey
                               : const Color.fromARGB(255, 18, 165, 188),
                           width: 1,
                         ),
@@ -549,7 +548,7 @@ class _FloorListDrawerState extends State<FloorListDrawer> {
                               : Icons.arrow_downward,
                           size: 20,
                           color: _isExpanded
-                              ? Colors.black
+                              ? Theme.of(context).textTheme.bodyMedium?.color
                               : const Color.fromARGB(255, 18, 165, 188),
                         ),
                         onPressed: _toggleExpanded,

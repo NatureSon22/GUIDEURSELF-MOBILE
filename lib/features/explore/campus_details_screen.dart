@@ -388,9 +388,10 @@ class _CampusDetailsScreenState extends State<CampusDetailsScreen> {
                 ),
                 TextSpan(
                   text: text,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 13, // Set text color
                     height: 1.5,
+                    color: Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey,
                   ),
                 ),
               ],

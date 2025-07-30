@@ -1,6 +1,5 @@
 // ignore: file_names
 import 'package:flutter/foundation.dart';
-import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:guideurself/models/campus_model.dart';
 import 'package:guideurself/models/university_management.dart';
@@ -386,9 +385,10 @@ class _CampusDetailsScreenState extends State<CampusDetailsScreen> {
                 ),
                 TextSpan(
                   text: text,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 13, // Set text color
                     height: 1.5,
+                    color: Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey,
                   ),
                 ),
               ],

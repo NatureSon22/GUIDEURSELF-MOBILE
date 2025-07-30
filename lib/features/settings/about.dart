@@ -9,6 +9,7 @@ import 'package:guideurself/widgets/textgradient.dart';
 import 'package:provider/provider.dart';
 import '../../services/general_settings_service.dart';
 import '../../models/general_settings.dart';
+import 'package:guideurself/providers/apperance.dart';
 
 class About extends StatefulWidget {
   const About({super.key});
@@ -28,6 +29,7 @@ class _AboutState extends State<About> {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = context.watch<AppearanceProvider>().isDarkMode;
     final textScaleFactor = context.watch<TextScaleProvider>().scaleFactor;
 
     return Scaffold(
@@ -70,7 +72,9 @@ class _AboutState extends State<About> {
                   context: context,
                   fontSizeOption: 14.0,
                   fontWeight: CustomFontWeight.weight600,
-                  color: const Color(0xFF323232).withOpacity(0.3),
+                  color: isDarkMode
+                      ? Colors.white.withOpacity(0.7)
+                      : const Color(0xFF323232).withOpacity(0.6),
                 ),
               ),
             ),

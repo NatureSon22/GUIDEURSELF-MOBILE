@@ -65,7 +65,7 @@ class _AppearanceState extends State<Appearance> {
                 fontFamily: "Poppins",
                 fontSize: 15,
                 fontWeight: FontWeight.w500,
-                color: const Color(0xFF323232).withOpacity(0.5),
+                color: Theme.of(context).textTheme.bodyMedium?.color ?? const Color(0xFF323232).withOpacity(0.5),
               ),
             ),
           )
@@ -80,7 +80,7 @@ class _AppearanceState extends State<Appearance> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  "Light mode",
+                  isDarkMode ? "Dark mode" : "Light mode",
                   style: TextStyle(fontSize: 14 * textScaleFactor),
                 ),
                 Row(
@@ -102,12 +102,7 @@ class _AppearanceState extends State<Appearance> {
                       inactiveColor: Colors.grey.shade400,
                       value: isDarkMode,
                       onToggle: (value) {
-                        context
-                            .read<AppearanceProvider>()
-                            .toggleDarkMode(value);
-                        // setState(() {
-                        //   isDarkMode = value;
-                        // });
+                        context.read<AppearanceProvider>().toggleDarkMode(value);
                       },
                     ),
                     const Gap(15),
