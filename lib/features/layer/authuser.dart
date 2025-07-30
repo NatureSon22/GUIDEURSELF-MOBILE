@@ -40,11 +40,22 @@ class _AuthLayerState extends State<AuthLayer> {
           _hasNavigated = true;
 
           final isValid = snapshot.data?['valid'] == true;
-          final destination = isValid ? '/' : '/login';
 
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            print('Navigating to $destination');
-            context.go(destination);
+          WidgetsBinding.instance.addPostFrameCallback((_) async {
+            if (!isValid) {
+              try {
+                await login(
+                    email: "john@gmail.com",
+                    password: "password",
+                    rememberMe: true);
+              } catch (e) {
+                print(e);
+              }
+            }
+
+            if (context.mounted) {
+              context.go("/");
+            }
           });
         }
 

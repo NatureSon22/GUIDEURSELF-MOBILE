@@ -6,8 +6,7 @@ import 'package:guideurself/features/auth/loginbuttons.dart';
 import 'package:guideurself/features/auth/logindescription.dart';
 import 'package:guideurself/features/auth/loginfields.dart';
 import 'package:guideurself/services/auth.dart';
-import 'package:guideurself/services/general_settings_service.dart'; // <-- Import your service
-import 'package:guideurself/models/general_settings.dart'; // <-- Import your model
+import 'package:guideurself/services/general_settings_service.dart'; 
 
 class Login extends HookWidget {
   const Login({super.key});

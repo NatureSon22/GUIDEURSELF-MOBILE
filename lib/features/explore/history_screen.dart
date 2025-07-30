@@ -142,7 +142,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                           width: 1,
                         ), // Optional: rounded corners
                       ),
-                      child: Html(
+                      child: Html( 
                         data: cleanedHtml,
                         style: {
                           "body": Style(

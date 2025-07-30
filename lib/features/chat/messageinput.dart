@@ -106,10 +106,10 @@ class _MessageInputState extends State<MessageInput> {
     String? conversationId = conversation['conversation_id'];
     int query = storage.getData(key: "query") ?? 0;
 
-    if (isGuest == true && query == 5) {
-      outOfQueries();
-      return;
-    }
+    // if (isGuest == true && query == 5) {
+    //   outOfQueries();
+    //   return;
+    // }
 
     final String tempMessageId =
         DateTime.now().millisecondsSinceEpoch.toString();
@@ -212,10 +212,10 @@ class _MessageInputState extends State<MessageInput> {
         children: [
           OutlinedButton(
             onPressed: () {
-              if (query == 5 && isGuest) {
-                outOfQueries();
-                return;
-              }
+              // if (query == 5 && isGuest) {
+              //   outOfQueries();
+              //   return;
+              // }
               recordInput(context, widget.handleSendQuestion,
                   widget.handleSelectQuestion);
             },

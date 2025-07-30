@@ -50,6 +50,7 @@ class Chatbot extends HookWidget {
 
     final extras =
         GoRouterState.of(context).extra as Map<String, dynamic>? ?? {};
+
     useEffect(() {
       // Only reset messages when explicitly starting a new conversation
       // but not when we're in the process of creating one
